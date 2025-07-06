@@ -73,8 +73,13 @@ public class Bullet extends DynamicGameObject {
     }
 
     public void destroy() {
-        this.tankInst.setBulletDestroyed(True);
+        this.tankInst.setBulletStatus(true);
     }
+
+    public boolean checkCollision() {
+        return false;
+    }
+
 
 
 }

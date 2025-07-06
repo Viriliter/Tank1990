@@ -22,16 +22,23 @@
 
 package tank1990.tile;
 
+import java.io.Serializable;
+
 import tank1990.core.Direction;
 import tank1990.core.StaticGameObject;
 
 public abstract class Tile extends StaticGameObject {
+    TileType type = null;
 
-    public Tile(int x, int y, Direction dir) {
+    public Tile(int x, int y, TileType type) {
         setX(x);
         setY(y);
-        setDir(dir);
+        setDir(Direction.DIRECTION_INVALID);
+
+        this.type = type;
     }
+
+    public TileType getType() { return this.type; }
 
     public void repaint() {
 

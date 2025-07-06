@@ -28,8 +28,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameOverPanel extends AbstractPanel {
-    public GameOverPanel(JFrame frame, ConfigHandler config) {
-        super(frame, config);
+    public GameOverPanel(JFrame frame) {
+        super(frame);
     }
 
     @Override

@@ -25,6 +25,7 @@ package tank1990.tank;
 import tank1990.core.ConfigHandler;
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
+import tank1990.powerup.Powerup;
 import tank1990.projectiles.Bullet;
 
 public abstract class AbstractTank extends DynamicGameObject {
@@ -52,22 +53,26 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     }
 
-    public Bullet fire() {
+    public Bullet shoot() {
         if (!this.isBulletDestroyed) return null;
 
-        return new Bullet();
+        return new Bullet(this, getX(), getY(), getDir(), this.properties.bulletSpeed());
     }
 
     public void getDamage() {
-
+        health = health>0 ? --health: 0;
     }
 
-    public void getPowerup() {
+    public void getPowerup(Powerup powerup) {
 
     }
 
     public void setBulletStatus(boolean isBulletDestroyed) {
         this.isBulletDestroyed = isBulletDestroyed;
+    }
+
+    public boolean checkCollision() {
+        return false;
     }
 
 }

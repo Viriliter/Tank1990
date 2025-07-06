@@ -10,9 +10,9 @@ import tank1990.panels.MenuPanel;
 
 public class Game {
     public static void main(String[] args) {
-        ConfigHandler config = new ConfigHandler(GlobalConstants.CONFIGURATION_FILE);
+        ConfigHandler.getInstance().parse(GlobalConstants.CONFIGURATION_FILE);
 
-        WindowProperties windowProperties = config.getWindowProperties();
+        WindowProperties windowProperties = ConfigHandler.getInstance().getWindowProperties();
 
         SwingUtilities.invokeLater(() -> {
 
@@ -33,7 +33,7 @@ public class Game {
                 frame.setResizable(false);
             }
 
-            MenuPanel menuPanel = new MenuPanel(frame, config);
+            MenuPanel menuPanel = new MenuPanel(frame);
             frame.add(menuPanel);
             frame.setVisible(true);
         });

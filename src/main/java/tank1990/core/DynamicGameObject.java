@@ -24,4 +24,6 @@ package tank1990.core;
 
 public abstract class DynamicGameObject extends GameObject {
     public abstract void move();
+
+    public abstract boolean checkCollision();
 }

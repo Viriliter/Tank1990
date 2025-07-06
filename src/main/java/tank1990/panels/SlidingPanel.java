@@ -20,46 +20,41 @@
  * SOFTWARE.
  */
 
-package tank1990.player;
+package tank1990.panels;
 
-import tank1990.core.ConfigHandler.PlayerProperties;
-import tank1990.core.Direction;
-import tank1990.core.GlobalConstants;
-import tank1990.projectiles.Bullet;
-import tank1990.tank.PlayerTank;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Player {
-    int health = 0;
-    PlayerTank myTank = null;
-    PlayerType playerType = PlayerType.PLAYER_1;
+public abstract class SlidingPanel extends AbstractPanel{
+    protected int yOffset;
+    protected Timer timer;
 
-    public Player(PlayerProperties properties, PlayerType playerType) {
-        this.health = properties.initialHealth();
+    public SlidingPanel(JFrame frame) {
+        super(frame);
 
-        if (playerType == PlayerType.PLAYER_1)
-            myTank = new PlayerTank(null, GlobalConstants.INITIAL_PLAYER_1_X, GlobalConstants.INITIAL_PLAYER_1_Y, Direction.DIRECTION_UPWARDS);
-        else
-            myTank = new PlayerTank(null, GlobalConstants.INITIAL_PLAYER_2_X, GlobalConstants.INITIAL_PLAYER_2_Y, Direction.DIRECTION_UPWARDS);
+        this.yOffset = this.frame.getHeight();  // Start from to bottom
+        setPreferredSize(new Dimension(this.frame.getWidth(), this.frame.getHeight()));
+        setBackground(Color.BLACK);
     }
 
-    public void incrementDx() {
-
+    protected void startAnimation() {
+        timer = new Timer(10, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                yOffset -= 5;
+                if (yOffset <= 0) {
+                    yOffset = 0;
+                    timer.stop();
+                    animationStopped();
+                }
+                repaint();
+            }
+        });
+        timer.start();
     }
 
-    public void decrementDx() {
+    protected abstract void animationStarted();
 
-    }
-
-    public void incrementDy() {
-
-    }
-
-    public void decrementDy() {
-
-    }
-
-    public Bullet shoot() {
-        return myTank.shoot();
-    }
-
+    protected abstract void animationStopped();
 }

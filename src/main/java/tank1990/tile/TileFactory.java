@@ -20,46 +20,29 @@
  * SOFTWARE.
  */
 
-package tank1990.player;
+package tank1990.tile;
 
-import tank1990.core.ConfigHandler.PlayerProperties;
+import tank1990.core.ConfigHandler;
 import tank1990.core.Direction;
-import tank1990.core.GlobalConstants;
-import tank1990.projectiles.Bullet;
-import tank1990.tank.PlayerTank;
+import tank1990.tank.*;
 
-public class Player {
-    int health = 0;
-    PlayerTank myTank = null;
-    PlayerType playerType = PlayerType.PLAYER_1;
+public class TileFactory {
+    public static Tile createTile(ConfigHandler config, TileType type, int x, int y) {
+        if (config == null) {
+            throw new IllegalStateException("ConfigHandler cannot be null!");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("Tank type cannot be null!");
+        }
 
-    public Player(PlayerProperties properties, PlayerType playerType) {
-        this.health = properties.initialHealth();
-
-        if (playerType == PlayerType.PLAYER_1)
-            myTank = new PlayerTank(null, GlobalConstants.INITIAL_PLAYER_1_X, GlobalConstants.INITIAL_PLAYER_1_Y, Direction.DIRECTION_UPWARDS);
-        else
-            myTank = new PlayerTank(null, GlobalConstants.INITIAL_PLAYER_2_X, GlobalConstants.INITIAL_PLAYER_2_Y, Direction.DIRECTION_UPWARDS);
+        return switch (type) {
+            case TILE_BRICKS -> new TileBricks(x, y);
+            case TILE_STEEL -> new TileSteel(x, y);
+            case TILE_TREES -> new TileTrees(x, y);
+            case TILE_SEA -> new TileSea(x, y);
+            case TILE_ICE -> new TileIce(x, y);
+            case TILE_EAGLE -> new TileEagle(x, y);
+            default -> null;
+        };
     }
-
-    public void incrementDx() {
-
-    }
-
-    public void decrementDx() {
-
-    }
-
-    public void incrementDy() {
-
-    }
-
-    public void decrementDy() {
-
-    }
-
-    public Bullet shoot() {
-        return myTank.shoot();
-    }
-
 }

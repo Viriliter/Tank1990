@@ -49,8 +49,8 @@ public class ConfigHandler implements Serializable{
     public record TankProperties (
             int points,
             int health,
-            int movement,
-            int bullet
+            int movementSpeed,
+            int bulletSpeed
     ) {}
 
     public record LevelProperties (
@@ -58,11 +58,22 @@ public class ConfigHandler implements Serializable{
 
     private static Ini ini;
 
+    private static ConfigHandler instance = null;
+
+    private ConfigHandler() {}
+
+    public static ConfigHandler getInstance() {
+        if (instance == null) {
+            instance = new ConfigHandler();
+        }
+        return instance;
+    }
+
     /**
-     * Constructor that loads and parses the configuration file.
+     * Loads and parses the configuration file.
      * @param filePath The path to the configuration file.
      */
-    public ConfigHandler(String filePath) {
+    public void parse(String filePath) {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(filePath)) {
             if (input == null) {
                 throw new IOException(filePath + " is not found in resources");
@@ -72,6 +83,11 @@ public class ConfigHandler implements Serializable{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Constructor that loads and parses the configuration file.
+     * @param filePath The path to the configuration file.
+     */
 
     /**
      * Sets value for the key of the configuration parameter in provided section.
