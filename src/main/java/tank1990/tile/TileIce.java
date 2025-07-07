@@ -23,7 +23,7 @@
 package tank1990.tile;
 
 public class TileIce extends Tile {
-    public TileIce(int x, int y) {
-        super(x, y, TileType.TILE_ICE);
+    public TileIce(int x, int y, BlockConfiguration blockConf) {
+        super(x, y, TileType.TILE_ICE, blockConf);
     }
 }

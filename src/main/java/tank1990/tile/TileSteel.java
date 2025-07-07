@@ -23,7 +23,7 @@
 package tank1990.tile;
 
 public class TileSteel extends Tile {
-    public TileSteel(int x, int y) {
-        super(x, y, TileType.TILE_STEEL);
+    public TileSteel(int x, int y, BlockConfiguration blockConf) {
+        super(x, y, TileType.TILE_STEEL, blockConf);
     }
 }

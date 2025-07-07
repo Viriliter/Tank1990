@@ -23,7 +23,7 @@
 package tank1990.tile;
 
 public class TileTrees extends Tile {
-    public TileTrees(int x, int y) {
-        super(x, y, TileType.TILE_TREES);
+    public TileTrees(int x, int y, BlockConfiguration blockConf) {
+        super(x, y, TileType.TILE_TREES, blockConf);
     }
 }

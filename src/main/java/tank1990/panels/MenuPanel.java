@@ -39,8 +39,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     private static final String[] menuItems = {
             "1 PLAYER", "2 PLAYERS", "CONSTRUCTION"
     };
-
-    private List<JLabel> selectorItems = null;
+    private static List<JLabel> selectorItems = new ArrayList<>();
 
     public MenuPanel(JFrame frame) {
         super(frame);
@@ -100,7 +99,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         panelSelection.setBackground(Color.BLUE);
         basePanel.add(panelSelection, gbc);
 
-        selectorItems = new ArrayList<>();
+        selectorItems.clear();
 
         for (int i = 0; i < menuItems.length; i++) {
             GridBagConstraints gbcIcon = new GridBagConstraints();
@@ -192,26 +191,27 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     //    g2.dispose();
     //}
 
+    private void updateSelectorVisibility() {
+        if (selectorItems == null || selectorItems.isEmpty()) return;
+
+        for (int i = 0; i < selectorItems.size(); i++) {
+            selectorItems.get(i).setVisible(i == selectedIndex);
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate(); // refresh layout
+            repaint();    // redraw component
+        });
+    }
+
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length;
-
-            if (selectorItems==null ||selectorItems.isEmpty()) return;
-            for (int i=0; i<selectorItems.size(); i++) {
-                selectorItems.get(i).setVisible(i == selectedIndex);
-            }
-
-            repaint();
+            updateSelectorVisibility();
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             selectedIndex = (selectedIndex + 1) % menuItems.length;
-
-            if (selectorItems==null || selectorItems.isEmpty()) return;
-            for (int i=0; i<selectorItems.size(); i++) {
-                selectorItems.get(i).setVisible(i == selectedIndex);
-            }
-
-            repaint();
+            updateSelectorVisibility();
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             System.out.println("Selected: " + menuItems[selectedIndex]);
             if (selectedIndex==0) {

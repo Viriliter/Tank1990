@@ -25,7 +25,7 @@ package tank1990.tile;
 import tank1990.core.ConfigHandler;
 
 public class TileBricks extends Tile {
-    public TileBricks(int x, int y) {
-        super(x, y, TileType.TILE_BRICKS);
+    public TileBricks(int x, int y, BlockConfiguration blockConf) {
+        super(x, y, TileType.TILE_BRICKS, blockConf);
     }
 }

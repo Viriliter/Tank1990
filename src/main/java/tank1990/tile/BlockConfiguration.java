@@ -22,8 +22,44 @@
 
 package tank1990.tile;
 
-public class TileEagle extends Tile {
-    public TileEagle(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_EAGLE, blockConf);
+/**
+ * Block Configurations
+ *
+ * X => FULL, 0 => FULL
+ *
+ * XX BLOCK_CONF_FULL
+ * XX
+ *
+ * XO BLOCK_CONF_1  OX BLOCK_CONF_2  0O BLOCK_CONF_3  0O BLOCK_CONF_4
+ * OO               OO               OX               XO
+ *
+ * XX BLOCK_CONF_5  OX BLOCK_CONF_6  0O BLOCK_CONF_7  XO BLOCK_CONF_8
+ * OO               OX               XX               XO
+ *
+ */
+public enum BlockConfiguration {
+    BLOCK_CONF_FULL,
+    BLOCK_CONF_1,
+    BLOCK_CONF_2,
+    BLOCK_CONF_3,
+    BLOCK_CONF_4,
+    BLOCK_CONF_5,
+    BLOCK_CONF_6,
+    BLOCK_CONF_7,
+    BLOCK_CONF_8;
+
+    public static BlockConfiguration valueOf(int val) {
+        return switch (val) {
+            case (0) -> BLOCK_CONF_FULL;
+            case (1) -> BLOCK_CONF_1;
+            case (2) -> BLOCK_CONF_2;
+            case (3) -> BLOCK_CONF_3;
+            case (4) -> BLOCK_CONF_4;
+            case (5) -> BLOCK_CONF_5;
+            case (6) -> BLOCK_CONF_6;
+            case (7) -> BLOCK_CONF_7;
+            case (8) -> BLOCK_CONF_8;
+            default -> throw new RuntimeException("Invalid Value for BlockConfiguration");
+        };
     }
 }

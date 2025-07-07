@@ -28,7 +28,8 @@ import tank1990.core.Direction;
 import tank1990.core.StaticGameObject;
 
 public abstract class Tile extends StaticGameObject {
-    TileType type = null;
+    protected TileType type = null;
+    protected BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
 
     public Tile(int x, int y, TileType type) {
         setX(x);
@@ -38,7 +39,18 @@ public abstract class Tile extends StaticGameObject {
         this.type = type;
     }
 
+    public Tile(int x, int y, TileType type, BlockConfiguration blockConf) {
+        setX(x);
+        setY(y);
+        setDir(Direction.DIRECTION_INVALID);
+
+        this.type = type;
+        this.blockConf = blockConf;
+    }
+
     public TileType getType() { return this.type; }
+
+    public BlockConfiguration getBlockConf() { return this.blockConf; }
 
     public void repaint() {
 

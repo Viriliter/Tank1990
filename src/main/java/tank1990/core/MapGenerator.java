@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import tank1990.tile.BlockConfiguration;
 import tank1990.tile.Tile;
 import tank1990.tile.TileFactory;
 import tank1990.tile.TileType;
@@ -129,13 +130,19 @@ public class MapGenerator {
             String line = scanner.nextLine();
             String[] params = line.split("\\s+");
 
-            if (params.length!=3) continue;
+            if (params.length<3) continue;
 
             TileType tileType = TileType.valueOf(params[0]);
             int rowIndex = Integer.parseInt(params[1]);
             int colIndex = Integer.parseInt(params[2]);
 
-            grid[rowIndex][colIndex] = TileFactory.createTile(ConfigHandler.getInstance(), tileType, rowIndex, colIndex);
+            // If extra parameter provided for block configuration set it, otherwise set as full block
+            BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
+            if (params.length==4) {
+                blockConf = BlockConfiguration.valueOf(Integer.parseInt(params[3]));
+            }
+
+            grid[rowIndex][colIndex] = TileFactory.createTile(ConfigHandler.getInstance(), tileType, rowIndex, colIndex, blockConf);
         }
 
         return grid;

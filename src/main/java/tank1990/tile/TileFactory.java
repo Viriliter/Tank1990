@@ -27,7 +27,7 @@ import tank1990.core.Direction;
 import tank1990.tank.*;
 
 public class TileFactory {
-    public static Tile createTile(ConfigHandler config, TileType type, int x, int y) {
+    public static Tile createTile(ConfigHandler config, TileType type, int x, int y, BlockConfiguration blockConf) {
         if (config == null) {
             throw new IllegalStateException("ConfigHandler cannot be null!");
         }
@@ -36,12 +36,12 @@ public class TileFactory {
         }
 
         return switch (type) {
-            case TILE_BRICKS -> new TileBricks(x, y);
-            case TILE_STEEL -> new TileSteel(x, y);
-            case TILE_TREES -> new TileTrees(x, y);
-            case TILE_SEA -> new TileSea(x, y);
-            case TILE_ICE -> new TileIce(x, y);
-            case TILE_EAGLE -> new TileEagle(x, y);
+            case TILE_BRICKS -> new TileBricks(x, y, blockConf);
+            case TILE_STEEL -> new TileSteel(x, y, blockConf);
+            case TILE_TREES -> new TileTrees(x, y, blockConf);
+            case TILE_SEA -> new TileSea(x, y, blockConf);
+            case TILE_ICE -> new TileIce(x, y, blockConf);
+            case TILE_EAGLE -> new TileEagle(x, y, blockConf);
             default -> null;
         };
     }
