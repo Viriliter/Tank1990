@@ -39,7 +39,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     private static final String[] menuItems = {
             "1 PLAYER", "2 PLAYERS", "CONSTRUCTION"
     };
-    private static List<JLabel> selectorItems = new ArrayList<>();
+    private static final List<JLabel> selectorItems = new ArrayList<>();
 
     public MenuPanel(JFrame frame) {
         super(frame);
@@ -51,28 +51,38 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         requestFocusInWindow();
         addKeyListener(this);
 
-
         int width = ConfigHandler.getInstance().getWindowProperties().windowWidth();
         int height = frame.getHeight();
 
+        JPanel backgroundPanel = new JPanel();
+        backgroundPanel.setBounds(0, 0, width, height);
+        backgroundPanel.setBackground(Color.BLACK);
+        backgroundPanel.setOpaque(true);
+
+        // Base Panel
         JPanel basePanel = new JPanel(new GridBagLayout());
-        basePanel.setBounds(0, 0, width, height);
-        basePanel.setOpaque(false);
-        basePanel.setSize(new Dimension(width, height));
+        basePanel.setBounds(0, height, width, height);  // Create at the bottom so the sliding animation takes its place
+        basePanel.setOpaque(true);
+        basePanel.setBackground(Color.BLACK);
+        revalidate();
+        repaint();
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
+        gbc.weightx = 1.0;
+
         gbc.fill = GridBagConstraints.BOTH;
 
         // Score Panel - 15% height
         gbc.gridy = 0;
         gbc.weighty = 0.15;
         JPanel panelScore = new JPanel();
-        panelScore.setBackground(Color.RED);
+        panelScore.setOpaque(true);
+        panelScore.setBackground(Color.BLACK);
         basePanel.add(panelScore, gbc);
 
         JLabel labelScore = new JLabel("I- 00 HI- 20000");
-        labelScore.setFont(new Font("Monospaced", Font.BOLD, 24));
+        labelScore.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
         labelScore.setHorizontalAlignment(SwingConstants.CENTER);
         labelScore.setForeground(Color.WHITE);
         panelScore.setLayout(new BorderLayout());
@@ -82,11 +92,12 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         gbc.gridy = 1;
         gbc.weighty = 0.35;
         JPanel panelGameTitle = new JPanel();
-        panelGameTitle.setBackground(Color.GREEN);
+        panelGameTitle.setOpaque(true);
+        panelGameTitle.setBackground(Color.BLACK);
         basePanel.add(panelGameTitle, gbc);
 
         JLabel labelTitle = new JLabel("<html><div style='text-align:center;'>TANK H<br>1990</div></html>");
-        labelTitle.setFont(new Font("Monospaced", Font.BOLD, 48));
+        labelTitle.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 48));
         labelTitle.setHorizontalAlignment(SwingConstants.CENTER);
         labelTitle.setForeground(Color.WHITE);
         panelGameTitle.setLayout(new BorderLayout());
@@ -96,7 +107,8 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         gbc.gridy = 2;
         gbc.weighty = 0.25;
         JPanel panelSelection = new JPanel(new GridBagLayout());
-        panelSelection.setBackground(Color.BLUE);
+        panelSelection.setOpaque(true);
+        panelSelection.setBackground(Color.BLACK);
         basePanel.add(panelSelection, gbc);
 
         selectorItems.clear();
@@ -120,29 +132,32 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             gbcText.anchor = GridBagConstraints.WEST;
 
             JLabel labelSelectionItem = new JLabel(menuItems[i]);
-            labelSelectionItem.setFont(new Font("Monospaced", Font.PLAIN, 18));
+            labelSelectionItem.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.PLAIN, 18));
             labelSelectionItem.setForeground(Color.WHITE);
             panelSelection.add(labelSelectionItem, gbcText);
         }
-        if (!selectorItems.isEmpty()) selectorItems.getFirst().setVisible(true);
 
         // Copyright - 25% height
         gbc.gridy = 3;
         gbc.weighty = 0.25;
         JPanel panelCopyRight = new JPanel();
-        panelCopyRight.setBackground(Color.CYAN);
+        panelCopyRight.setOpaque(true);
+        panelCopyRight.setBackground(Color.BLACK);
         basePanel.add(panelCopyRight, gbc);
 
         JLabel labelCopyRight = new JLabel("© YS 1990");
-        labelCopyRight.setFont(new Font("Monospaced", Font.BOLD, 24));
+
+        labelCopyRight.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
         labelCopyRight.setHorizontalAlignment(SwingConstants.CENTER);
         labelCopyRight.setForeground(Color.WHITE);
         panelCopyRight.setLayout(new BorderLayout());
         panelCopyRight.add(labelCopyRight, BorderLayout.CENTER);
 
         frame.add(basePanel);
+        frame.add(backgroundPanel);
 
-        //startAnimation();
+        // Apply sliding animation for base panel
+        startAnimation(basePanel, 15);
     }
 
     /**
@@ -155,41 +170,17 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         requestFocus();
     }
 
-    //@Override
-    //protected void paintComponent(Graphics g) {
-    //    super.paintComponent(g);
-    //    Graphics2D g2 = (Graphics2D) g.create();
-//
-    //    int width = frame.getWidth();
-    //    int height = frame.getHeight();
-//
-    //    int centerWidth = frame.getWidth() / 2;
-    //    int centerHeight = frame.getHeight() / 2;
-//
-//
-    //    g2.translate(0, yOffset); // Slide upward
-    //    g2.setFont(new Font("Monospaced", Font.BOLD, 20));
-//
-    //    g2.setColor(Color.WHITE);
-    //    g2.drawString("00 HI- 20000", centerWidth,  (int) (height*0.1) + 20);
-//
-    //    g2.setColor(Color.RED);
-    //    g2.drawString("TANK H 1990", centerWidth, (int) (height*0.2));
-//
-    //    g2.setColor(Color.WHITE);
-    //    for (int i = 0; i < menuItems.length; i++) {
-    //        g2.drawString(menuItems[i], centerWidth + 20,  (int) (height*0.2) + 20 + i * 40);
-//
-    //        // Draw selector next to the selected item
-    //        if (i == selectedIndex && selectorImage != null && isAnimationStopped) {
-    //            g2.drawImage(selectorImage, centerWidth - 20, (int) (height*0.2) + 20 + i * 40 - selectorImage.getHeight(null)/2, null);
-    //        }
-    //    }
-//
-    //    g2.drawString("© YS 1990", centerWidth, (int) (height*0.8));
-//
-    //    g2.dispose();
-    //}
+    /**
+     * Paints the components of the menu panel, including the background image.
+     *
+     * @param g The Graphics object used to paint the component.
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        this.frame.repaint();
+    }
 
     private void updateSelectorVisibility() {
         if (selectorItems == null || selectorItems.isEmpty()) return;
@@ -215,12 +206,12 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             System.out.println("Selected: " + menuItems[selectedIndex]);
             if (selectedIndex==0) {
-
+                // TODO implement later
             } else if (selectedIndex==1) {
-
+                // TODO implement later
             } else if (selectedIndex==2) {
-
-            } else {};
+                // TODO implement later
+            } else {}
         }
     }
 
@@ -230,6 +221,8 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     @Override protected void animationStarted() { }
 
 
-    @Override protected void animationStopped() { }
+    @Override protected void animationFinished() {
+        if (!selectorItems.isEmpty()) selectorItems.getFirst().setVisible(true);
+    }
 
 }

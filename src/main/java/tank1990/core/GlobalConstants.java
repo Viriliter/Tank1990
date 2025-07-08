@@ -28,6 +28,8 @@ import java.io.InputStream;
 
 import java.awt.Rectangle;
 import java.awt.Image;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -37,34 +39,34 @@ import javax.swing.ImageIcon;
  * @brief Stores game specific configuration parameters and file paths of the resources that can be used throughout the application life.
  */
 public interface GlobalConstants {
-    public static final String CONFIGURATION_FILE = "config.ini";
-    public static final int GAME_TICK_MS = 10;
+    String CONFIGURATION_FILE = "config.ini";
+    int GAME_TICK_MS = 10;
 
-    public static final String GAME_TITLE = "TANK 1990 - NES";
+    String GAME_TITLE = "TANK 1990 - NES";
 
-    public static final int TILE_SUBDIVISION = 4;
+    int TILE_SUBDIVISION = 4;
 
-    public static final int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
-    public static final int ROW_TILE_COUNT = 13;// * TILE_SUBDIVISION;
+    int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
+    int ROW_TILE_COUNT = 13;// * TILE_SUBDIVISION;
 
-    public static final double SCALE = 3.75;
+    double SCALE = 3.75;
 
-    public static final int GAME_FONT = 4;
+    String FONT_PRESS_START_2P = "fonts/PressStart2PRegular.ttf";
 
     /**
      * PLAYER KEYBOARD CONTROLS
      */
 
-    public static final int KEY_PLAYER_1_MOVE_UP = KeyEvent.VK_UP;
-    public static final int KEY_PLAYER_1_MOVE_RIGHT = KeyEvent.VK_RIGHT;
-    public static final int KEY_PLAYER_1_MOVE_DOWN = KeyEvent.VK_DOWN;
-    public static final int KEY_PLAYER_1_MOVE_LEFT = KeyEvent.VK_LEFT;
-    public static final int KEY_PLAYER_1_MOVE_SHOOT = KeyEvent.KEY_LOCATION_RIGHT;
-    public static final int KEY_PLAYER_2_MOVE_UP = KeyEvent.VK_W;
-    public static final int KEY_PLAYER_2_MOVE_RIGHT = KeyEvent.VK_D;
-    public static final int KEY_PLAYER_2_MOVE_DOWN = KeyEvent.VK_S;
-    public static final int KEY_PLAYER_2_MOVE_LEFT = KeyEvent.VK_A;
-    public static final int KEY_PLAYER_2_MOVE_SHOOT = KeyEvent.KEY_LOCATION_LEFT;
+    int KEY_PLAYER_1_MOVE_UP = KeyEvent.VK_UP;
+    int KEY_PLAYER_1_MOVE_RIGHT = KeyEvent.VK_RIGHT;
+    int KEY_PLAYER_1_MOVE_DOWN = KeyEvent.VK_DOWN;
+    int KEY_PLAYER_1_MOVE_LEFT = KeyEvent.VK_LEFT;
+    int KEY_PLAYER_1_MOVE_SHOOT = KeyEvent.KEY_LOCATION_RIGHT;
+    int KEY_PLAYER_2_MOVE_UP = KeyEvent.VK_W;
+    int KEY_PLAYER_2_MOVE_RIGHT = KeyEvent.VK_D;
+    int KEY_PLAYER_2_MOVE_DOWN = KeyEvent.VK_S;
+    int KEY_PLAYER_2_MOVE_LEFT = KeyEvent.VK_A;
+    int KEY_PLAYER_2_MOVE_SHOOT = KeyEvent.KEY_LOCATION_LEFT;
     //KeyEvent.VK_CONTROL: 17: 00010001
     //KeyEvent.KEY_LOCATION_RIGHT: 3: 00000011
     //KeyEvent.KEY_LOCATION_LEFT: 2: 00000010
@@ -74,56 +76,56 @@ public interface GlobalConstants {
      * PLAYER PARAMETERS
      */
 
-    public static final int INITIAL_PLAYER_1_X = 0;
-    public static final int INITIAL_PLAYER_1_Y = 0;
-    public static final int INITIAL_PLAYER_2_X = 0;
-    public static final int INITIAL_PLAYER_2_Y = 0;
+    int INITIAL_PLAYER_1_X = 0;
+    int INITIAL_PLAYER_1_Y = 0;
+    int INITIAL_PLAYER_2_X = 0;
+    int INITIAL_PLAYER_2_Y = 0;
 
     /**
      * GAME ENGINE PARAMETERS
      */
 
-    public static final int BULLET_SPEED_PER_TICK = 10;  // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
+    int BULLET_SPEED_PER_TICK = 10;  // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
 
-    public static final int ENEMY_SPAWN_TIME = 3;
-    public static final int PLAYER_SPAWN_TIME = 3;
-    public static final int SPAWN_PROTECTION_TIME = 3;
+    int ENEMY_SPAWN_TIME = 3;
+    int PLAYER_SPAWN_TIME = 3;
+    int SPAWN_PROTECTION_TIME = 3;
 
-    public static final int SKID_DISTANCE = 10;
+    int SKID_DISTANCE = 10;
 
 
     /**
      * POWERUPS
      */
 
-    public static final String ICON_POWERUP_GRENADE_PATH = "textures/powerups/powerup-grenade.png";
-    public static final String ICON_POWERUP_HELMET_PATH = "textures/powerups/powerup-helmet.png";
-    public static final String ICON_POWERUP_SHOVEL_PATH = "textures/powerups/powerup-shovel.png";
-    public static final String ICON_POWERUP_STAR_PATH = "textures/powerups/powerup-star.png";
-    public static final String ICON_POWERUP_TANK_PATH = "textures/powerups/powerup-tank.png";
-    public static final String ICON_POWERUP_TIMER_PATH = "textures/powerups/powerup-timer.png";
+    String ICON_POWERUP_GRENADE_PATH = "textures/powerups/powerup-grenade.png";
+    String ICON_POWERUP_HELMET_PATH = "textures/powerups/powerup-helmet.png";
+    String ICON_POWERUP_SHOVEL_PATH = "textures/powerups/powerup-shovel.png";
+    String ICON_POWERUP_STAR_PATH = "textures/powerups/powerup-star.png";
+    String ICON_POWERUP_TANK_PATH = "textures/powerups/powerup-tank.png";
+    String ICON_POWERUP_TIMER_PATH = "textures/powerups/powerup-timer.png";
 
     /**
      * TILES
      */
 
-    public static final String TEXTURE_TILE_BRICKS_PATH = "textures/tiles/tile-bricks.png";
-    public static final String TEXTURE_TILE_STEEL_PATH = "textures/tiles/tile-steel.png";
-    public static final String TEXTURE_TILE_TREES_PATH = "textures/tiles/tile-trees.png";
-    public static final String TEXTURE_TILE_WATER_PATH = "textures/tiles/tile-water.png";
-    public static final String TEXTURE_TILE_ICE_PATH = "textures/tiles/tile-ice.png";
-    public static final String TEXTURE_TILE_EAGLE_PATH = "textures/tiles/tile-eagle.png";
+    String TEXTURE_TILE_BRICKS_PATH = "textures/tiles/tile-bricks.png";
+    String TEXTURE_TILE_STEEL_PATH = "textures/tiles/tile-steel.png";
+    String TEXTURE_TILE_TREES_PATH = "textures/tiles/tile-trees.png";
+    String TEXTURE_TILE_WATER_PATH = "textures/tiles/tile-water.png";
+    String TEXTURE_TILE_ICE_PATH = "textures/tiles/tile-ice.png";
+    String TEXTURE_TILE_EAGLE_PATH = "textures/tiles/tile-eagle.png";
 
     /**
      * TANKS
      */
-    public static final String TEXTURE_PLAYER1_TANK_PATH = "textures/tank/tank-player-1.png";
-    public static final String TEXTURE_PLAYER2_TANK_PATH = "textures/tank/tank-player-2.png";
+    String TEXTURE_PLAYER1_TANK_PATH = "textures/tank/tank-player-1.png";
+    String TEXTURE_PLAYER2_TANK_PATH = "textures/tank/tank-player-2.png";
 
-    public static final String TEXTURE_BASIC_TANK = "textures/tank/basic-tank.png";
-    public static final String TEXTURE_FAST_TANK = "textures/tank/fast-tank.png";
-    public static final String TEXTURE_POWER_TANK = "textures/tank/power-tank.png";
-    public static final String TEXTURE_ARMOR_TANK = "textures/tank/armor-tankpng";
+    String TEXTURE_BASIC_TANK = "textures/tank/basic-tank.png";
+    String TEXTURE_FAST_TANK = "textures/tank/fast-tank.png";
+    String TEXTURE_POWER_TANK = "textures/tank/power-tank.png";
+    String TEXTURE_ARMOR_TANK = "textures/tank/armor-tankpng";
 
 
     /**
@@ -134,6 +136,8 @@ public interface GlobalConstants {
     /**
      * SOUND EFFECTS
      */
+
+    String SOUND_BATTLE_CITY_GAME_START = "battle-city-game-start.wav";
 
     /**
      * UTILITY FUNCTIONS
@@ -148,20 +152,20 @@ public interface GlobalConstants {
     }
 
     static ImageIcon loadPNGIcon(String path, int targetWidth, int targetHeight) throws NullPointerException {
-        InputStream inputStream = GlobalConstants.class.getClassLoader().getResourceAsStream(path);
-        if (inputStream == null) {
-            System.err.println("PNG file not found: " + path);
-            return null;
-        }
-
         try {
+            InputStream inputStream = GlobalConstants.class.getClassLoader().getResourceAsStream(path);
+            if (inputStream == null) {
+                System.err.println("PNG file not found: " + path);
+                return null;
+            }
+
             ImageIcon icon = new ImageIcon(inputStream.readAllBytes());
             Image image = icon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);  // Resize image
             return new ImageIcon(image);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     static Image loadTexture(String fileName) {
@@ -194,26 +198,53 @@ public interface GlobalConstants {
         }
     }
 
-    public static double radToDeg(double radians) {
+    /**
+     * Loads a custom TTF font from resources and returns a derived font.
+     *
+     * @param path  Path to the font file (e.g., "/fonts/arcade.ttf")
+     * @param style Font.PLAIN, Font.BOLD, Font.ITALIC, or Font.BOLD | Font.ITALIC
+     * @param size  Font size in points
+     * @return the custom Font or fallback Font if failed
+     */
+    static Font loadFont(String path, int style, float size) {
+        try {
+            InputStream is = GlobalConstants.class.getClassLoader().getResourceAsStream(path);
+            if (is == null) throw new IllegalArgumentException("Font not found at " + path);
+
+            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, is);
+            Font styledFont = baseFont.deriveFont(style, size);
+
+            // Optional: register it system-wide (so you can use by name if needed)
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(styledFont);
+
+            return styledFont;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Font("Monospaced", style, (int) size); // fallback font
+        }
+    }
+
+    static double radToDeg(double radians) {
         return Math.toDegrees(radians);
     }
 
     // Convert degrees to radians
-    public static double degToRad(double degrees) {
+    static double degToRad(double degrees) {
         return Math.toRadians(degrees);
     }
 
-    public static boolean isObjectsCollided(Rectangle rect1, Rectangle rect2) {
+    static boolean isObjectsCollided(Rectangle rect1, Rectangle rect2) {
         return rect1.getBounds().intersects(rect2.getBounds()) ||
                 rect2.getBounds().contains(rect1.getBounds()) ||
                 rect1.getBounds().contains(rect2.getBounds());
     }
 
-    public static boolean isObjectsCollided(RectangleBound rectBound1, RectangleBound rectBound2) {
+    static boolean isObjectsCollided(RectangleBound rectBound1, RectangleBound rectBound2) {
         return RectangleBound.isCollided(rectBound1, rectBound2);
     }
 
-    public static boolean isObjectsCollided(Rectangle rect1, RectangleBound rectBound2) {
+    static boolean isObjectsCollided(Rectangle rect1, RectangleBound rectBound2) {
         return RectangleBound.isCollided(rect1, rectBound2);
     }
 

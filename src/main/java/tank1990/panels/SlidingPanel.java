@@ -24,37 +24,37 @@ package tank1990.panels;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public abstract class SlidingPanel extends AbstractPanel{
-    protected int yOffset;
-    protected Timer timer;
-
     public SlidingPanel(JFrame frame) {
         super(frame);
-
-        this.yOffset = this.frame.getHeight();  // Start from to bottom
-        setPreferredSize(new Dimension(this.frame.getWidth(), this.frame.getHeight()));
-        setBackground(Color.BLACK);
     }
 
-    protected void startAnimation() {
-        timer = new Timer(10, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                yOffset -= 5;
-                if (yOffset <= 0) {
-                    yOffset = 0;
-                    timer.stop();
-                    animationStopped();
-                }
-                repaint();
+    protected void startAnimation(JPanel panel, int delay) {
+        int finalY = 0; // Target position (top)
+        int step = 5; // Pixels to move per tick
+
+        Timer timer = new Timer(delay, null);
+        timer.addActionListener(e -> {
+            Point current = panel.getLocation();
+            int newY = current.y - step;
+
+            if (newY <= finalY) {
+                panel.setLocation(0, finalY);
+                timer.stop();
+                animationFinished();
+            } else {
+                panel.setLocation(0, newY);
             }
+
+            panel.repaint();
         });
+
         timer.start();
+        animationStarted();
     }
 
     protected abstract void animationStarted();
 
-    protected abstract void animationStopped();
+    protected abstract void animationFinished();
 }
