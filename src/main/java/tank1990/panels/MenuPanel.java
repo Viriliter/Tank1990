@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import tank1990.core.ConfigHandler;
+import tank1990.core.GameMode;
 import tank1990.core.GlobalConstants;
 
 public class MenuPanel extends SlidingPanel implements KeyListener {
@@ -157,7 +158,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         frame.add(backgroundPanel);
 
         // Apply sliding animation for base panel
-        startAnimation(basePanel, 15);
+        startAnimation(basePanel, 5);
     }
 
     /**
@@ -206,9 +207,22 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             System.out.println("Selected: " + menuItems[selectedIndex]);
             if (selectedIndex==0) {
-                // TODO implement later
+                GamePanel gamePanel = new GamePanel(frame, GameMode.MODE_SINGLE_PLAYER);
+                frame.getContentPane().removeAll();
+                frame.add(gamePanel);
+                gamePanel.requestFocusInWindow();
+                SwingUtilities.invokeLater(() -> {
+                    gamePanel.show();            
+                });
+
             } else if (selectedIndex==1) {
-                // TODO implement later
+                GamePanel gamePanel = new GamePanel(frame, GameMode.MODE_MULTI_PLAYER);
+                frame.getContentPane().removeAll();
+                frame.add(gamePanel);
+                gamePanel.requestFocusInWindow();
+                SwingUtilities.invokeLater(() -> {
+                    gamePanel.show();            
+                });
             } else if (selectedIndex==2) {
                 // TODO implement later
             } else {}
@@ -219,7 +233,6 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     @Override public void keyTyped(KeyEvent e) {}
 
     @Override protected void animationStarted() { }
-
 
     @Override protected void animationFinished() {
         if (!selectorItems.isEmpty()) selectorItems.getFirst().setVisible(true);

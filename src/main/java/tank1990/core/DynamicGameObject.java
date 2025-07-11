@@ -22,7 +22,11 @@
 
 package tank1990.core;
 
+import java.awt.Graphics;
+
 public abstract class DynamicGameObject extends GameObject {
+    public abstract void draw(Graphics g);
+
     public abstract void move();
 
     public abstract boolean checkCollision();

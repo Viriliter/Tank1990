@@ -27,6 +27,8 @@ import tank1990.core.Direction;
 import tank1990.core.GlobalConstants;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.PlayerTank;
+import tank1990.tank.TankFactory;
+import tank1990.tank.TankType;
 
 public class Player {
     int health = 0;
@@ -37,9 +39,13 @@ public class Player {
         this.health = properties.initialHealth();
 
         if (playerType == PlayerType.PLAYER_1)
-            myTank = new PlayerTank(null, GlobalConstants.INITIAL_PLAYER_1_X, GlobalConstants.INITIAL_PLAYER_1_Y, Direction.DIRECTION_UPWARDS);
+            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, GlobalConstants.INITIAL_PLAYER_1_LOC.x(), GlobalConstants.INITIAL_PLAYER_1_LOC.y(), GlobalConstants.INITIAL_PLAYER_1_DIR);
         else
-            myTank = new PlayerTank(null, GlobalConstants.INITIAL_PLAYER_2_X, GlobalConstants.INITIAL_PLAYER_2_Y, Direction.DIRECTION_UPWARDS);
+            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, GlobalConstants.INITIAL_PLAYER_2_LOC.x(), GlobalConstants.INITIAL_PLAYER_2_LOC.y(), GlobalConstants.INITIAL_PLAYER_2_DIR);
+    }
+
+    public void draw() {
+
     }
 
     public void incrementDx() {
@@ -57,6 +63,10 @@ public class Player {
     public void decrementDy() {
 
     }
+
+    public void resetDx() {}
+
+    public void resetDy() {}
 
     public Bullet shoot() {
         return myTank.shoot();

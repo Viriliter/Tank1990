@@ -32,7 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 
 import tank1990.core.ConfigHandler;
-import tank1990.core.GameTick;
+import tank1990.core.TimeTick;
 import tank1990.core.TextureFX;
 import tank1990.player.Player;
 import tank1990.tank.Enemy;

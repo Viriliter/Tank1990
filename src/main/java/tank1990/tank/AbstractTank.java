@@ -22,6 +22,8 @@
 
 package tank1990.tank;
 
+import java.awt.Graphics;
+
 import tank1990.core.ConfigHandler;
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
@@ -29,18 +31,18 @@ import tank1990.powerup.Powerup;
 import tank1990.projectiles.Bullet;
 
 public abstract class AbstractTank extends DynamicGameObject {
-    ConfigHandler.TankProperties properties = null;
-    boolean isBulletDestroyed = false;
+    private ConfigHandler.TankProperties properties = null;
+    private boolean isBulletDestroyed = false;
 
-    int health;
+    private int points = 200;
+    private int armorLevel = 1;
+    private int movement = 3;
+    private int bullet = 2;
 
-    public AbstractTank(ConfigHandler.TankProperties properties, int x, int y, Direction dir) {
-        this.properties = properties;
+    public AbstractTank(int x, int y, Direction dir) {
         setX(x);
         setY(y);
         setDir(dir);
-
-        this.health = properties.health();
     }
 
     @Override
@@ -49,9 +51,25 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     @Override
+    public void draw(Graphics g) {
+        // Draw tank animations
+
+    }
+
+    @Override
     public void move() {
 
     }
+
+    public int getPoints() {return this.points;}
+    public int getArmorLevel() {return this.armorLevel;}
+    public int getMovement() {return this.movement;}
+    public int getBullet() {return this.bullet;}
+
+    public void setPoints(int points) {this.points = points;}
+    public void setArmorLevel(int armorLevel) {this.armorLevel = armorLevel;}
+    public void setMovement(int movement) {this.movement = movement;}
+    public void setBullet(int bullet) {this.bullet = bullet;}
 
     public Bullet shoot() {
         if (!this.isBulletDestroyed) return null;
@@ -60,7 +78,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     public void getDamage() {
-        health = health>0 ? --health: 0;
+        // After each damage decrement armor level by one.
+        armorLevel = armorLevel>0 ? --armorLevel: 0;
     }
 
     public void getPowerup(Powerup powerup) {

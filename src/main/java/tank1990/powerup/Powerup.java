@@ -22,5 +22,8 @@
 
 package tank1990.powerup;
 
+import java.awt.Graphics;
+
 public interface Powerup {
+    void draw(Graphics g);
 }

@@ -22,6 +22,8 @@
 
 package tank1990.projectiles;
 
+import java.awt.Graphics;
+
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
 import tank1990.core.GlobalConstants;
@@ -39,6 +41,11 @@ public class Bullet extends DynamicGameObject {
         setDir(dir);
 
         this.speed = speed;
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        
     }
 
     @Override

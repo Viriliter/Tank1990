@@ -30,18 +30,36 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import tank1990.core.ConfigHandler;
+import tank1990.core.EventType;
 import tank1990.core.GameEngine;
 import tank1990.core.GameMode;
 import tank1990.core.GlobalConstants;
+import tank1990.core.LevelState;
+import tank1990.core.Observer;
+import tank1990.player.Player;
 
-public class GamePanel extends AbstractPanel implements ActionListener, KeyListener {
+public class GamePanel extends AbstractPanel implements ActionListener, KeyListener, Observer {
 
     GameEngine gameEngine = null;
+    JPanel getReadyPanel = null;
 
     public GamePanel(JFrame frame, GameMode gameMode) {
         super(frame);
 
-        gameEngine = new GameEngine(gameMode);
+        gameEngine = new GameEngine(this, gameMode);
+        gameEngine.subscribe((Observer) this);
+    }
+
+    @Override
+    public void eventFilter(EventType event) {
+        switch (event) {
+            case EventType.REPAINT:
+                repaint();
+                break;
+            case EventType.UPDATE:
+            default:
+                break;
+        }
     }
 
     @Override
@@ -136,7 +154,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         super.paintComponent(g);
 
         this.gameEngine.paintComponent(g);
-
     }
 
     /**
@@ -257,15 +274,52 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
      */
     @Override
     public void keyPressed(KeyEvent e) {
-        //switch (e.getKeyCode()) {
-        //    case KeyEvent.VK_A -> player.decrementDx();
-        //    case KeyEvent.VK_D -> player.incrementDx();
-        //    case KeyEvent.VK_W -> player.decrementDy();
-        //    case KeyEvent.VK_S -> player.incrementDy();
-        //    case KeyEvent.VK_R -> player.getCurrentWeapon().reload();
-        //    case KeyEvent.VK_Q -> player.switchWeapon();
-        //    case KeyEvent.VK_ESCAPE -> openInGameMenu();
-        //}
+        int key = e.getKeyCode();
+        int location = e.getKeyLocation();
+        
+        Player player = null; 
+        switch (key) {
+            case (GlobalConstants.KEY_PLAYER_1_MOVE_UP):
+                player = gameEngine.getPlayer1();
+                if(player!=null) player.decrementDy();
+                break;
+            case (GlobalConstants.KEY_PLAYER_1_MOVE_RIGHT):
+                player = gameEngine.getPlayer1();
+                if(player!=null) player.incrementDx();
+                break;
+            case (GlobalConstants.KEY_PLAYER_1_MOVE_DOWN):
+                player = gameEngine.getPlayer1();
+                if(player!=null) player.incrementDy();
+                break;
+            case (GlobalConstants.KEY_PLAYER_1_MOVE_LEFT):
+                player = gameEngine.getPlayer1();
+                if(player!=null) player.decrementDx();
+                break;
+            case (GlobalConstants.KEY_PLAYER_2_MOVE_UP):
+                player = gameEngine.getPlayer2();
+                if(player!=null) player.decrementDy();
+                break;
+            case (GlobalConstants.KEY_PLAYER_2_MOVE_RIGHT):
+                player = gameEngine.getPlayer2();
+                if(player!=null) player.incrementDx();
+                break;
+            case (GlobalConstants.KEY_PLAYER_2_MOVE_DOWN):
+                player = gameEngine.getPlayer2();
+                if(player!=null) player.incrementDy();
+                break;
+            case (GlobalConstants.KEY_PLAYER_2_MOVE_LEFT):
+                player = gameEngine.getPlayer2();
+                if(player!=null) player.decrementDx();
+                break;
+            case (KeyEvent.VK_CONTROL):
+                if (location == GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT)
+                    gameEngine.startFireTimer(gameEngine.getPlayer1());
+                else if (location == GlobalConstants.KEY_PLAYER_2_MOVE_SHOOT)
+                    gameEngine.startFireTimer(gameEngine.getPlayer2());
+                else {}
+                break;
+            default: break;
+        }
     }
 
     /**
@@ -281,35 +335,46 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
         switch (key) {
             case (GlobalConstants.KEY_PLAYER_1_MOVE_UP):
-                gameEngine.getPlayer1().decrementDy();
+                gameEngine.getPlayer1().resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_1_MOVE_RIGHT):
-                gameEngine.getPlayer1().incrementDx();
+                gameEngine.getPlayer1().resetDx();
                 break;
             case (GlobalConstants.KEY_PLAYER_1_MOVE_DOWN):
-                gameEngine.getPlayer1().incrementDy();
+                gameEngine.getPlayer1().resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_1_MOVE_LEFT):
-                gameEngine.getPlayer1().decrementDx();
+                gameEngine.getPlayer1().resetDx();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_UP):
-                gameEngine.getPlayer2().decrementDy();
+                gameEngine.getPlayer2().resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_RIGHT):
-                gameEngine.getPlayer2().incrementDx();
+                gameEngine.getPlayer2().resetDx();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_DOWN):
-                gameEngine.getPlayer2().incrementDy();
+                gameEngine.getPlayer2().resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_LEFT):
-                gameEngine.getPlayer2().decrementDx();
+                gameEngine.getPlayer2().resetDx();
                 break;
             case (KeyEvent.VK_CONTROL):
                 if (location == GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT)
-                    gameEngine.getPlayer1().shoot();
+                    gameEngine.stopFire(gameEngine.getPlayer1());
                 else if (location == GlobalConstants.KEY_PLAYER_2_MOVE_SHOOT)
-                    gameEngine.getPlayer2().shoot();
+                    gameEngine.stopFire(gameEngine.getPlayer2());
                 else {}
+                break;
+            case (KeyEvent.VK_ENTER):
+                switch (gameEngine.getCurrentLevel().getCurrentState()) {
+                    case LevelState.GET_READY:
+                        getReadyPanel.setVisible(false);
+                        frame.remove(getReadyPanel);
+                        gameEngine.startGameLevel();
+                        getReadyPanel = null;
+                        break;
+                    default: break;
+                }
                 break;
             default:
                 break;
@@ -329,6 +394,31 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     @Override
     public void actionPerformed(ActionEvent e) {
 
+    }
+
+    public void show() {
+        gameEngine.loadGameLevel();
+        showGetReadyPanel();
+        gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
+    }
+
+    private void showGetReadyPanel() {
+        int levelIndex = gameEngine.getCurrentLevelIndex();
+
+        this.getReadyPanel = new JPanel();
+        this.getReadyPanel.setLayout(new BorderLayout());
+        JLabel getReadyLabel = new JLabel(String.format("STAGE\t%2d", levelIndex), SwingConstants.CENTER);
+        getReadyLabel.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
+        getReadyLabel.setForeground(Color.BLACK);
+
+        this.getReadyPanel.add(getReadyLabel, BorderLayout.CENTER);
+        this.getReadyPanel.setBackground(GlobalConstants.COLOR_GRAY);
+        this.getReadyPanel.setPreferredSize(new Dimension(frame.getContentPane().getWidth(), frame.getContentPane().getHeight()));
+        this.getReadyPanel.setVisible(true);
+        frame.add(this.getReadyPanel);
+        
+        revalidate();
+        repaint();
     }
 
 }

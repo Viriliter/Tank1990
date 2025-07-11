@@ -117,7 +117,7 @@ public class ConfigHandler implements Serializable{
      */
     public PlayerProperties getPlayerProperties() {
         int initialHealth = Integer.parseInt(ConfigHandler.ini.get("Player").get("InitialHealth"));
-        int speed = Integer.parseInt(ConfigHandler.ini.get("Player").get("Speed"));
+        int speed = 2; //Integer.parseInt(ConfigHandler.ini.get("Player").get("Speed"));
         return new PlayerProperties(initialHealth, speed);
     }
 

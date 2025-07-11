@@ -26,13 +26,13 @@ import java.io.Serializable;
 
 
 /**
- * @class GameTick
+ * @class TimeTick
  * @brief A class that manages a countdown timer with optional repeat functionality and associated actions.
  *
  * The TimeTick class is responsible for managing a countdown timer, executing actions when the timer reaches zero.
  * It allows setting a countdown action which triggers when the countdown reaches zero.
  */
-public class GameTick implements Serializable {
+public class TimeTick implements Serializable {
     private int tick = 0;                       /**< The current tick value, representing the remaining time. */
     private int defaultTick = 0;                /**< The default tick value used to reset the timer. */
     private int repeatCount = -1;               /**< The number of times the timer will repeat after reaching zero. -1 means infinite repeats. */
@@ -43,7 +43,7 @@ public class GameTick implements Serializable {
      *
      * @param defaultTick The default number of ticks before the timer reaches zero.
      */
-    public GameTick(int defaultTick) {
+    public TimeTick(int defaultTick) {
         this.defaultTick = defaultTick;
         this.reset();
     }
@@ -54,7 +54,7 @@ public class GameTick implements Serializable {
      * @param defaultTick The default number of ticks before the timer reaches zero.
      * @param action The action to execute when the timer reaches zero.
      */
-    public GameTick(int defaultTick, SerializableRunnable action) {
+    public TimeTick(int defaultTick, SerializableRunnable action) {
         this.defaultTick = defaultTick;
         this.action = action;
         this.reset();
@@ -67,7 +67,7 @@ public class GameTick implements Serializable {
      * @param defaultTick The default number of ticks before the timer reaches zero.
      * @param repeatCount The number of repeats after the timer reaches zero. -1 means infinite repeats.
      */
-    public GameTick(int tick, int defaultTick, int repeatCount) {
+    public TimeTick(int tick, int defaultTick, int repeatCount) {
         this.tick = tick;
         this.defaultTick = defaultTick;
         this.repeatCount = repeatCount;

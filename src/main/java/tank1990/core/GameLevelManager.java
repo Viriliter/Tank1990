@@ -1,0 +1,56 @@
+package tank1990.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GameLevelManager {
+    List<GameLevel> gameLevels; // List of game levels
+    int currentLevelIndex; // Index of the current game level
+
+    private static GameLevelManager instance;
+
+    private GameLevelManager() {
+        this.gameLevels = new ArrayList<>();
+        this.currentLevelIndex = 0;
+    }
+
+    public static GameLevelManager getInstance() {
+        if (instance == null) {
+            instance = new GameLevelManager();
+        }
+        return instance;
+    }
+
+    public void addLevels() {
+        // Add predefined game levels to the manager
+        for (int i = 1; i <= GlobalConstants.GAME_LEVEL_COUNTS; i++) {
+            // FIXME: Use a proper path for the level files
+            // For now, we will use a placeholder path
+            GameLevel level = new GameLevel(GlobalConstants.MAP_PATH + String.format("stage-%02d.bin", 1));
+            this.gameLevels.add(level);
+        }
+    }
+
+    public int getCurrentIndex() {
+        return this.currentLevelIndex;
+    }
+
+    public GameLevel getCurrentLevel() {
+        return this.gameLevels.get(this.currentLevelIndex);
+    }
+
+    public GameLevel nextLevel() {
+        return loadLevel(++this.currentLevelIndex % this.gameLevels.size());
+    }
+
+    private GameLevel loadLevel(int levelIndex) {
+        if (levelIndex < 0 || levelIndex >= this.gameLevels.size()) {
+            throw new IndexOutOfBoundsException("Invalid level index: " + levelIndex);
+        }
+        return this.gameLevels.get(levelIndex);
+    }
+
+    public void update() {
+        
+    }
+}

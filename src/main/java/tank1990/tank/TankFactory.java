@@ -39,7 +39,6 @@ public class TankFactory {
      * This method generates an enemy using the provided configuration
      * and assigns it the given x and y coordinates.
      *
-     * @param config A reference to the ConfigHandler object that provides tank properties.
      * @param type The type of tank to create.
      * @param x The x-coordinate of the tank's spawn location.
      * @param y The y-coordinate of the tank's spawn location.
@@ -47,25 +46,22 @@ public class TankFactory {
      * @throws IllegalStateException If the config parameter is null.
      * @throws IllegalArgumentException If the type parameter is null.
      */
-    public static AbstractTank createEnemyTank(ConfigHandler config, TankType type, int x, int y, Direction dir) {
-        if (config == null) {
-            throw new IllegalStateException("ConfigHandler cannot be null!");
-        }
+    public static AbstractTank createTank(TankType type, int x, int y, Direction dir) {
         if (type == null) {
             throw new IllegalArgumentException("Tank type cannot be null!");
         }
 
         switch (type) {
             case BASIC_TANK:
-                return new BasicAbstractTank(config.getBasicTankProperties(), x, y, dir);
+                return new BasicTank(x, y, dir);
             case FAST_TANK:
-                return new FastTank(config.getFastTankProperties(), x, y, dir);
+                return new FastTank(x, y, dir);
             case POWER_TANK:
-                return new PowerTank(config.getPowerTankProperties(), x, y, dir);
+                return new PowerTank(x, y, dir);
             case ARMOR_TANK:
-                return new ArmorTank(config.getArmorTankProperties(), x, y, dir);
+                return new ArmorTank(x, y, dir);
             case PLAYER_TANK:
-                return new PlayerTank(null, x, y, dir);
+                return new PlayerTank(x, y, dir);
             default:
                 return null;
         }

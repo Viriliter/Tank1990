@@ -22,13 +22,12 @@
 
 package tank1990.tank;
 
-import tank1990.core.ConfigHandler;
 import tank1990.core.Direction;
 
 public class ArmorTank extends AbstractTank implements Enemy {
 
-    public ArmorTank(ConfigHandler.TankProperties properties, int x, int y, Direction dir) {
-        super(properties, x, y, dir);
+    public ArmorTank(int x, int y, Direction dir) {
+        super(x, y, dir);
     }
 
 }

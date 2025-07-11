@@ -28,6 +28,7 @@ import java.io.InputStream;
 
 import java.awt.Rectangle;
 import java.awt.Image;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 
@@ -76,10 +77,15 @@ public interface GlobalConstants {
      * PLAYER PARAMETERS
      */
 
-    int INITIAL_PLAYER_1_X = 0;
-    int INITIAL_PLAYER_1_Y = 0;
-    int INITIAL_PLAYER_2_X = 0;
-    int INITIAL_PLAYER_2_Y = 0;
+    GridLocation INITIAL_PLAYER_1_LOC = new GridLocation(4, 12);
+    Direction INITIAL_PLAYER_1_DIR = Direction.DIRECTION_UPWARDS;
+    GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(8, 12);
+    Direction INITIAL_PLAYER_2_DIR = Direction.DIRECTION_UPWARDS;
+
+    /**
+     * COLOR PALLETTE
+     */
+    Color COLOR_GRAY = new Color(114, 116, 114); // Gray
 
     /**
      * GAME ENGINE PARAMETERS
@@ -92,6 +98,8 @@ public interface GlobalConstants {
     int SPAWN_PROTECTION_TIME = 3;
 
     int SKID_DISTANCE = 10;
+
+    int GAME_LEVEL_COUNTS = 35; // Total number of game levels
 
 
     /**
@@ -131,6 +139,12 @@ public interface GlobalConstants {
     /**
      * MISCS TEXTURES
      */
+
+
+    /**
+     * MAPS
+     */
+    String MAP_PATH = "maps/";
 
 
     /**
