@@ -22,7 +22,6 @@
 
 package tank1990.tank;
 
-import tank1990.core.ConfigHandler;
 import tank1990.core.Direction;
 
 /**

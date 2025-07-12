@@ -22,19 +22,28 @@
 
 package tank1990.tile;
 
-import java.io.Serializable;
+import java.awt.Graphics;
 
 import tank1990.core.Direction;
+import tank1990.core.GlobalConstants;
+import tank1990.core.GridLocation;
+import tank1990.core.Location;
 import tank1990.core.StaticGameObject;
+import tank1990.core.TextureFX;
 
 public abstract class Tile extends StaticGameObject {
     protected TileType type = null;
     protected BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
+    protected TextureFX textureFX = null;
+    protected boolean needDraw = false;
+
+    GridLocation gloc = null;
 
     public Tile(int x, int y, TileType type) {
         setX(x);
         setY(y);
         setDir(Direction.DIRECTION_INVALID);
+        //this.gloc = new GridLocation(y, x);
 
         this.type = type;
     }
@@ -43,6 +52,7 @@ public abstract class Tile extends StaticGameObject {
         setX(x);
         setY(y);
         setDir(Direction.DIRECTION_INVALID);
+        this.gloc = new GridLocation(y, x);
 
         this.type = type;
         this.blockConf = blockConf;
@@ -52,8 +62,22 @@ public abstract class Tile extends StaticGameObject {
 
     public BlockConfiguration getBlockConf() { return this.blockConf; }
 
-    public void repaint() {
-
+    public void update() {
+    
+    }
+    
+    public void draw(Graphics g) {
+        //if (!this.needDraw) return;
+        if (this.textureFX == null) {
+            System.err.println("Tile textureFX is null for tile: " + this.type);
+            return;
+        }
+        
+        // Get the clip bounds of the graphics context
+        java.awt.Rectangle clipBounds = g.getClipBounds();
+        this.textureFX.setTargetSize(clipBounds.width/GlobalConstants.COL_TILE_COUNT, clipBounds.height/GlobalConstants.ROW_TILE_COUNT);
+        Location loc = GlobalConstants.gridLoc2Loc(this.gloc, clipBounds.width, clipBounds.height); 
+        this.textureFX.draw(g, loc.x(), loc.y(), 0.0);
     }
 
 }

@@ -22,8 +22,14 @@
 
 package tank1990.tile;
 
+import tank1990.core.GlobalConstants;
+import tank1990.core.TextureFX;
+
 public class TileTrees extends Tile {
     public TileTrees(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_TREES, blockConf);
+        setDepth(1);
+
+        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_TREES);
     }
 }

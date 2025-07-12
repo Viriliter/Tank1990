@@ -3,5 +3,6 @@ package tank1990.core;
 public enum EventType {
     NULL,
     UPDATE,
-    REPAINT
+    REPAINT,
+    UPDATE_MAP,
 }

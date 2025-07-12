@@ -20,15 +20,11 @@
  * SOFTWARE.
  */
 
-package tank1990.tile;
+package tank1990.core;
 
-import tank1990.core.GlobalConstants;
-import tank1990.core.TextureFX;
-
-public class TileSteel extends Tile {
-    public TileSteel(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_STEEL, blockConf);
-
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_STEEL);
+public record Location(int x, int y) {
+    @Override
+    public String toString() {
+        return String.format("L(x:%d, y:%d)", x,y);
     }
 }

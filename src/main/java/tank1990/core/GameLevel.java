@@ -1,11 +1,38 @@
-package tank1990.core;
+/*
+ * Copyright (c) 2025.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
+ package tank1990.core;
+
+import java.awt.Graphics;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import javax.swing.JPanel;
 
 import tank1990.tank.AbstractTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
+import tank1990.tile.Tile;
 
 public class GameLevel {
     // Define game level status here
@@ -25,10 +52,13 @@ public class GameLevel {
 
     private LevelState currentState;
 
+    private Tile[][] map;
+    
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
+        this.map = MapGenerator.createMap(levelPath);
+        this.enemyTankCounts = new HashMap<TankType, Integer>();
         //enemyTankCounts = loadenemyTankCounts(levelPath);
-
     }
 
     public LevelState getCurrentState() {
@@ -37,6 +67,22 @@ public class GameLevel {
 
     public void setCurrentState(LevelState state) {
         this.currentState = state;
+    }
+
+    public void draw(Graphics g) {
+        for (Tile[] tileRows: this.map) {
+            for (Tile tile: tileRows) {
+                if (tile!=null) tile.draw(g);
+            }
+        }
+    }
+
+    public void update() {
+        
+    }
+
+    public Tile[][] getMap() {
+        return this.map;
     }
 
     public Map<TankType, Integer> getEnemyTankCounts() {
@@ -75,16 +121,16 @@ public class GameLevel {
         switch(currentTankType) {
             case BASIC_TANK:
                 this.enemyTankCounts.put(TankType.BASIC_TANK, this.enemyTankCounts.get(TankType.BASIC_TANK) - 1);
-                return TankFactory.createTank(TankType.BASIC_TANK, spawnLocation.x(), spawnLocation.y(), spawnDir);
+                return TankFactory.createTank(TankType.BASIC_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
             case FAST_TANK:
                 this.enemyTankCounts.put(TankType.FAST_TANK, this.enemyTankCounts.get(TankType.FAST_TANK) - 1);
-                return TankFactory.createTank(TankType.FAST_TANK, spawnLocation.x(), spawnLocation.y(), spawnDir);
+                return TankFactory.createTank(TankType.FAST_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
             case POWER_TANK:
                 this.enemyTankCounts.put(TankType.POWER_TANK, this.enemyTankCounts.get(TankType.POWER_TANK) - 1);
-                return TankFactory.createTank(TankType.POWER_TANK, spawnLocation.x(), spawnLocation.y(), spawnDir);
+                return TankFactory.createTank(TankType.POWER_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
             case ARMOR_TANK:
                 this.enemyTankCounts.put(TankType.ARMOR_TANK, this.enemyTankCounts.get(TankType.ARMOR_TANK) - 1);
-                return TankFactory.createTank(TankType.ARMOR_TANK, spawnLocation.x(), spawnLocation.y(), spawnDir);
+                return TankFactory.createTank(TankType.ARMOR_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
             default:
                 return null;
         }    

@@ -22,8 +22,6 @@
 
 package tank1990.panels;
 
-import tank1990.core.ConfigHandler;
-
 import javax.swing.*;
 import java.awt.*;
 

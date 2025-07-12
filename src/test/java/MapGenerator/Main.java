@@ -54,10 +54,10 @@ public class Main {
     public static void main(String[] args) {
         ObjectOutputStream os = null;
         try {
-            Tile[][] tiles = MapGenerator.createFromText("C:\\Users\\MSI\\JavaProjects\\Tank1990\\src\\test\\java\\MapGenerator\\map-stage-01.txt");
+            Tile[][] tiles = MapGenerator.createFromText("C:\\Users\\mert_\\Documents\\Tank1990\\src\\test\\java\\MapGenerator\\map-stage-01.txt");
             MapGenerator.printGrid(tiles);
 
-            os = new ObjectOutputStream(new FileOutputStream("stage-01.bin"));
+            os = new ObjectOutputStream(new FileOutputStream("C:\\Users\\mert_\\Documents\\Tank1990\\src\\main\\resources\\maps\\stage-01.bin"));
             os.writeObject(tiles);
             os.close();
         } catch (FileNotFoundException e) {

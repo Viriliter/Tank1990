@@ -22,12 +22,17 @@
 
 package tank1990.core;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.io.Serializable;
 
 public abstract class GameObject implements Serializable {
     protected int x;
     protected int y;
     protected Direction dir;
+    protected int depth=0;
+    protected int width;
+    protected int height;
 
     public int getX() { return this.x; }
 
@@ -35,12 +40,20 @@ public abstract class GameObject implements Serializable {
 
     public Direction getDir() { return this.dir; }
 
+    public int getDepth() { return this.depth; }
+
     public void setX(int x) { this.x = x; }
 
     public void setY(int y) { this.y = y; }
 
     public void setDir(Direction dir) { this.dir = dir; }
 
-    public abstract void repaint();
+    public void setDepth(int depth) { this.depth = depth; }
+
+    public Dimension getSize() {return new Dimension(this.width, this.height);}
+
+    public void setSize(Dimension dimension) {this.width = (int) dimension.getWidth(); this.height = (int) dimension.getHeight();}
+
+    public abstract void draw(Graphics g);
 
 }

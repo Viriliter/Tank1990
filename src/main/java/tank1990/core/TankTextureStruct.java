@@ -20,15 +20,18 @@
  * SOFTWARE.
  */
 
-package tank1990.tile;
+package tank1990.core;
 
-import tank1990.core.GlobalConstants;
-import tank1990.core.TextureFX;
+public class TankTextureStruct {
+    public TextureFXStruct upwardsTexturePath;
+    public TextureFXStruct rightTexturePath;
+    public TextureFXStruct downwardsTexturePath;
+    public TextureFXStruct leftTexturePath;
 
-public class TileSteel extends Tile {
-    public TileSteel(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_STEEL, blockConf);
-
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_STEEL);
+    public TankTextureStruct(TextureFXStruct upwardsTexturePath, TextureFXStruct rightTexturePath, TextureFXStruct downwardsTexturePath, TextureFXStruct leftTexturePath) {
+        this.upwardsTexturePath = upwardsTexturePath;
+        this.rightTexturePath = rightTexturePath;
+        this.downwardsTexturePath = downwardsTexturePath;
+        this.leftTexturePath = leftTexturePath;
     }
 }

@@ -20,15 +20,27 @@
  * SOFTWARE.
  */
 
-package tank1990.tile;
+package tank1990.panels;
 
-import tank1990.core.GlobalConstants;
-import tank1990.core.TextureFX;
+import java.awt.Graphics;
 
-public class TileSteel extends Tile {
-    public TileSteel(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_STEEL, blockConf);
+import javax.swing.JLayeredPane;
 
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_STEEL);
+import tank1990.core.GameEngine;
+
+public class GameAreaPanel extends JLayeredPane {
+    private GameEngine gameEngine = null;
+
+    GameAreaPanel(GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
+        this.gameEngine.setParentPanel(this);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        this.gameEngine.paintComponent(g);
     }
 }
+

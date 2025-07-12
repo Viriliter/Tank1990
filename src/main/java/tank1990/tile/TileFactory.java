@@ -22,15 +22,8 @@
 
 package tank1990.tile;
 
-import tank1990.core.ConfigHandler;
-import tank1990.core.Direction;
-import tank1990.tank.*;
-
 public class TileFactory {
-    public static Tile createTile(ConfigHandler config, TileType type, int x, int y, BlockConfiguration blockConf) {
-        if (config == null) {
-            throw new IllegalStateException("ConfigHandler cannot be null!");
-        }
+    public static Tile createTile(TileType type, int x, int y, BlockConfiguration blockConf) {
         if (type == null) {
             throw new IllegalArgumentException("Tank type cannot be null!");
         }

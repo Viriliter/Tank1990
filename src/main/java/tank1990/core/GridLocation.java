@@ -1,9 +1,26 @@
 package tank1990.core;
 
-public record GridLocation(int x, int y) {
+import java.io.Serializable;
+
+public class GridLocation implements Serializable {
+    private final int rowIndex;
+    private final int colIndex;
+
+    public GridLocation(int rowIndex, int colIndex) {
+        this.rowIndex = rowIndex;
+        this.colIndex = colIndex;
+    }
+
+    public int rowIndex() {
+        return rowIndex;
+    }
+
+    public int colIndex() {
+        return colIndex;
+    }
 
     @Override
     public String toString() {
-        return String.format("GL(x:%d, y:%d)", x,y);
+        return String.format("GL(r:%d, c:%d)", rowIndex, colIndex);
     }
 }

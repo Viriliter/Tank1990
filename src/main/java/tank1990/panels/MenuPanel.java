@@ -30,7 +30,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import tank1990.core.ConfigHandler;
 import tank1990.core.GameMode;
 import tank1990.core.GlobalConstants;
 
@@ -52,7 +51,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         requestFocusInWindow();
         addKeyListener(this);
 
-        int width = ConfigHandler.getInstance().getWindowProperties().windowWidth();
+        int width = frame.getWidth();
         int height = frame.getHeight();
 
         JPanel backgroundPanel = new JPanel();
@@ -207,21 +206,27 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             System.out.println("Selected: " + menuItems[selectedIndex]);
             if (selectedIndex==0) {
+                this.frame.getContentPane().removeAll();
+
                 GamePanel gamePanel = new GamePanel(frame, GameMode.MODE_SINGLE_PLAYER);
-                frame.getContentPane().removeAll();
-                frame.add(gamePanel);
-                gamePanel.requestFocusInWindow();
+                this.frame.add(gamePanel);
                 SwingUtilities.invokeLater(() -> {
-                    gamePanel.show();            
+                    gamePanel.requestFocusInWindow();
+                    gamePanel.show();
+                    revalidate(); // refresh layout
+                    repaint();    // redraw component
                 });
 
             } else if (selectedIndex==1) {
+                this.frame.getContentPane().removeAll();
+
                 GamePanel gamePanel = new GamePanel(frame, GameMode.MODE_MULTI_PLAYER);
-                frame.getContentPane().removeAll();
-                frame.add(gamePanel);
-                gamePanel.requestFocusInWindow();
+                this.frame.add(gamePanel);
                 SwingUtilities.invokeLater(() -> {
-                    gamePanel.show();            
+                    gamePanel.requestFocusInWindow();
+                    gamePanel.show();         
+                    revalidate(); // refresh layout
+                    repaint();    // redraw component
                 });
             } else if (selectedIndex==2) {
                 // TODO implement later

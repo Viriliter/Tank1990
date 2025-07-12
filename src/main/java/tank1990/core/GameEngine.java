@@ -24,27 +24,23 @@ package tank1990.core;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
+import tank1990.panels.GameAreaPanel;
 import tank1990.player.Player;
 import tank1990.player.PlayerType;
 import tank1990.powerup.Powerup;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.Enemy;
-import tank1990.tank.PlayerTank;
-import tank1990.tank.TankFactory;
-import tank1990.tank.TankType;
 
 public class GameEngine extends Subject {
-    private JPanel parentPanel = null;
+    private GameAreaPanel parentPanel = null;
 
     // Game objects
-    private ArrayList<Player> players = null;   /*< List of zombies in the game. */
+    private ArrayList<Player> players = null;       /*< List of zombies in the game. */
     private ArrayList<Enemy> enemies = null;        /*< List of enemies in the game. */
     private ArrayList<Powerup> powerups = null;     /*< List of powerups in the game. */
     private ArrayList<TextureFX> blastFX = null;    /*< List of blast effects in the game. */
@@ -52,26 +48,25 @@ public class GameEngine extends Subject {
 
     // Game parameters
     private boolean isStopped = false;
-    private boolean isPaused = false;               /*< Flag indicating whether the game is paused. */
+    private boolean isPaused = false;                   /*< Flag indicating whether the game is paused. */
 
-    private Timer gameTimer;                        /*< Timer for handling periodic updates. */
-    private Map<Player, TimeTick> fireRateTicks = null;           /*< Time tick for handling fire rate control. */
+    private Timer gameTimer;                            /*< Timer for handling periodic updates. */
+    private Map<Player, TimeTick> fireRateTicks = null; /*< Time tick for handling fire rate control. */
 
     private GameMode gameMode = GameMode.MODE_SINGLE_PLAYER;
     private GameLevel currentGameLevel = null;
 
-    public GameEngine(JPanel parentPanel, GameMode gameMode) {
-        this.parentPanel = parentPanel;
+    public GameEngine(GameMode gameMode) {
         this.gameMode = gameMode;
 
         this.players = new ArrayList<>();
 
         // Add first player by default
-        players.add(new Player(ConfigHandler.getInstance().getPlayerProperties(), PlayerType.PLAYER_1));
+        players.add(new Player(PlayerType.PLAYER_1));
 
         // Add second player if game mode is multiplayer
         if (this.gameMode==GameMode.MODE_MULTI_PLAYER) {
-            players.add(new Player(ConfigHandler.getInstance().getPlayerProperties(), PlayerType.PLAYER_2));
+            players.add(new Player(PlayerType.PLAYER_2));
         }
 
         // Initialize other game objects
@@ -86,6 +81,8 @@ public class GameEngine extends Subject {
         // Initialize game timer
         gameTimer = new Timer(GlobalConstants.GAME_TICK_MS, e -> this.update());
         gameTimer.setRepeats(true);
+
+        fireRateTicks = new java.util.HashMap<Player, TimeTick>();            
     }
 
     /**
@@ -97,30 +94,31 @@ public class GameEngine extends Subject {
      */
     public void paintComponent(Graphics g) {
         // Draw map
-        //if (currentGameLevel!=null) currentGameLevel
-
+        GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
+        if (gameLevel!=null) gameLevel.draw(g);
+        
         // Draw player(s)
         for (Player p: this.players) {
-            p.draw();
-        }
-
-        // Draw enemies
-        for (Enemy e : this.enemies) {
-            AbstractTank t = (AbstractTank) e;
-            t.draw(g);
-        }
-
-        // Draw bullets
-        for (Bullet b : this.bullets) {
-            if (b == null) continue;
-            b.draw(g);
-        }
-
-        // Draw powerups
-        for (Powerup p : this.powerups) {
-            if (p == null) continue;
             p.draw(g);
         }
+//
+        //// Draw enemies
+        //for (Enemy e : this.enemies) {
+        //    AbstractTank t = (AbstractTank) e;
+        //    t.draw(g);
+        //}
+//
+        //// Draw bullets
+        //for (Bullet b : this.bullets) {
+        //    if (b == null) continue;
+        //    b.draw(g);
+        //}
+//
+        //// Draw powerups
+        //for (Powerup p : this.powerups) {
+        //    if (p == null) continue;
+        //    p.draw(g);
+        //}
 
         //for (TextureFX tFX : this.TextureFX) {
         //    tFX.draw(g);
@@ -134,6 +132,8 @@ public class GameEngine extends Subject {
      */
     public void update() {
         // Update map
+        GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
+        if (gameLevel!=null) gameLevel.update();
         
         // Update players
         updatePlayers();
@@ -163,7 +163,11 @@ public class GameEngine extends Subject {
         // Update Visual FXs
         updateBlasts();
 
-        notify(EventType.REPAINT);  // Notify observers to repaint event
+        notify(EventType.REPAINT, null);  // Notify observers to repaint event
+    }
+
+    public void setParentPanel(GameAreaPanel parentPanel) {
+        this.parentPanel = parentPanel;
     }
 
     public GameLevel getCurrentLevel() {
@@ -268,7 +272,9 @@ public class GameEngine extends Subject {
     } 
 
     private void updatePlayers() {
-        // TODO implement later
+        for (Player p: this.players) {
+            p.update(parentPanel.getWidth(), parentPanel.getHeight());
+        }
     }
 
     /**
@@ -285,11 +291,16 @@ public class GameEngine extends Subject {
     }
 
     private void updateEnemies() {
-        // TODO implement later
+        for (Enemy e: this.enemies) {
+            AbstractTank t = (AbstractTank) e;
+            t.update();
+        }
     }
 
     private void updateProjectiles() {
-        // TODO implement later
+        for (Bullet b: this.bullets) {
+            b.update();
+        }
     }
 
     private void updatePowerups() {

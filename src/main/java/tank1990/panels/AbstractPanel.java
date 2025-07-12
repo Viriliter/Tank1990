@@ -28,16 +28,6 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-
-import tank1990.core.ConfigHandler;
-import tank1990.core.TimeTick;
-import tank1990.core.TextureFX;
-import tank1990.player.Player;
-import tank1990.tank.Enemy;
-import tank1990.powerup.Powerup;
-import tank1990.projectiles.Bullet;
 
 public abstract class AbstractPanel extends JPanel {
     protected JFrame frame;                   //*< The parent JFrame that holds this panel. */

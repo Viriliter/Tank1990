@@ -23,11 +23,17 @@
 package tank1990.tank;
 
 import tank1990.core.Direction;
+import tank1990.core.GlobalConstants;
 
 public class BasicTank extends AbstractTank implements Enemy {
 
     public BasicTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
+        this.tankTextureFxStruct = GlobalConstants.TEXTURE_BASIC_TANK_STRUCT;
+        createTextureFXs();
     }
+
+    @Override
+    public void update() {}
 }

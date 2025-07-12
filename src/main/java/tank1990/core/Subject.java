@@ -18,9 +18,9 @@ public abstract class Subject {
         observers.remove(observer);
     }
 
-    protected void notify(EventType event) {
+    protected void notify(EventType event, Object data) {
         for(Observer subscriber: observers) {
-            subscriber.eventFilter(event);
+            subscriber.eventFilter(event, data);
         }
     }
 }

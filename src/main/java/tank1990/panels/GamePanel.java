@@ -29,7 +29,6 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import tank1990.core.ConfigHandler;
 import tank1990.core.EventType;
 import tank1990.core.GameEngine;
 import tank1990.core.GameMode;
@@ -41,20 +40,28 @@ import tank1990.player.Player;
 public class GamePanel extends AbstractPanel implements ActionListener, KeyListener, Observer {
 
     GameEngine gameEngine = null;
-    JPanel getReadyPanel = null;
+    
+    JLayeredPane rootPanel = null;      // Store reference to layered root panel
+    JPanel getReadyPanel = null;        // Store reference to get ready panel
+    JPanel gamePanel = null;            // Store reference to game content panel
+    GameAreaPanel gameplayArea = null;  // Store reference to gameplay area
 
     public GamePanel(JFrame frame, GameMode gameMode) {
         super(frame);
 
-        gameEngine = new GameEngine(this, gameMode);
-        gameEngine.subscribe((Observer) this);
+        this.gameEngine = new GameEngine(gameMode);
+        this.gameEngine.subscribe((Observer) this);
+        initLayeredPanels();
     }
 
     @Override
-    public void eventFilter(EventType event) {
+    public void eventFilter(EventType event, Object data) {
         switch (event) {
             case EventType.REPAINT:
                 repaint();
+                break;
+            case EventType.UPDATE_MAP:
+                // Handle map update
                 break;
             case EventType.UPDATE:
             default:
@@ -66,69 +73,52 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     protected void initPanel() {
         setFocusable(true);
         requestFocusInWindow();
-        setBackground(Color.BLACK);
+        setBackground(Color.RED);
         addKeyListener(this);
+    }
 
-        ConfigHandler.WindowProperties wProperties = ConfigHandler.getInstance().getWindowProperties();
+    private void initLayeredPanels() {
+        // Set this panel's layout to BorderLayout to contain the root panel
+        this.setLayout(new BorderLayout());
 
-        // Root Panel
-        JPanel root = new JPanel(new BorderLayout());
+        // Root Panel as JLayeredPane
+        this.rootPanel = new JLayeredPane();
+        this.rootPanel.setPreferredSize(new Dimension(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT));
 
-        // Panels Container
-        JPanel panelContainer = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridy = 0;
+        // Game Content Panel (contains gameplay area and info panel)
+        this.gamePanel = new JPanel(new BorderLayout());
+        this.gamePanel.setBounds(0, 0, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
 
-        // Game Area panel with overlay panels
-        gbc.weightx = 0.75;
-        JLayeredPane gameAreaPanel = new JLayeredPane();
-        gameAreaPanel.setPreferredSize(new Dimension(600, 600));
+        // Gameplay Area (3/4 of the width)
+        this.gameplayArea = new GameAreaPanel(this.gameEngine);
+        this.gameplayArea.setBackground(Color.BLACK);
+        this.gameplayArea.setOpaque(true);
 
-        // Overlay panel for game map
-        JPanel mapPanel = new JPanel();
-        mapPanel.setBackground(Color.DARK_GRAY);
-        mapPanel.setBounds(0, 0, 600, 600);
-        gameAreaPanel.add(mapPanel, JLayeredPane.DEFAULT_LAYER);
+        // Calculate dimensions for square gameplay area
+        int gameplaySize = Math.min(GlobalConstants.WINDOW_WIDTH * 3 / 4, GlobalConstants.WINDOW_HEIGHT);
+        this.gameplayArea.setPreferredSize(new Dimension(gameplaySize, gameplaySize));
 
-        // Overlay panel for actors (enemy and player(s))
-        JPanel actorsPanel = new JPanel();
-        actorsPanel.setBackground(new Color(255, 0, 0, 100)); // Semi-transparent red
-        actorsPanel.setBounds(100, 100, 400, 400);
-        gameAreaPanel.add(actorsPanel, JLayeredPane.PALETTE_LAYER);
+        // Game Info Panel (1/4 of the width)
+        JPanel gameInfoPanel = new GameInfoPanel();
+        gameInfoPanel.setBackground(GlobalConstants.COLOR_GRAY);
+        gameInfoPanel.setPreferredSize(new Dimension(GlobalConstants.WINDOW_WIDTH / 4, gameplaySize));
+        gameInfoPanel.setBorder(BorderFactory.createTitledBorder("Game Info"));
 
-        //// Overlay panel for visual FX
-        //JPanel fxPanel = new JPanel();
-        //fxPanel.setBackground(new Color(255, 0, 0, 100)); // Semi-transparent red
-        //fxPanel.setBounds(100, 100, 400, 400);
-        //gameAreaPanel.add(fxPanel, JLayeredPane.PALETTE_LAYER);
-        //
-        //// Overlay panel for Items
-        //JPanel itemsPanel = new JPanel();
-        //itemsPanel.setBackground(new Color(255, 0, 0, 100)); // Semi-transparent red
-        //itemsPanel.setBounds(100, 100, 400, 400);
-        //gameAreaPanel.add(itemsPanel, JLayeredPane.PALETTE_LAYER);
-        //
-        //// Overlay panel for HUD
-        //JPanel hudPanel = new JPanel();
-        //hudPanel.setBackground(new Color(255, 0, 0, 100)); // Semi-transparent red
-        //hudPanel.setBounds(100, 100, 400, 400);
-        //gameAreaPanel.add(hudPanel, JLayeredPane.PALETTE_LAYER);
+        // Add placeholder content to game info panel
+        gameInfoPanel.setLayout(new BoxLayout(gameInfoPanel, BoxLayout.Y_AXIS));
+        JLabel infoLabel = new JLabel("Game Information");
+        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        gameInfoPanel.add(infoLabel);
 
-        gbc.gridx = 0;
-        panelContainer.add(gameAreaPanel, gbc);
+        // Add components to game content panel
+        this.gamePanel.add(this.gameplayArea, BorderLayout.CENTER);
+        this.gamePanel.add(gameInfoPanel, BorderLayout.EAST);
 
-        // Game status panel
-        gbc.weightx = 0.25;
-        gbc.gridx = 1;
-        JPanel gameStatPanel = new JPanel();
-        gameStatPanel.setBackground(Color.LIGHT_GRAY);
-        panelContainer.add(gameStatPanel, gbc);
+        // Add game content panel to layered pane (background layer)
+        this.rootPanel.add(this.gamePanel, JLayeredPane.DEFAULT_LAYER);
 
-        // Add to root
-        root.add(panelContainer, BorderLayout.CENTER);
-        frame.add(root);
-        frame.setVisible(true);
+        // Add the root panel to this GamePanel component
+        this.add(this.rootPanel, BorderLayout.CENTER);
     }
 
     /**
@@ -152,8 +142,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        this.gameEngine.paintComponent(g);
     }
 
     /**
@@ -174,7 +162,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
      * @throws IOException If an I/O error occurs during deserialization.
      * @throws ClassNotFoundException If the class definition of a game object is not found.
      */
-    @SuppressWarnings("unchecked")
     private void createGameObjects(ObjectInputStream os) throws IOException, ClassNotFoundException{
         try {
             this.gameEngine = (GameEngine) os.readObject();
@@ -368,10 +355,9 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case (KeyEvent.VK_ENTER):
                 switch (gameEngine.getCurrentLevel().getCurrentState()) {
                     case LevelState.GET_READY:
-                        getReadyPanel.setVisible(false);
-                        frame.remove(getReadyPanel);
-                        gameEngine.startGameLevel();
-                        getReadyPanel = null;
+                        SwingUtilities.invokeLater(() -> {
+                            showGamePanel();
+                        });
                         break;
                     default: break;
                 }
@@ -392,33 +378,60 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     public void keyTyped(KeyEvent e) { }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
+    public void actionPerformed(ActionEvent e) { }
 
     public void show() {
-        gameEngine.loadGameLevel();
+        this.gameEngine.loadGameLevel();
         showGetReadyPanel();
-        gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
+        this.gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
     }
 
     private void showGetReadyPanel() {
-        int levelIndex = gameEngine.getCurrentLevelIndex();
+        int levelIndex = this.gameEngine.getCurrentLevelIndex();
 
+        // Hide the main game panel
+        if (this.gamePanel != null) {
+            this.gamePanel.setVisible(false);
+        }
+
+        // Create and configure the get ready panel
         this.getReadyPanel = new JPanel();
         this.getReadyPanel.setLayout(new BorderLayout());
+
         JLabel getReadyLabel = new JLabel(String.format("STAGE\t%2d", levelIndex), SwingConstants.CENTER);
         getReadyLabel.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
         getReadyLabel.setForeground(Color.BLACK);
 
         this.getReadyPanel.add(getReadyLabel, BorderLayout.CENTER);
         this.getReadyPanel.setBackground(GlobalConstants.COLOR_GRAY);
-        this.getReadyPanel.setPreferredSize(new Dimension(frame.getContentPane().getWidth(), frame.getContentPane().getHeight()));
+        this.getReadyPanel.setBounds(0, 0, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
         this.getReadyPanel.setVisible(true);
-        frame.add(this.getReadyPanel);
         
-        revalidate();
-        repaint();
+        // Add get ready panel to layered pane (foreground layer)
+        this.rootPanel.add(this.getReadyPanel, JLayeredPane.POPUP_LAYER);
+        
+        this.rootPanel.revalidate();
+        this.rootPanel.repaint();
     }
 
+    private void showGamePanel() {
+        // Hide the get ready panel
+        if (this.getReadyPanel != null) {
+            this.getReadyPanel.setVisible(false);
+            this.rootPanel.remove(getReadyPanel);
+            this.getReadyPanel = null;
+        }
+        
+        // Show the main game panel
+        if (this.gamePanel != null) {
+            this.gamePanel.setVisible(true);
+        }
+        
+        // Start the game level
+        this.gameEngine.startGameLevel();
+
+        requestFocus(); // Ensure game panel has focus for key events
+        this.rootPanel.revalidate();
+        this.rootPanel.repaint();
+    }
 }

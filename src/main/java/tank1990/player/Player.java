@@ -23,6 +23,9 @@
 package tank1990.player;
 
 import tank1990.core.ConfigHandler.PlayerProperties;
+
+import java.awt.Graphics;
+
 import tank1990.core.Direction;
 import tank1990.core.GlobalConstants;
 import tank1990.projectiles.Bullet;
@@ -31,45 +34,68 @@ import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 
 public class Player {
-    int health = 0;
-    PlayerTank myTank = null;
-    PlayerType playerType = PlayerType.PLAYER_1;
+    private int health;
+    private int dx, dy;   // Player's position and movement direction
+    private Direction dir = null;
+    private int speed = 0;
 
-    public Player(PlayerProperties properties, PlayerType playerType) {
-        this.health = properties.initialHealth();
+    private PlayerTank myTank = null;
+    private PlayerType playerType = PlayerType.PLAYER_1;
 
-        if (playerType == PlayerType.PLAYER_1)
-            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, GlobalConstants.INITIAL_PLAYER_1_LOC.x(), GlobalConstants.INITIAL_PLAYER_1_LOC.y(), GlobalConstants.INITIAL_PLAYER_1_DIR);
-        else
-            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, GlobalConstants.INITIAL_PLAYER_2_LOC.x(), GlobalConstants.INITIAL_PLAYER_2_LOC.y(), GlobalConstants.INITIAL_PLAYER_2_DIR);
+    public Player(PlayerType playerType) {
+        this.health = GlobalConstants.INITAL_PLAYER_HEALTH;
+        this.dx = 0;
+        this.dy = 0;
+        this.speed = GlobalConstants.PLAYER_MOVEMENT_SPEED;
+
+        if (playerType == PlayerType.PLAYER_1) {
+            this.dir = GlobalConstants.INITIAL_PLAYER_1_DIR;
+            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
+                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_1_LOC, 720,720).x(), 
+                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_1_LOC, 720,720).y(), 
+                                                         GlobalConstants.INITIAL_PLAYER_1_DIR);
+            myTank.setPlayerType(playerType);
+        } else {
+            this.dir = GlobalConstants.INITIAL_PLAYER_2_DIR;
+            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
+                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_2_LOC, 720,720).x(), 
+                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_2_LOC, 720,720).y(), 
+                                                         GlobalConstants.INITIAL_PLAYER_2_DIR);
+            myTank.setPlayerType(playerType);
+        }
     }
 
-    public void draw() {
-
+    public void draw(Graphics g) {
+        myTank.draw(g);
     }
 
-    public void incrementDx() {
-
+    public void update(int maxWidth, int maxHeight) {
+        // Calculate new position with boundary checking
+        int newX = Math.max(0, Math.min(myTank.getX() + this.dx, maxWidth - (int) myTank.getSize().getWidth()));
+        int newY = Math.max(0, Math.min(myTank.getY() + this.dy, maxHeight - (int) myTank.getSize().getHeight()));
+        
+        // Update tank position and direction
+        myTank.setX(newX);
+        myTank.setY(newY);
+        myTank.setDir(dir);
     }
 
-    public void decrementDx() {
+    public void decrementDx() { resetDy(); this.dx = this.dx-this.speed < -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dx-this.speed; this.dir = Direction.DIRECTION_LEFT;}
 
-    }
+    public void incrementDx() { resetDy(); this.dx = this.dx+this.speed > GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dx+this.speed; this.dir = Direction.DIRECTION_RIGHT;}
+    
+    public void decrementDy() { resetDx(); this.dy = this.dy-this.speed < GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dy-this.speed; this.dir = Direction.DIRECTION_UPWARDS;}
 
-    public void incrementDy() {
+    public void incrementDy() { resetDx(); this.dy = this.dy+this.speed > GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dy+this.speed; this.dir = Direction.DIRECTION_DOWNWARDS;}
 
-    }
+    public void resetDx() { this.dx=0; }
 
-    public void decrementDy() {
-
-    }
-
-    public void resetDx() {}
-
-    public void resetDy() {}
+    public void resetDy() { this.dy=0; }
 
     public Bullet shoot() {
         return myTank.shoot();
     }
+
+    public PlayerType getPlayerType() {return this.playerType;}
 
 }

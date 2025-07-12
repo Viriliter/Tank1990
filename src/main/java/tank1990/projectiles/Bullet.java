@@ -48,6 +48,10 @@ public class Bullet extends DynamicGameObject {
         
     }
 
+    public void update() {
+        
+    }
+
     @Override
     public void move() {
         switch (dir) {
@@ -71,11 +75,6 @@ public class Bullet extends DynamicGameObject {
                 System.err.printf("Invalid direction: %s", dir);
                 break;
         }
-
-    }
-
-    @Override
-    public void repaint() {
 
     }
 

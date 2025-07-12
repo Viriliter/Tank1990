@@ -41,23 +41,29 @@ import javax.swing.ImageIcon;
  */
 public interface GlobalConstants {
     String CONFIGURATION_FILE = "config.ini";
-    int GAME_TICK_MS = 10;
 
     String GAME_TITLE = "TANK 1990 - NES";
 
+    // Game Window Dimensions
+    int WINDOW_WIDTH = 960;
+    int WINDOW_HEIGHT = 720;
+    double SCALE = 3.75;
+
+    // Tile Parameters
+    int TILE_WIDTH = 16;
+    int TILE_HEIGHT = 16;
     int TILE_SUBDIVISION = 4;
 
+    // Map Dimensions
     int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
     int ROW_TILE_COUNT = 13;// * TILE_SUBDIVISION;
 
-    double SCALE = 3.75;
-
+    // Fonts
     String FONT_PRESS_START_2P = "fonts/PressStart2PRegular.ttf";
 
     /**
      * PLAYER KEYBOARD CONTROLS
      */
-
     int KEY_PLAYER_1_MOVE_UP = KeyEvent.VK_UP;
     int KEY_PLAYER_1_MOVE_RIGHT = KeyEvent.VK_RIGHT;
     int KEY_PLAYER_1_MOVE_DOWN = KeyEvent.VK_DOWN;
@@ -76,11 +82,15 @@ public interface GlobalConstants {
     /**
      * PLAYER PARAMETERS
      */
+    int INITAL_PLAYER_HEALTH = 3;
 
-    GridLocation INITIAL_PLAYER_1_LOC = new GridLocation(4, 12);
+    GridLocation INITIAL_PLAYER_1_LOC = new GridLocation(12, 4);
     Direction INITIAL_PLAYER_1_DIR = Direction.DIRECTION_UPWARDS;
-    GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(8, 12);
+    GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(12, 8);
     Direction INITIAL_PLAYER_2_DIR = Direction.DIRECTION_UPWARDS;
+
+    int PLAYER_MOVEMENT_SPEED = 1;
+    int PLAYER_MOVEMENT_MAX_SPEED = 5;
 
     /**
      * COLOR PALLETTE
@@ -90,51 +100,84 @@ public interface GlobalConstants {
     /**
      * GAME ENGINE PARAMETERS
      */
+    int GAME_TICK_MS = 10;
 
-    int BULLET_SPEED_PER_TICK = 10;  // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
+    int BULLET_SPEED_PER_TICK = 10;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
 
-    int ENEMY_SPAWN_TIME = 3;
-    int PLAYER_SPAWN_TIME = 3;
-    int SPAWN_PROTECTION_TIME = 3;
+    int ENEMY_SPAWN_PROTECTION_TIME = 3;    // Protection time in seconds
+    int PLAYER_SPAWN_PROTECTION_TIME = 3;   // Protection time in seconds
 
-    int SKID_DISTANCE = 10;
+    int SKID_DISTANCE = 10;                 // Skid distance of a tank on ice tile in pixels
 
-    int GAME_LEVEL_COUNTS = 35; // Total number of game levels
-
+    /**
+     * GAME LEVEL PARAMETERS
+     */
+    int GAME_LEVEL_COUNTS = 5; // Total number of game levels
 
     /**
      * POWERUPS
      */
 
-    String ICON_POWERUP_GRENADE_PATH = "textures/powerups/powerup-grenade.png";
-    String ICON_POWERUP_HELMET_PATH = "textures/powerups/powerup-helmet.png";
-    String ICON_POWERUP_SHOVEL_PATH = "textures/powerups/powerup-shovel.png";
-    String ICON_POWERUP_STAR_PATH = "textures/powerups/powerup-star.png";
-    String ICON_POWERUP_TANK_PATH = "textures/powerups/powerup-tank.png";
-    String ICON_POWERUP_TIMER_PATH = "textures/powerups/powerup-timer.png";
+    TextureFXStruct ICON_POWERUP_GRENADE_PATH = new TextureFXStruct("textures/powerups/powerup-grenade.png",0,0,0);
+    TextureFXStruct ICON_POWERUP_HELMET_PATH = new TextureFXStruct("textures/powerups/powerup-helmet.png",0,0,0);
+    TextureFXStruct ICON_POWERUP_SHOVEL_PATH = new TextureFXStruct("textures/powerups/powerup-shovel.png",0,0,0);
+    TextureFXStruct ICON_POWERUP_STAR_PATH = new TextureFXStruct("textures/powerups/powerup-star.png",0,0,0);
+    TextureFXStruct ICON_POWERUP_TANK_PATH = new TextureFXStruct("textures/powerups/powerup-tank.png",0,0,0);
+    TextureFXStruct ICON_POWERUP_TIMER_PATH = new TextureFXStruct("textures/powerups/powerup-timer.png",0,0,0);
 
     /**
      * TILES
      */
 
-    String TEXTURE_TILE_BRICKS_PATH = "textures/tiles/tile-bricks.png";
-    String TEXTURE_TILE_STEEL_PATH = "textures/tiles/tile-steel.png";
-    String TEXTURE_TILE_TREES_PATH = "textures/tiles/tile-trees.png";
-    String TEXTURE_TILE_WATER_PATH = "textures/tiles/tile-water.png";
-    String TEXTURE_TILE_ICE_PATH = "textures/tiles/tile-ice.png";
-    String TEXTURE_TILE_EAGLE_PATH = "textures/tiles/tile-eagle.png";
+    TextureFXStruct TEXTURE_TILE_BRICKS = new TextureFXStruct("textures/tiles/tile-bricks.png",0,0,0);
+    TextureFXStruct TEXTURE_TILE_STEEL = new TextureFXStruct("textures/tiles/tile-steel.png",0,0,0);
+    TextureFXStruct TEXTURE_TILE_TREES = new TextureFXStruct("textures/tiles/tile-trees.png",0,0,0);
+    TextureFXStruct TEXTURE_TILE_SEA = new TextureFXStruct("textures/tiles/tile-sea.png",0,0,0);
+    TextureFXStruct TEXTURE_TILE_ICE = new TextureFXStruct("textures/tiles/tile-ice.png",0,0,0);
+    TextureFXStruct TEXTURE_TILE_EAGLE = new TextureFXStruct("textures/tiles/tile-eagle.png",0,0,0);
 
     /**
      * TANKS
      */
-    String TEXTURE_PLAYER1_TANK_PATH = "textures/tank/tank-player-1.png";
-    String TEXTURE_PLAYER2_TANK_PATH = "textures/tank/tank-player-2.png";
+    String TEXTURE_PLAYER1_TANK_PATH = "textures/tank/tank-player-1-right.png";
+    
+    TankTextureStruct TEXTURE_PLAYER1_TANK_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_PLAYER2_TANK_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-player-2-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-2-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-2-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-2-left.png",0,0,0)
+    );
 
-    String TEXTURE_BASIC_TANK = "textures/tank/basic-tank.png";
-    String TEXTURE_FAST_TANK = "textures/tank/fast-tank.png";
-    String TEXTURE_POWER_TANK = "textures/tank/power-tank.png";
-    String TEXTURE_ARMOR_TANK = "textures/tank/armor-tankpng";
-
+    TankTextureStruct TEXTURE_BASIC_TANK_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/basic-tank-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/basic-tank-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/basic-tank-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/basic-tank-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_FAST_TANK_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/fast-tank-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/fast-tank-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/fast-tank-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/fast-tank-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_POWER_TANK_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/power-tank-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/power-tank-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/power-tank-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/power-tank-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_ARMOR_TANK_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/armor-tank-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/armor-tank-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/armor-tank-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/armor-tank-left.png",0,0,0)
+    );
 
     /**
      * MISCS TEXTURES
@@ -195,7 +238,6 @@ public interface GlobalConstants {
             return null;
         }
     }
-
 
     static Image loadTexture(String fileName, int width, int height) {
         try {
@@ -260,6 +302,18 @@ public interface GlobalConstants {
 
     static boolean isObjectsCollided(Rectangle rect1, RectangleBound rectBound2) {
         return RectangleBound.isCollided(rect1, rectBound2);
+    }
+
+    static Location gridLoc2Loc(GridLocation gloc, int width, int height) {
+        int cellWidth = width / GlobalConstants.COL_TILE_COUNT;
+        int cellHeight = height / GlobalConstants.ROW_TILE_COUNT;
+        return new Location(cellWidth * gloc.colIndex() + cellWidth/2, cellHeight * gloc.rowIndex() + cellHeight/2);
+    }
+
+    static GridLocation Loc2gridLoc(Location loc, int width, int height) {
+        int cellWidth = width / GlobalConstants.ROW_TILE_COUNT;
+        int cellHeight = height / GlobalConstants.COL_TILE_COUNT;
+        return new GridLocation((int) (loc.y() / cellHeight), (int) (loc.x() / cellWidth));
     }
 
 }

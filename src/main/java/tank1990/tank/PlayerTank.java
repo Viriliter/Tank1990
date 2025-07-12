@@ -23,11 +23,27 @@
 package tank1990.tank;
 
 import tank1990.core.Direction;
+import tank1990.core.GlobalConstants;
+import tank1990.player.PlayerType;
 
 public class PlayerTank extends AbstractTank {
 
     public PlayerTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
+        this.tankTextureFxStruct = GlobalConstants.TEXTURE_PLAYER1_TANK_STRUCT;
+        createTextureFXs();
     }
+
+    public void setPlayerType(PlayerType playerType) {
+        if (playerType == PlayerType.PLAYER_1) {
+            this.tankTextureFxStruct = GlobalConstants.TEXTURE_PLAYER1_TANK_STRUCT;
+        } else {
+            this.tankTextureFxStruct = GlobalConstants.TEXTURE_PLAYER2_TANK_STRUCT;
+        }
+        createTextureFXs();
+    } 
+
+    @Override
+    public void update() {}
 }

@@ -22,12 +22,7 @@
 
 package tank1990.core;
 
-import java.awt.*;
-import javax.swing.*;
-
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import tank1990.tile.BlockConfiguration;
@@ -37,119 +32,25 @@ import tank1990.tile.TileType;
 
 public class MapGenerator {
 
-    public static JPanel createMap(String filePath) {
+    public static Tile[][] createMap(String filePath) {
         Tile[][] tiles = loadFromBinary(filePath);
 
-        return createPanel(tiles);
+        return tiles;//createPanel(tiles);
     }
 
-    @SuppressWarnings("unchecked")
-    private static Tile[][] loadFromBinary(String filePath) {
-        Tile[][] grid = new Tile[GlobalConstants.ROW_TILE_COUNT][GlobalConstants.COL_TILE_COUNT];
+    public static void saveToBinary(String sourceTxtPath, String targetBinPath) {
+        ObjectOutputStream os = null;
         try {
-            InputStream inputStream = MapGenerator.class.getClassLoader().getResourceAsStream(filePath);
-            ObjectInputStream os = new ObjectInputStream(inputStream);
-            for(Tile tile: (List<Tile>) os.readObject()) {
-                grid[tile.getX()][tile.getY()] = tile;
-            }
-            return grid;
+            Tile[][] tiles = MapGenerator.createFromText(sourceTxtPath);
 
-        } catch (IOException | ClassNotFoundException e) {
+            os = new ObjectOutputStream(new FileOutputStream(targetBinPath));
+            os.writeObject(tiles);
+            os.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found.");
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private static JPanel createPanel(Tile[][] grid) {
-        int rows = grid.length;
-        int cols = grid[0].length;
-
-        JPanel panel = new JPanel(new GridLayout(rows, cols));
-        panel.setPreferredSize(new Dimension(ConfigHandler.getInstance().getWindowProperties().windowWidth(),
-                                             ConfigHandler.getInstance().getWindowProperties().windowHeight()));
-
-        int tileSize = panel.getWidth() / GlobalConstants.ROW_TILE_COUNT;
-
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
-                Tile tile = grid[row][col];
-
-                if (tile == null) {
-                    JLabel emptyLabel = new JLabel();
-                    emptyLabel.setPreferredSize(new Dimension(tileSize, tileSize));
-                    emptyLabel.setOpaque(true);
-                    emptyLabel.setBackground(Color.BLACK);
-                    panel.add(emptyLabel);
-                    continue;
-                }
-
-                JLabel label = null;
-                switch (tile.getType()) {
-                    case TILE_BRICKS:
-                        label = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_TILE_BRICKS_PATH, tileSize, tileSize));
-                        break;
-                    case TileType.TILE_STEEL:
-                        label = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_TILE_BRICKS_PATH, tileSize, tileSize));
-                        break;
-                    case TileType.TILE_TREES:
-                        label = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_TILE_BRICKS_PATH, tileSize, tileSize));
-                        break;
-                    case TileType.TILE_SEA:
-                        label = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_TILE_BRICKS_PATH, tileSize, tileSize));
-                        break;
-                    case TileType.TILE_ICE:
-                        label = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_TILE_BRICKS_PATH, tileSize, tileSize));
-                        break;
-                    case TileType.TILE_EAGLE:
-                        label = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_TILE_BRICKS_PATH, tileSize, tileSize));
-                        break;
-                    default:
-                        JLabel emptyLabel = new JLabel();
-                        emptyLabel.setPreferredSize(new Dimension(tileSize, tileSize));
-                        emptyLabel.setOpaque(true);
-                        emptyLabel.setBackground(Color.BLACK);
-                        panel.add(emptyLabel);
-                        break;
-                }
-
-                assert label != null;
-                label.setPreferredSize(new Dimension(tileSize, tileSize));
-                panel.add(label);
-            }
-        }
-
-        return panel;
-    }
-
-    public static Tile[][] createFromText(String filePath) throws FileNotFoundException {
-        Tile[][] grid = new Tile[GlobalConstants.ROW_TILE_COUNT][GlobalConstants.COL_TILE_COUNT];
-
-        FileInputStream inputStream = new FileInputStream(filePath);
-        assert inputStream != null;
-        Scanner scanner = new Scanner(inputStream);
-         while(scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] params = line.split("\\s+");
-
-            if (params.length<3) continue;
-
-            TileType tileType = TileType.valueOf(params[0]);
-            int rowIndex = Integer.parseInt(params[1]);
-            int colIndex = Integer.parseInt(params[2]);
-
-            // If extra parameter provided for block configuration set it, otherwise set as full block
-            BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
-            if (params.length==4) {
-                blockConf = BlockConfiguration.valueOf(Integer.parseInt(params[3]));
-            }
-
-            grid[rowIndex][colIndex] = TileFactory.createTile(ConfigHandler.getInstance(), tileType, rowIndex, colIndex, blockConf);
-        }
-
-        return grid;
-    }
-
-    public static void saveToBinary() {
-
+        }    
     }
 
     public static void printGrid(Tile[][] grid) {
@@ -181,5 +82,50 @@ public class MapGenerator {
             if (i!=GlobalConstants.ROW_TILE_COUNT-1) System.out.print("||---|---|---|---|---|---|---|---|---|---|---|---|---||\n");
         }
         System.out.print("||===|===|===|===|===|===|===|===|===|===|===|===|===||\n");
+    }
+
+    private static Tile[][] loadFromBinary(String filePath) {
+        try {
+            InputStream inputStream = MapGenerator.class.getClassLoader().getResourceAsStream(filePath);
+            ObjectInputStream os = new ObjectInputStream(inputStream);
+            Tile[][] grid = (Tile[][]) os.readObject();
+            os.close();
+            return grid;
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Tile[][] createFromText(String filePath) throws FileNotFoundException {
+        Tile[][] grid = new Tile[GlobalConstants.ROW_TILE_COUNT][GlobalConstants.COL_TILE_COUNT];
+
+        FileInputStream inputStream = new FileInputStream(filePath);
+        assert inputStream != null;
+        Scanner scanner = new Scanner(inputStream);
+        try {
+            while(scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] params = line.split("\\s+");
+
+                if (params.length<3) continue;
+
+                TileType tileType = TileType.valueOf(params[0]);
+                int rowIndex = Integer.parseInt(params[1]);
+                int colIndex = Integer.parseInt(params[2]);
+
+                // If extra parameter provided for block configuration set it, otherwise set as full block
+                BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
+                if (params.length==4) {
+                    blockConf = BlockConfiguration.valueOf(Integer.parseInt(params[3]));
+                }
+                
+                grid[rowIndex][colIndex] = TileFactory.createTile(tileType, colIndex, rowIndex, blockConf);
+            }
+        } finally {
+            scanner.close();
+        }
+
+        return grid;
     }
 }

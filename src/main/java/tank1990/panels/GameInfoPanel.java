@@ -20,15 +20,10 @@
  * SOFTWARE.
  */
 
-package tank1990.tile;
+package tank1990.panels;
 
-import tank1990.core.GlobalConstants;
-import tank1990.core.TextureFX;
+import javax.swing.JPanel;
 
-public class TileSteel extends Tile {
-    public TileSteel(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_STEEL, blockConf);
+public class GameInfoPanel extends JPanel{
 
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_STEEL);
-    }
 }
