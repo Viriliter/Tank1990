@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import javax.swing.JPanel;
-
 import tank1990.tank.AbstractTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
@@ -43,9 +41,9 @@ public class GameLevel {
     public static final int STAGE_PAUSED = 4;
     public static final int STAGE_GAME_OVER = 5;
 
-    GridLocation[] SPAWN_LOCATIONS = new GridLocation[] {
-        new GridLocation(0, 0), new GridLocation(0, 1), new GridLocation(1, 0), new GridLocation(1, 1),
-        new GridLocation(2, 0), new GridLocation(2, 1), new GridLocation(3, 0), new GridLocation(3, 1)
+    Location[] SPAWN_LOCATIONS = new Location[] {
+        new Location(0, 0), new Location(0, 1), new Location(1, 0), new Location(1, 1),
+        new Location(2, 0), new Location(2, 1), new Location(3, 0), new Location(3, 1)
     };
 
     private Map<TankType, Integer> enemyTankCounts; // Map of tank types to their counts in the level
@@ -112,7 +110,7 @@ public class GameLevel {
 
         // Randomly choose a spawn location
         int spawnIndex = random.nextInt(SPAWN_LOCATIONS.length);
-        GridLocation spawnLocation = SPAWN_LOCATIONS[spawnIndex];
+        Location spawnLocation = SPAWN_LOCATIONS[spawnIndex];
         // Randomly choose a spawn direction
         Direction[] directions = Direction.values();
         Direction spawnDir = directions[random.nextInt(directions.length)];
@@ -121,16 +119,16 @@ public class GameLevel {
         switch(currentTankType) {
             case BASIC_TANK:
                 this.enemyTankCounts.put(TankType.BASIC_TANK, this.enemyTankCounts.get(TankType.BASIC_TANK) - 1);
-                return TankFactory.createTank(TankType.BASIC_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
+                return TankFactory.createTank(TankType.BASIC_TANK, spawnLocation.col(), spawnLocation.row(), spawnDir);
             case FAST_TANK:
                 this.enemyTankCounts.put(TankType.FAST_TANK, this.enemyTankCounts.get(TankType.FAST_TANK) - 1);
-                return TankFactory.createTank(TankType.FAST_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
+                return TankFactory.createTank(TankType.FAST_TANK, spawnLocation.col(), spawnLocation.row(), spawnDir);
             case POWER_TANK:
                 this.enemyTankCounts.put(TankType.POWER_TANK, this.enemyTankCounts.get(TankType.POWER_TANK) - 1);
-                return TankFactory.createTank(TankType.POWER_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
+                return TankFactory.createTank(TankType.POWER_TANK, spawnLocation.col(), spawnLocation.row(), spawnDir);
             case ARMOR_TANK:
                 this.enemyTankCounts.put(TankType.ARMOR_TANK, this.enemyTankCounts.get(TankType.ARMOR_TANK) - 1);
-                return TankFactory.createTank(TankType.ARMOR_TANK, spawnLocation.colIndex(), spawnLocation.rowIndex(), spawnDir);
+                return TankFactory.createTank(TankType.ARMOR_TANK, spawnLocation.col(), spawnLocation.row(), spawnDir);
             default:
                 return null;
         }    

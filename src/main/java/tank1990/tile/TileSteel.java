@@ -26,8 +26,8 @@ import tank1990.core.GlobalConstants;
 import tank1990.core.TextureFX;
 
 public class TileSteel extends Tile {
-    public TileSteel(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_STEEL, blockConf);
+    public TileSteel(int row, int col, BlockConfiguration blockConf) {
+        super(row, col, TileType.TILE_STEEL, blockConf);
 
         this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_STEEL);
     }

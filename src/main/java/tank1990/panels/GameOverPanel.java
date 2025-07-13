@@ -23,7 +23,6 @@
 package tank1990.panels;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class GameOverPanel extends AbstractPanel {
     public GameOverPanel(JFrame frame) {

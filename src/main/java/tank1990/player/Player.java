@@ -22,8 +22,6 @@
 
 package tank1990.player;
 
-import tank1990.core.ConfigHandler.PlayerProperties;
-
 import java.awt.Graphics;
 
 import tank1990.core.Direction;
@@ -51,15 +49,15 @@ public class Player {
         if (playerType == PlayerType.PLAYER_1) {
             this.dir = GlobalConstants.INITIAL_PLAYER_1_DIR;
             myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_1_LOC, 720,720).x(), 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_1_LOC, 720,720).y(), 
+                                                         GlobalConstants.INITIAL_PLAYER_1_LOC.col(), 
+                                                         GlobalConstants.INITIAL_PLAYER_1_LOC.row(), 
                                                          GlobalConstants.INITIAL_PLAYER_1_DIR);
             myTank.setPlayerType(playerType);
         } else {
             this.dir = GlobalConstants.INITIAL_PLAYER_2_DIR;
             myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_2_LOC, 720,720).x(), 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_2_LOC, 720,720).y(), 
+                                                         GlobalConstants.INITIAL_PLAYER_2_LOC.col(), 
+                                                         GlobalConstants.INITIAL_PLAYER_2_LOC.row(), 
                                                          GlobalConstants.INITIAL_PLAYER_2_DIR);
             myTank.setPlayerType(playerType);
         }
@@ -70,23 +68,24 @@ public class Player {
     }
 
     public void update(int maxWidth, int maxHeight) {
+        System.out.println(dx + " " + dy + " " + dir);
         // Calculate new position with boundary checking
-        int newX = Math.max(0, Math.min(myTank.getX() + this.dx, maxWidth - (int) myTank.getSize().getWidth()));
-        int newY = Math.max(0, Math.min(myTank.getY() + this.dy, maxHeight - (int) myTank.getSize().getHeight()));
+        int newX = Math.max(0, Math.min(myTank.getCol() + this.dx, maxWidth - myTank.getSize().width()));
+        int newY = Math.max(0, Math.min(myTank.getRow() + this.dy, maxHeight - myTank.getSize().height()));
         
         // Update tank position and direction
-        myTank.setX(newX);
-        myTank.setY(newY);
+        myTank.setCol(newX);
+        myTank.setRow(newY);
         myTank.setDir(dir);
     }
 
-    public void decrementDx() { resetDy(); this.dx = this.dx-this.speed < -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dx-this.speed; this.dir = Direction.DIRECTION_LEFT;}
+    public void decrementDx() { resetDy(); this.dx = this.dx-this.speed <= -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dx-this.speed; this.dir = Direction.DIRECTION_LEFT;}
 
-    public void incrementDx() { resetDy(); this.dx = this.dx+this.speed > GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dx+this.speed; this.dir = Direction.DIRECTION_RIGHT;}
+    public void incrementDx() { resetDy(); this.dx = this.dx+this.speed >= GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dx+this.speed; this.dir = Direction.DIRECTION_RIGHT;}
     
-    public void decrementDy() { resetDx(); this.dy = this.dy-this.speed < GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dy-this.speed; this.dir = Direction.DIRECTION_UPWARDS;}
+    public void decrementDy() { resetDx(); this.dy = this.dy-this.speed <= GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dy-this.speed; this.dir = Direction.DIRECTION_UPWARDS;}
 
-    public void incrementDy() { resetDx(); this.dy = this.dy+this.speed > GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dy+this.speed; this.dir = Direction.DIRECTION_DOWNWARDS;}
+    public void incrementDy() { resetDx(); this.dy = this.dy+this.speed >= GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.dy+this.speed; this.dir = Direction.DIRECTION_DOWNWARDS;}
 
     public void resetDx() { this.dx=0; }
 

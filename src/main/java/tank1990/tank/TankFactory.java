@@ -39,28 +39,28 @@ public class TankFactory {
      * and assigns it the given x and y coordinates.
      *
      * @param type The type of tank to create.
-     * @param x The x-coordinate of the tank's spawn location.
-     * @param y The y-coordinate of the tank's spawn location.
+     * @param row The row index of the tank's spawn location.
+     * @param col The col index of the tank's spawn location.
      * @return A newly created Tank object of the specified type.
      * @throws IllegalStateException If the config parameter is null.
      * @throws IllegalArgumentException If the type parameter is null.
      */
-    public static AbstractTank createTank(TankType type, int x, int y, Direction dir) {
+    public static AbstractTank createTank(TankType type, int row, int col, Direction dir) {
         if (type == null) {
             throw new IllegalArgumentException("Tank type cannot be null!");
         }
 
         switch (type) {
             case BASIC_TANK:
-                return new BasicTank(x, y, dir);
+                return new BasicTank(row, col, dir);
             case FAST_TANK:
-                return new FastTank(x, y, dir);
+                return new FastTank(row, col, dir);
             case POWER_TANK:
-                return new PowerTank(x, y, dir);
+                return new PowerTank(row, col, dir);
             case ARMOR_TANK:
-                return new ArmorTank(x, y, dir);
+                return new ArmorTank(row, col, dir);
             case PLAYER_TANK:
-                return new PlayerTank(x, y, dir);
+                return new PlayerTank(row, col, dir);
             default:
                 return null;
         }

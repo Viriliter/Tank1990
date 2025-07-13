@@ -22,7 +22,6 @@
 
 package tank1990.tank;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.Map;
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
 import tank1990.core.GlobalConstants;
+import tank1990.core.GridSize;
 import tank1990.core.TankTextureStruct;
 import tank1990.core.TextureFX;
 import tank1990.powerup.Powerup;
@@ -45,10 +45,11 @@ public abstract class AbstractTank extends DynamicGameObject {
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
 
-    public AbstractTank(int x, int y, Direction dir) {
-        setX(x);
-        setY(y);
+    public AbstractTank(int row, int col, Direction dir) {
+        setRow(row);
+        setCol(col);
         setDir(dir);
+        setSize(new GridSize(GlobalConstants.TANK_WIDTH, GlobalConstants.TANK_HEIGHT));
     }
 
     public void createTextureFXs() {
@@ -57,23 +58,19 @@ public abstract class AbstractTank extends DynamicGameObject {
         this.textureFXs = new HashMap<>();
 
         this.textureFXs.put(Direction.DIRECTION_UPWARDS, new TextureFX(this.tankTextureFxStruct.upwardsTexturePath));
+        this.textureFXs.get(Direction.DIRECTION_UPWARDS).setTargetSize(getSize().width(), getSize().height());
         this.textureFXs.put(Direction.DIRECTION_RIGHT, new TextureFX(this.tankTextureFxStruct.rightTexturePath));
+        this.textureFXs.get(Direction.DIRECTION_RIGHT).setTargetSize(getSize().width(), getSize().height());
         this.textureFXs.put(Direction.DIRECTION_DOWNWARDS, new TextureFX(this.tankTextureFxStruct.downwardsTexturePath));
+        this.textureFXs.get(Direction.DIRECTION_DOWNWARDS).setTargetSize(getSize().width(), getSize().height());
         this.textureFXs.put(Direction.DIRECTION_LEFT, new TextureFX(this.tankTextureFxStruct.leftTexturePath));
+        this.textureFXs.get(Direction.DIRECTION_LEFT).setTargetSize(getSize().width(), getSize().height());
     }
 
     @Override
     public void draw(Graphics g) {
         // Draw tank animations
-        java.awt.Rectangle clipBounds = g.getClipBounds();
-        
-        int width = clipBounds.width/GlobalConstants.COL_TILE_COUNT - 2;
-        int height = clipBounds.height/GlobalConstants.ROW_TILE_COUNT - 2;
-
-        setSize(new Dimension(width, height));
-
-        this.textureFXs.get(dir).setTargetSize(width, height);
-        this.textureFXs.get(dir).draw(g, x+width/2, y+height/2, 0.0);
+        this.textureFXs.get(dir).drawGrid(g, row, col);
     }
 
     public abstract void update();
@@ -101,7 +98,7 @@ public abstract class AbstractTank extends DynamicGameObject {
     public Bullet shoot() {
         if (!this.isBulletDestroyed) return null;
 
-        return new Bullet(this, getX(), getY(), getDir(), GlobalConstants.BULLET_SPEED_PER_TICK);
+        return new Bullet(this, getCol(), getRow(), getDir(), GlobalConstants.BULLET_SPEED_PER_TICK);
     }
 
     public void getDamage() {

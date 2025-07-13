@@ -36,8 +36,8 @@ public class Bullet extends DynamicGameObject {
 
     public Bullet(AbstractTank tankInst, int x, int y, Direction dir, int speed) {
         this.tankInst = tankInst;
-        setX(x);
-        setY(y);
+        setCol(x);
+        setRow(y);
         setDir(dir);
 
         this.speed = speed;
@@ -56,20 +56,20 @@ public class Bullet extends DynamicGameObject {
     public void move() {
         switch (dir) {
             case DIRECTION_UPWARDS:
-                setX(x);
-                setY(y - this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
+                setCol(col);
+                setRow(row - this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
                 break;
             case DIRECTION_RIGHT:
-                setX(x + this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
-                setY(y);
+                setCol(col + this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
+                setRow(row);
                 break;
             case DIRECTION_DOWNWARDS:
-                setX(x);
-                setY(y + this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
+                setCol(col);
+                setRow(row + this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
                 break;
             case DIRECTION_LEFT:
-                setX(x - this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
-                setY(y);
+                setCol(col - this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
+                setRow(row);
                 break;
             default:
                 System.err.printf("Invalid direction: %s", dir);

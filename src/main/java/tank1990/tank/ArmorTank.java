@@ -27,8 +27,8 @@ import tank1990.core.GlobalConstants;
 
 public class ArmorTank extends AbstractTank implements Enemy {
 
-    public ArmorTank(int x, int y, Direction dir) {
-        super(x, y, dir);
+    public ArmorTank(int row, int col, Direction dir) {
+        super(row, col, dir);
 
         this.tankTextureFxStruct = GlobalConstants.TEXTURE_ARMOR_TANK_STRUCT;
         createTextureFXs();

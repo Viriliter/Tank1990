@@ -23,18 +23,18 @@
 package tank1990.tile;
 
 public class TileFactory {
-    public static Tile createTile(TileType type, int x, int y, BlockConfiguration blockConf) {
+    public static Tile createTile(TileType type, int row, int col, BlockConfiguration blockConf) {
         if (type == null) {
             throw new IllegalArgumentException("Tank type cannot be null!");
         }
 
         return switch (type) {
-            case TILE_BRICKS -> new TileBricks(x, y, blockConf);
-            case TILE_STEEL -> new TileSteel(x, y, blockConf);
-            case TILE_TREES -> new TileTrees(x, y, blockConf);
-            case TILE_SEA -> new TileSea(x, y, blockConf);
-            case TILE_ICE -> new TileIce(x, y, blockConf);
-            case TILE_EAGLE -> new TileEagle(x, y, blockConf);
+            case TILE_BRICKS -> new TileBricks(row, col, blockConf);
+            case TILE_STEEL -> new TileSteel(row, col, blockConf);
+            case TILE_TREES -> new TileTrees(row, col, blockConf);
+            case TILE_SEA -> new TileSea(row, col, blockConf);
+            case TILE_ICE -> new TileIce(row, col, blockConf);
+            case TILE_EAGLE -> new TileEagle(row, col, blockConf);
             default -> null;
         };
     }

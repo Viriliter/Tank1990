@@ -22,9 +22,20 @@
 
 package tank1990.core;
 
-public record Location(int x, int y) {
+import java.io.Serializable;
+
+public record Location(int row, int col) implements Serializable{
     @Override
     public String toString() {
-        return String.format("L(x:%d, y:%d)", x,y);
+        return String.format("L(row:%d, col:%d)", row, col);
+    }
+
+    public static Location[] toCellLocations(int row, int col) {
+        Location[] locations = new Location[4];
+        locations[0] = new Location(row, col);
+        locations[1] = new Location(row, col + 1);
+        locations[2] = new Location(row + 1, col);
+        locations[3] = new Location(row + 1, col + 1);
+        return locations;
     }
 }

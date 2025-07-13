@@ -27,8 +27,8 @@ import tank1990.core.GlobalConstants;
 
 public class FastTank extends AbstractTank implements Enemy {
 
-    public FastTank(int x, int y, Direction dir) {
-        super(x, y, dir);
+    public FastTank(int row, int col, Direction dir) {
+        super(row, col, dir);
 
         this.tankTextureFxStruct = GlobalConstants.TEXTURE_FAST_TANK_STRUCT;
         createTextureFXs();

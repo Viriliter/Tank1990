@@ -49,14 +49,23 @@ public interface GlobalConstants {
     int WINDOW_HEIGHT = 720;
     double SCALE = 3.75;
 
-    // Tile Parameters
-    int TILE_WIDTH = 16;
-    int TILE_HEIGHT = 16;
-    int TILE_SUBDIVISION = 4;
-
     // Map Dimensions
-    int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
-    int ROW_TILE_COUNT = 13;// * TILE_SUBDIVISION;
+    int BASE_COL_TILE_COUNT = 13;
+    int BASE_ROW_TILE_COUNT = 13;
+    int GRID_SUBDIVISION = 4;
+    
+    // Subdivided map dimensions (each original tile becomes 4x4 subdivisions)
+    int COL_TILE_COUNT = BASE_COL_TILE_COUNT * GRID_SUBDIVISION; // 13 * 4 = 52
+    int ROW_TILE_COUNT = BASE_ROW_TILE_COUNT * GRID_SUBDIVISION; // 13 * 4 = 52
+
+    // Tank Parameters
+    int TANK_WIDTH = 4;  // in grid size
+    int TANK_HEIGHT = 4;  // in grid size
+    
+    // Tile Parameters
+    int TILE_WIDTH = 4;  // in grid size
+    int TILE_HEIGHT = 4;  // in grid size
+
 
     // Fonts
     String FONT_PRESS_START_2P = "fonts/PressStart2PRegular.ttf";
@@ -84,13 +93,13 @@ public interface GlobalConstants {
      */
     int INITAL_PLAYER_HEALTH = 3;
 
-    GridLocation INITIAL_PLAYER_1_LOC = new GridLocation(12, 4);
+    Location INITIAL_PLAYER_1_LOC = new Location(12, 4);
     Direction INITIAL_PLAYER_1_DIR = Direction.DIRECTION_UPWARDS;
-    GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(12, 8);
+    Location INITIAL_PLAYER_2_LOC = new Location(12, 8);
     Direction INITIAL_PLAYER_2_DIR = Direction.DIRECTION_UPWARDS;
 
     int PLAYER_MOVEMENT_SPEED = 1;
-    int PLAYER_MOVEMENT_MAX_SPEED = 5;
+    int PLAYER_MOVEMENT_MAX_SPEED = 1;
 
     /**
      * COLOR PALLETTE
@@ -100,7 +109,7 @@ public interface GlobalConstants {
     /**
      * GAME ENGINE PARAMETERS
      */
-    int GAME_TICK_MS = 10;
+    int GAME_TICK_MS = 100;
 
     int BULLET_SPEED_PER_TICK = 10;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
 
@@ -112,7 +121,7 @@ public interface GlobalConstants {
     /**
      * GAME LEVEL PARAMETERS
      */
-    int GAME_LEVEL_COUNTS = 5; // Total number of game levels
+    int GAME_LEVEL_COUNTS = 1; // Total number of game levels
 
     /**
      * POWERUPS
@@ -295,25 +304,4 @@ public interface GlobalConstants {
                 rect2.getBounds().contains(rect1.getBounds()) ||
                 rect1.getBounds().contains(rect2.getBounds());
     }
-
-    static boolean isObjectsCollided(RectangleBound rectBound1, RectangleBound rectBound2) {
-        return RectangleBound.isCollided(rectBound1, rectBound2);
-    }
-
-    static boolean isObjectsCollided(Rectangle rect1, RectangleBound rectBound2) {
-        return RectangleBound.isCollided(rect1, rectBound2);
-    }
-
-    static Location gridLoc2Loc(GridLocation gloc, int width, int height) {
-        int cellWidth = width / GlobalConstants.COL_TILE_COUNT;
-        int cellHeight = height / GlobalConstants.ROW_TILE_COUNT;
-        return new Location(cellWidth * gloc.colIndex() + cellWidth/2, cellHeight * gloc.rowIndex() + cellHeight/2);
-    }
-
-    static GridLocation Loc2gridLoc(Location loc, int width, int height) {
-        int cellWidth = width / GlobalConstants.ROW_TILE_COUNT;
-        int cellHeight = height / GlobalConstants.COL_TILE_COUNT;
-        return new GridLocation((int) (loc.y() / cellHeight), (int) (loc.x() / cellWidth));
-    }
-
 }

@@ -22,12 +22,7 @@
 
 package tank1990.panels;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseMotionAdapter;
-import java.util.ArrayList;
-
 import javax.swing.*;
-import java.awt.*;
 
 public abstract class AbstractPanel extends JPanel {
     protected JFrame frame;                   //*< The parent JFrame that holds this panel. */

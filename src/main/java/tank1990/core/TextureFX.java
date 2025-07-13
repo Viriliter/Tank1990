@@ -50,7 +50,7 @@ public class TextureFX implements Serializable{
     private int offsetY;                            /**< The Y offset to apply to the texture's position. */
     private int defaultDelay = 0;                   /**< The default delay (in frames) for the texture effect before it is drawn again. */
     private int delay = 0;                          /**< The current delay (in frames) for the texture effect before it is drawn again. */
-
+    private GridSize gridSize = null;
     /**
      * Constructs a TextureFX object using the given texture metadata structure.
      * The texture is loaded from the path specified in the struct object.
@@ -86,6 +86,17 @@ public class TextureFX implements Serializable{
     }
 
     /**
+     * Sets the target width and height for the texture when drawn.
+     *
+     * @param width The new width for the texture.
+     * @param height The new height for the texture.
+     */
+    public void setTargetSize(GridSize size) {
+        this.gridSize = size;
+    }
+
+
+    /**
      * Updates the delay for the texture effect, decrementing it if it is greater than 0.
      * This is typically called every frame to manage the animation delay.
      */
@@ -114,6 +125,37 @@ public class TextureFX implements Serializable{
         g2d.translate(this.offsetX, this.offsetY);
 
         if (this.texture!=null) g2d.drawImage(this.texture, -this.targetWidth / 2, -this.targetHeight / 2, this.targetWidth, this.targetHeight, null);
+
+        g2d.setTransform(oldTransform);
+    }
+
+    /**
+     * Draws the texture on the provided Graphics context at the specified position
+     * and applies the specified rotation.
+     *
+     * @param g The Graphics context on which to draw the texture.
+     * @param row The row index for the texture's position.
+     * @param col The col index for the texture's position.
+     * @param rotation The rotation angle (in radians) to apply to the texture.
+     */
+    public void drawGrid(Graphics g, int row, int col) {
+        if (this.delay>0) return;
+
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform oldTransform = g2d.getTransform();
+
+        int cellWidth = g.getClipBounds().width / GlobalConstants.BASE_COL_TILE_COUNT;
+        int cellHeight = g.getClipBounds().height / GlobalConstants.BASE_ROW_TILE_COUNT;
+
+        int textureWidth = this.gridSize.width() * cellWidth;
+        int textureHeight = this.gridSize.height() * cellHeight;
+
+        int x = col * cellWidth + (int) (textureWidth * 0.5);
+        int y = row * cellHeight + (int) (textureHeight * 0.5);
+        g2d.translate(x, y);
+        g2d.translate(this.offsetX, this.offsetY);
+
+        if (this.texture!=null) g2d.drawImage(this.texture, (int) (-textureWidth*0.5), (int) (-textureHeight*0.5), textureWidth, textureHeight, null);
 
         g2d.setTransform(oldTransform);
 

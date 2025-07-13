@@ -33,7 +33,7 @@ public class GameLevelManager {
 
     private GameLevelManager() {
         this.gameLevels = new ArrayList<>();
-        this.currentLevelIndex = 0;
+        this.currentLevelIndex = -1;
     }
 
     public static GameLevelManager getInstance() {

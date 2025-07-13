@@ -28,8 +28,8 @@ import tank1990.player.PlayerType;
 
 public class PlayerTank extends AbstractTank {
 
-    public PlayerTank(int x, int y, Direction dir) {
-        super(x, y, dir);
+    public PlayerTank(int row, int col, Direction dir) {
+        super(row, col, dir);
 
         this.tankTextureFxStruct = GlobalConstants.TEXTURE_PLAYER1_TANK_STRUCT;
         createTextureFXs();

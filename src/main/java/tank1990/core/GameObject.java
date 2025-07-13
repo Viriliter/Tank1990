@@ -22,37 +22,36 @@
 
 package tank1990.core;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.Serializable;
 
 public abstract class GameObject implements Serializable {
-    protected int x;
-    protected int y;
+    protected int row;
+    protected int col;
     protected Direction dir;
     protected int depth=0;
     protected int width;
     protected int height;
 
-    public int getX() { return this.x; }
+    public int getRow() { return this.row; }
 
-    public int getY() { return this.y; }
+    public int getCol() { return this.col; }
 
     public Direction getDir() { return this.dir; }
 
     public int getDepth() { return this.depth; }
 
-    public void setX(int x) { this.x = x; }
+    public void setRow(int row) { this.row = row; }
 
-    public void setY(int y) { this.y = y; }
+    public void setCol(int col) { this.col = col; }
 
     public void setDir(Direction dir) { this.dir = dir; }
 
     public void setDepth(int depth) { this.depth = depth; }
 
-    public Dimension getSize() {return new Dimension(this.width, this.height);}
+    public GridSize getSize() {return new GridSize(this.width, this.height);}
 
-    public void setSize(Dimension dimension) {this.width = (int) dimension.getWidth(); this.height = (int) dimension.getHeight();}
+    public void setSize(GridSize dimension) {this.width = dimension.width(); this.height = dimension.height();}
 
     public abstract void draw(Graphics g);
 
