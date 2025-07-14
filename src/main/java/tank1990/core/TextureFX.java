@@ -22,6 +22,7 @@
 
 package tank1990.core;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -46,8 +47,8 @@ public class TextureFX implements Serializable{
     private TextureFXStruct struct = null;          /**< The structure holding metadata and configuration for the texture. */
     private int targetWidth;                        /**< The target width for the texture when drawn. */
     private int targetHeight;                       /**< The target height for the texture when drawn. */
-    private int offsetX;                            /**< The X offset to apply to the texture's position. */
-    private int offsetY;                            /**< The Y offset to apply to the texture's position. */
+    private int offsetX = 0;                        /**< The X offset to apply to the texture's position. */
+    private int offsetY = 0;                        /**< The Y offset to apply to the texture's position. */
     private int defaultDelay = 0;                   /**< The default delay (in frames) for the texture effect before it is drawn again. */
     private int delay = 0;                          /**< The current delay (in frames) for the texture effect before it is drawn again. */
 
@@ -85,6 +86,10 @@ public class TextureFX implements Serializable{
         this.targetHeight = height;
     }
 
+    public Dimension getOffsets() {
+        return new Dimension(this.offsetX, this.offsetY);
+    }
+
     /**
      * Updates the delay for the texture effect, decrementing it if it is greater than 0.
      * This is typically called every frame to manage the animation delay.
@@ -111,7 +116,7 @@ public class TextureFX implements Serializable{
         // Apply transformations (rotation + centering)
         g2d.translate(x, y);
         g2d.rotate(rotation);
-        g2d.translate(this.offsetX, this.offsetY);
+        //g2d.translate(this.offsetX, this.offsetY);
 
         if (this.texture!=null) g2d.drawImage(this.texture, -this.targetWidth / 2, -this.targetHeight / 2, this.targetWidth, this.targetHeight, null);
 

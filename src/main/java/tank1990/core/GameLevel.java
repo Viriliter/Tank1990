@@ -22,6 +22,7 @@
 
  package tank1990.core;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,16 +54,25 @@ public class GameLevel {
     private LevelState currentState;
 
     private Tile[][] map;
+
+    private Dimension gameAreaSize;
     
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
         this.map = MapGenerator.createMap(levelPath);
         this.enemyTankCounts = new HashMap<TankType, Integer>();
+
+        // Set default size values for now, it will updated on draw method
+        this.gameAreaSize = new Dimension(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
         //enemyTankCounts = loadenemyTankCounts(levelPath);
     }
 
     public LevelState getCurrentState() {
         return this.currentState;
+    }
+
+    public Dimension getGameAreaSize() {
+        return this.gameAreaSize;
     }
 
     public void setCurrentState(LevelState state) {
@@ -75,6 +85,9 @@ public class GameLevel {
                 if (tile!=null) tile.draw(g);
             }
         }
+
+        this.gameAreaSize.width = g.getClipBounds().width;
+        this.gameAreaSize.height = g.getClipBounds().height;
     }
 
     public void update() {

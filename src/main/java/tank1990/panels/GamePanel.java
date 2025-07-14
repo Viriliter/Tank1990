@@ -298,13 +298,21 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 player = gameEngine.getPlayer2();
                 if(player!=null) player.decrementDx();
                 break;
-            case (KeyEvent.VK_CONTROL):
+            case (GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT):
+                System.out.println("Fire for Player 1");
+                player = gameEngine.getPlayer1();
+                if (player!=null) gameEngine.triggerPlayerShooting(player);
+                break;
+            /*
+             * TODO: implement Player 2 shooting later
+                case (KeyEvent.VK_CONTROL):
                 if (location == GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT)
                     gameEngine.startFireTimer(gameEngine.getPlayer1());
                 else if (location == GlobalConstants.KEY_PLAYER_2_MOVE_SHOOT)
                     gameEngine.startFireTimer(gameEngine.getPlayer2());
                 else {}
                 break;
+            */
             default: break;
         }
     }
@@ -320,31 +328,45 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         int key = e.getKeyCode();
         int location = e.getKeyLocation();
 
+        Player player = null;
         switch (key) {
             case (GlobalConstants.KEY_PLAYER_1_MOVE_UP):
-                gameEngine.getPlayer1().resetDy();
+                player = gameEngine.getPlayer1();
+                if (player!=null) player.resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_1_MOVE_RIGHT):
-                gameEngine.getPlayer1().resetDx();
+                player = gameEngine.getPlayer1();
+                if (player!=null) player.resetDx();
                 break;
             case (GlobalConstants.KEY_PLAYER_1_MOVE_DOWN):
-                gameEngine.getPlayer1().resetDy();
+                player = gameEngine.getPlayer1();
+                if (player!=null) player.resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_1_MOVE_LEFT):
-                gameEngine.getPlayer1().resetDx();
+                player = gameEngine.getPlayer1();
+                if (player!=null) player.resetDx();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_UP):
-                gameEngine.getPlayer2().resetDy();
+                player = gameEngine.getPlayer2();
+                if (player!=null) player.resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_RIGHT):
-                gameEngine.getPlayer2().resetDx();
+                player = gameEngine.getPlayer2();
+                if (player!=null) player.resetDx();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_DOWN):
-                gameEngine.getPlayer2().resetDy();
+                player = gameEngine.getPlayer2();
+                if (player!=null) player.resetDy();
                 break;
             case (GlobalConstants.KEY_PLAYER_2_MOVE_LEFT):
-                gameEngine.getPlayer2().resetDx();
+                player = gameEngine.getPlayer2();
+                if (player!=null) player.resetDx();
                 break;
+            case (GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT):
+                System.out.println("Stopping fire for Player 1");
+                break;
+            /*
+             * TODO: implement Player 2 shooting later
             case (KeyEvent.VK_CONTROL):
                 if (location == GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT)
                     gameEngine.stopFire(gameEngine.getPlayer1());
@@ -352,6 +374,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                     gameEngine.stopFire(gameEngine.getPlayer2());
                 else {}
                 break;
+            */
             case (KeyEvent.VK_ENTER):
                 switch (gameEngine.getCurrentLevel().getCurrentState()) {
                     case LevelState.GET_READY:

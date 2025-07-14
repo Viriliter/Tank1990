@@ -30,13 +30,14 @@ import java.util.Map;
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
 import tank1990.core.GlobalConstants;
+import tank1990.core.Location;
 import tank1990.core.TankTextureStruct;
 import tank1990.core.TextureFX;
-import tank1990.powerup.Powerup;
+import tank1990.powerup.AbstractPowerup;
 import tank1990.projectiles.Bullet;
 
 public abstract class AbstractTank extends DynamicGameObject {
-    private boolean isBulletDestroyed = false;
+    private boolean isBulletDestroyed = true;  // Flag to indicate if the bullet fired from the tank is destroyed or not
 
     private int points = 200;
     private int armorLevel = 1;
@@ -44,6 +45,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     private int bullet = 2;
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
+
+    private boolean hasBoat = false; // Flag to indicate if the tank has a boat for water movement
 
     public AbstractTank(int x, int y, Direction dir) {
         setX(x);
@@ -67,13 +70,17 @@ public abstract class AbstractTank extends DynamicGameObject {
         // Draw tank animations
         java.awt.Rectangle clipBounds = g.getClipBounds();
         
-        int width = clipBounds.width/GlobalConstants.COL_TILE_COUNT - 2;
-        int height = clipBounds.height/GlobalConstants.ROW_TILE_COUNT - 2;
+        int cellWidth = clipBounds.width/GlobalConstants.COL_TILE_COUNT;
+        int cellHeight = clipBounds.height/GlobalConstants.ROW_TILE_COUNT;
 
-        setSize(new Dimension(width, height));
+        // Set the tank size for collision detection - make it smaller to allow movement
+        // Tank should be about 80% of cell size to allow for movement between tiles
+        int tankWidth = (int)(cellWidth - 2);
+        int tankHeight = (int)(cellHeight - 2);
+        setSize(new Dimension(tankWidth, tankHeight));
 
-        this.textureFXs.get(dir).setTargetSize(width, height);
-        this.textureFXs.get(dir).draw(g, x+width/2, y+height/2, 0.0);
+        this.textureFXs.get(dir).setTargetSize(cellWidth, cellHeight);
+        this.textureFXs.get(dir).draw(g, getX(), getY(), 0.0);
     }
 
     public abstract void update();
@@ -99,9 +106,18 @@ public abstract class AbstractTank extends DynamicGameObject {
     public void setBullet(int bullet) {this.bullet = bullet;}
 
     public Bullet shoot() {
+        // Do not shoot if bullet has not been destroyed yet
         if (!this.isBulletDestroyed) return null;
 
-        return new Bullet(this, getX(), getY(), getDir(), GlobalConstants.BULLET_SPEED_PER_TICK);
+        // Set bullet status to prevent multiple bullets
+        this.isBulletDestroyed = false;
+
+        // TODO: Initial position of the bullet should be where barrel of the tank locates.
+        // Thus, add some offset for visual appearance.
+        // This offset is defined in the textureFXs map.
+        Dimension offset = this.textureFXs.get(dir).getOffsets();
+
+        return new Bullet(this, getX() + (int) offset.getWidth(), getY() + (int) offset.getHeight(), getDir(), GlobalConstants.BULLET_SPEED_PER_TICK);
     }
 
     public void getDamage() {
@@ -109,7 +125,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         armorLevel = armorLevel>0 ? --armorLevel: 0;
     }
 
-    public void getPowerup(Powerup powerup) {
+    public void getPowerup(AbstractPowerup powerup) {
 
     }
 

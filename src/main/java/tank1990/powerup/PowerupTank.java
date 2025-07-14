@@ -22,8 +22,24 @@
 
 package tank1990.powerup;
 
-import java.awt.Graphics;
+import tank1990.core.GlobalConstants;
+import tank1990.core.TextureFX;
 
-public interface Powerup {
-    void draw(Graphics g);
+public class PowerupTank extends AbstractPowerup {
+    public PowerupTank(int x, int y) {
+        super(x, y, PowerupType.POWERUP_TANK, GlobalConstants.Time2GameTick(GlobalConstants.DEFAULT_POWERUP_DURATION));
+        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_POWERUP_TANK);
+    }
+
+    @Override
+    public void move() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'move'");
+    }
+
+    @Override
+    public boolean checkCollision() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'checkCollision'");
+    }
 }

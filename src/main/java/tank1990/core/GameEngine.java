@@ -26,12 +26,12 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Iterator;
 
 import tank1990.panels.GameAreaPanel;
 import tank1990.player.Player;
 import tank1990.player.PlayerType;
-import tank1990.powerup.Powerup;
+import tank1990.powerup.AbstractPowerup;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.Enemy;
@@ -42,16 +42,15 @@ public class GameEngine extends Subject {
     // Game objects
     private ArrayList<Player> players = null;       /*< List of zombies in the game. */
     private ArrayList<Enemy> enemies = null;        /*< List of enemies in the game. */
-    private ArrayList<Powerup> powerups = null;     /*< List of powerups in the game. */
+    private ArrayList<AbstractPowerup> powerups = null;     /*< List of powerups in the game. */
     private ArrayList<TextureFX> blastFX = null;    /*< List of blast effects in the game. */
     private ArrayList<Bullet> bullets = null;       /*< List of bullets in the game. */
 
     // Game parameters
     private boolean isStopped = false;
-    private boolean isPaused = false;                   /*< Flag indicating whether the game is paused. */
+    private boolean isPaused = false;               /*< Flag indicating whether the game is paused. */
 
-    private Timer gameTimer;                            /*< Timer for handling periodic updates. */
-    private Map<Player, TimeTick> fireRateTicks = null; /*< Time tick for handling fire rate control. */
+    private Timer gameTimer;                        /*< Timer for handling periodic updates. */
 
     private GameMode gameMode = GameMode.MODE_SINGLE_PLAYER;
     private GameLevel currentGameLevel = null;
@@ -81,8 +80,6 @@ public class GameEngine extends Subject {
         // Initialize game timer
         gameTimer = new Timer(GlobalConstants.GAME_TICK_MS, e -> this.update());
         gameTimer.setRepeats(true);
-
-        fireRateTicks = new java.util.HashMap<Player, TimeTick>();            
     }
 
     /**
@@ -108,11 +105,11 @@ public class GameEngine extends Subject {
         //    t.draw(g);
         //}
 //
-        //// Draw bullets
-        //for (Bullet b : this.bullets) {
-        //    if (b == null) continue;
-        //    b.draw(g);
-        //}
+        // Draw bullets
+        for (Bullet b : this.bullets) {
+            if (b == null) continue;
+            b.draw(g);
+        }
 //
         //// Draw powerups
         //for (Powerup p : this.powerups) {
@@ -136,26 +133,22 @@ public class GameEngine extends Subject {
         if (gameLevel!=null) gameLevel.update();
         
         // Update players
-        updatePlayers();
+        updatePlayers(gameLevel);
 
         // Update players
         updateGameLevel();
 
         // Update enemies movement
-        updateEnemies();
+        updateEnemies(gameLevel);
 
         // Update projectiles movement
-        updateProjectiles();
+        updateProjectiles(gameLevel);
 
         // Update projectiles movement
-        updatePowerups();
+        updatePowerups(gameLevel);
 
         // Check collisions
-        checkCollisions();
-
-        for (TimeTick timeTick: fireRateTicks.values()) {
-            timeTick.updateTick();
-        }
+        checkCollisions(gameLevel);
 
         // Update Game Info
         updateGameInfo();
@@ -205,10 +198,6 @@ public class GameEngine extends Subject {
         this.isStopped = true;
         this.isPaused = false;
         if (this.gameTimer!=null) this.gameTimer.stop();
-        
-        for (TimeTick timeTick: this.fireRateTicks.values()) {
-            timeTick.reset();
-        }
     }
 
     public void loadGameLevel() {
@@ -227,40 +216,9 @@ public class GameEngine extends Subject {
     }
 
     /**
-     * Starts the fire rate timer to control how frequently the player can fire.
-     * 
-     * It is triggered by mouse events.
-     * 
-     */
-    public void startFireTimer(Player player) {
-        if (player ==null) return;
-
-        try {
-            TimeTick timeTick = this.fireRateTicks.get(player);
-
-            if (timeTick == null || timeTick.isTimeOut()) {
-                timeTick = new TimeTick(GlobalConstants.Time2GameTick(GlobalConstants.GAME_TICK_MS), () -> triggerFireFunction(player)); // Calls function every 15ms
-                timeTick.setRepeats(0);  // Repeat only once
-            }
-        } catch (NullPointerException e) {}
-    }
-
-    /**
-     * Stops firing and cancels the fire rate timer.
-     * 
-     * It is triggered by mouse events.
-     * 
-     */
-    public void stopFire(Player player) {
-        try {
-            this.fireRateTicks.put(player, null);
-        } catch (NullPointerException e) {}
-    }
-
-    /**
      * Adds a projectile to the projectile list when the player shoots.
      */
-    public void triggerFireFunction(Player player) {
+    public void triggerPlayerShooting(Player player) {
         Bullet bullet = player.shoot();
         if (bullet != null) addBullet(bullet);
     }
@@ -271,9 +229,9 @@ public class GameEngine extends Subject {
         this.bullets.add(bullet);
     } 
 
-    private void updatePlayers() {
+    private void updatePlayers(GameLevel gameLevel) {
         for (Player p: this.players) {
-            p.update(parentPanel.getWidth(), parentPanel.getHeight());
+            p.update(gameLevel);
         }
     }
 
@@ -281,7 +239,6 @@ public class GameEngine extends Subject {
      * Updates the game level status, including checking level progression.
      */
     private void updateGameLevel() {
-
         GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
         if (gameLevel.getRemainingEnemyTanks() == 0) {
             //finishLevel();            
@@ -290,24 +247,40 @@ public class GameEngine extends Subject {
         //gameLevel.updateAsync();
     }
 
-    private void updateEnemies() {
+    private void updateEnemies(GameLevel gameLevel) {
         for (Enemy e: this.enemies) {
             AbstractTank t = (AbstractTank) e;
             t.update();
         }
     }
 
-    private void updateProjectiles() {
-        for (Bullet b: this.bullets) {
-            b.update();
+    private void updateProjectiles(GameLevel gameLevel) {
+        Iterator<Bullet> it = this.bullets.iterator();
+        while (it.hasNext()) {
+            Bullet b = it.next();
+            
+            // Update bullet position
+            b.update(gameLevel);
+            
+            System.out.println("Updating bullet: " + b);
+            if (b.isOutOfBounds(gameLevel.getGameAreaSize().width, gameLevel.getGameAreaSize().height)) {
+                b.destroy(); // Properly destroy bullet and notify tank
+                it.remove(); // Remove bullet if it is out of bounds
+                continue;
+            }
+            if (b.checkCollision(gameLevel)) {
+                b.destroy(); // Destroy bullet if it collides with something
+                it.remove();
+                continue;
+            }
         }
     }
 
-    private void updatePowerups() {
+    private void updatePowerups(GameLevel gameLevel) {
         // TODO implement later
     }
 
-    private void checkCollisions() {
+    private void checkCollisions(GameLevel gameLevel) {
         // TODO implement later
     }
 

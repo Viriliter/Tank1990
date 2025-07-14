@@ -52,11 +52,24 @@ public interface GlobalConstants {
     // Tile Parameters
     int TILE_WIDTH = 16;
     int TILE_HEIGHT = 16;
-    int TILE_SUBDIVISION = 4;
+
+    // Tank Parameters
+    int TANK_WIDTH = 16;
+    int TANK_HEIGHT = 16;
+    
+    // Bullet Parameters
+    int BULLET_WIDTH = 3;
+    int BULLET_HEIGHT = 5;
+
+    // Powerup Parameters
+    int POWERUP_WIDTH = 16;
+    int POWERUP_HEIGHT = 16;
+    int DEFAULT_POWERUP_DURATION = 10; // Default powerup duration in seconds 
 
     // Map Dimensions
     int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
     int ROW_TILE_COUNT = 13;// * TILE_SUBDIVISION;
+    int TILE_SUBDIVISION = 4;
 
     // Fonts
     String FONT_PRESS_START_2P = "fonts/PressStart2PRegular.ttf";
@@ -68,7 +81,7 @@ public interface GlobalConstants {
     int KEY_PLAYER_1_MOVE_RIGHT = KeyEvent.VK_RIGHT;
     int KEY_PLAYER_1_MOVE_DOWN = KeyEvent.VK_DOWN;
     int KEY_PLAYER_1_MOVE_LEFT = KeyEvent.VK_LEFT;
-    int KEY_PLAYER_1_MOVE_SHOOT = KeyEvent.KEY_LOCATION_RIGHT;
+    int KEY_PLAYER_1_MOVE_SHOOT = KeyEvent.VK_Z;
     int KEY_PLAYER_2_MOVE_UP = KeyEvent.VK_W;
     int KEY_PLAYER_2_MOVE_RIGHT = KeyEvent.VK_D;
     int KEY_PLAYER_2_MOVE_DOWN = KeyEvent.VK_S;
@@ -89,7 +102,7 @@ public interface GlobalConstants {
     GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(12, 8);
     Direction INITIAL_PLAYER_2_DIR = Direction.DIRECTION_UPWARDS;
 
-    int PLAYER_MOVEMENT_SPEED = 1;
+    int PLAYER_MOVEMENT_SPEED = 5;
     int PLAYER_MOVEMENT_MAX_SPEED = 5;
 
     /**
@@ -118,12 +131,12 @@ public interface GlobalConstants {
      * POWERUPS
      */
 
-    TextureFXStruct ICON_POWERUP_GRENADE_PATH = new TextureFXStruct("textures/powerups/powerup-grenade.png",0,0,0);
-    TextureFXStruct ICON_POWERUP_HELMET_PATH = new TextureFXStruct("textures/powerups/powerup-helmet.png",0,0,0);
-    TextureFXStruct ICON_POWERUP_SHOVEL_PATH = new TextureFXStruct("textures/powerups/powerup-shovel.png",0,0,0);
-    TextureFXStruct ICON_POWERUP_STAR_PATH = new TextureFXStruct("textures/powerups/powerup-star.png",0,0,0);
-    TextureFXStruct ICON_POWERUP_TANK_PATH = new TextureFXStruct("textures/powerups/powerup-tank.png",0,0,0);
-    TextureFXStruct ICON_POWERUP_TIMER_PATH = new TextureFXStruct("textures/powerups/powerup-timer.png",0,0,0);
+    TextureFXStruct TEXTURE_POWERUP_GRENADE = new TextureFXStruct("textures/powerups/powerup-grenade.png",0,0,0);
+    TextureFXStruct TEXTURE_POWERUP_HELMET = new TextureFXStruct("textures/powerups/powerup-helmet.png",0,0,0);
+    TextureFXStruct TEXTURE_POWERUP_SHOVEL = new TextureFXStruct("textures/powerups/powerup-shovel.png",0,0,0);
+    TextureFXStruct TEXTURE_POWERUP_STAR = new TextureFXStruct("textures/powerups/powerup-star.png",0,0,0);
+    TextureFXStruct TEXTURE_POWERUP_TANK = new TextureFXStruct("textures/powerups/powerup-tank.png",0,0,0);
+    TextureFXStruct TEXTURE_POWERUP_TIMER = new TextureFXStruct("textures/powerups/powerup-timer.png",0,0,0);
 
     /**
      * TILES
@@ -313,7 +326,9 @@ public interface GlobalConstants {
     static GridLocation Loc2gridLoc(Location loc, int width, int height) {
         int cellWidth = width / GlobalConstants.ROW_TILE_COUNT;
         int cellHeight = height / GlobalConstants.COL_TILE_COUNT;
-        return new GridLocation((int) (loc.y() / cellHeight), (int) (loc.x() / cellWidth));
+
+        return new GridLocation(Math.max(Math.min((int) (loc.y() / cellHeight), GlobalConstants.ROW_TILE_COUNT-1), 0),
+                                Math.max(Math.min((int) (loc.x() / cellWidth), GlobalConstants.COL_TILE_COUNT-1), 0));
     }
 
 }
