@@ -46,7 +46,7 @@ import tank1990.tile.TileSteel;
 import tank1990.tile.TileTrees;
 
 public class Player {
-    private int health;
+    private int life;
     private int dx, dy;   // Player's position and movement direction
     private Direction dir = null;
     private int speed = 0;
@@ -55,7 +55,7 @@ public class Player {
     private PlayerType playerType = PlayerType.PLAYER_1;
 
     public Player(PlayerType playerType) {
-        this.health = GlobalConstants.INITAL_PLAYER_HEALTH;
+        this.life = GlobalConstants.INITAL_PLAYER_HEALTH;
         this.dx = 0;
         this.dy = 0;
         this.speed = GlobalConstants.PLAYER_MOVEMENT_SPEED;
@@ -209,6 +209,14 @@ public class Player {
 
     public Bullet shoot() {
         return myTank.shoot();
+    }
+
+    public void getDamage() {
+        life = life>0? --life: 0;
+    }
+
+    public int getRemainingLife() {
+        return life;
     }
 
     public PlayerType getPlayerType() {return this.playerType;}

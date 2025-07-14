@@ -32,12 +32,6 @@ public class PowerupTank extends AbstractPowerup {
     }
 
     @Override
-    public void move() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'move'");
-    }
-
-    @Override
     public boolean checkCollision() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'checkCollision'");

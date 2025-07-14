@@ -84,11 +84,6 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     public abstract void update();
-
-    @Override
-    public void move() {
-
-    }
     
     @Override
     public void setDir(Direction dir) {
@@ -104,7 +99,7 @@ public abstract class AbstractTank extends DynamicGameObject {
     public void setArmorLevel(int armorLevel) {this.armorLevel = armorLevel;}
     public void setMovement(int movement) {this.movement = movement;}
     public void setBullet(int bullet) {this.bullet = bullet;}
-
+    
     public Bullet shoot() {
         // Do not shoot if bullet has not been destroyed yet
         if (!this.isBulletDestroyed) return null;

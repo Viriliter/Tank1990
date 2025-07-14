@@ -53,12 +53,6 @@ public class Blast extends DynamicGameObject {
     }
 
     @Override
-    public void move() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'move'");
-    }
-
-    @Override
     public boolean checkCollision() { return false; }
 
 }

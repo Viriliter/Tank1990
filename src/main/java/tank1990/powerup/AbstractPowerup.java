@@ -44,12 +44,6 @@ public abstract class AbstractPowerup extends DynamicGameObject {
         this.duration = duration;
     }
 
-    @Override
-    public void move() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'move'");
-    }
-
     public void draw(Graphics g) {
         this.textureFX.draw(g, getX(), getY(), 0);
     }

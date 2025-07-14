@@ -41,7 +41,6 @@ import tank1990.tile.TileIce;
 import tank1990.tile.TileSea;
 import tank1990.tile.TileSteel;
 import tank1990.tile.TileTrees;
-import tank1990.core.SpriteAnimation;
 
 public class Bullet extends DynamicGameObject {
 
@@ -78,32 +77,6 @@ public class Bullet extends DynamicGameObject {
             case DIRECTION_LEFT: x -= (int) this.speed; break;
             default: break; 
         }
-    }
-
-    @Override
-    public void move() {
-        switch (dir) {
-            case DIRECTION_UPWARDS:
-                setX(x);
-                setY(y - this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
-                break;
-            case DIRECTION_RIGHT:
-                setX(x + this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
-                setY(y);
-                break;
-            case DIRECTION_DOWNWARDS:
-                setX(x);
-                setY(y + this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
-                break;
-            case DIRECTION_LEFT:
-                setX(x - this.speed*GlobalConstants.BULLET_SPEED_PER_TICK);
-                setY(y);
-                break;
-            default:
-                System.err.printf("Invalid direction: %s", dir);
-                break;
-        }
-
     }
 
     public Blast destroy() {
