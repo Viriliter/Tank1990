@@ -25,7 +25,9 @@ package tank1990.powerup;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import tank1990.Game;
 import tank1990.core.DynamicGameObject;
+import tank1990.core.GameLevel;
 import tank1990.core.TextureFX;
 
 public abstract class AbstractPowerup extends DynamicGameObject {

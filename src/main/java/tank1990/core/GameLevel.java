@@ -79,10 +79,10 @@ public class GameLevel {
         this.currentState = state;
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g, int minDepth) {
         for (Tile[] tileRows: this.map) {
             for (Tile tile: tileRows) {
-                if (tile!=null) tile.draw(g);
+                if (tile!=null && tile.depth>=minDepth) tile.draw(g);
             }
         }
 

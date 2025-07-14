@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.awt.Rectangle;
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 
 import javax.imageio.ImageIO;
@@ -60,6 +62,8 @@ public interface GlobalConstants {
     // Bullet Parameters
     int BULLET_WIDTH = 3;
     int BULLET_HEIGHT = 5;
+    int BLAST_WIDTH = 8;
+    int BLAST_HEIGHT = 8;
 
     // Powerup Parameters
     int POWERUP_WIDTH = 16;
@@ -115,7 +119,7 @@ public interface GlobalConstants {
      */
     int GAME_TICK_MS = 10;
 
-    int BULLET_SPEED_PER_TICK = 10;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
+    int BULLET_SPEED_PER_TICK = 20;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
 
     int ENEMY_SPAWN_PROTECTION_TIME = 3;    // Protection time in seconds
     int PLAYER_SPAWN_PROTECTION_TIME = 3;   // Protection time in seconds
@@ -195,7 +199,8 @@ public interface GlobalConstants {
     /**
      * MISCS TEXTURES
      */
-
+    int FRAME_DELAY = 5;
+    SpriteAnimationStruct BLAST_ANIMATION = new SpriteAnimationStruct("textures/miscs/blast.png", 3, FRAME_DELAY, 1, 3, 0, 0);
 
     /**
      * MAPS
@@ -331,4 +336,18 @@ public interface GlobalConstants {
                                 Math.max(Math.min((int) (loc.x() / cellWidth), GlobalConstants.COL_TILE_COUNT-1), 0));
     }
 
+    /*
+     * Normalizes width and height in respect to size of tile size.
+     *
+     * @param g Reference screen size
+     * @param width Width of source object
+     * @param height Height of source object
+     * @return normalized Dimension
+     */
+    static Dimension normalizeDimension(Graphics g, int width, int height) {
+        width = width * (g.getClipBounds().width / GlobalConstants.COL_TILE_COUNT) / GlobalConstants.TILE_WIDTH;
+        height = height * (g.getClipBounds().height / GlobalConstants.ROW_TILE_COUNT) / GlobalConstants.TILE_HEIGHT;;
+        
+        return new Dimension(width, height);
+    }
 }

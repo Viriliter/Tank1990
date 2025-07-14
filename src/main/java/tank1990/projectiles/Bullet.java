@@ -41,6 +41,7 @@ import tank1990.tile.TileIce;
 import tank1990.tile.TileSea;
 import tank1990.tile.TileSteel;
 import tank1990.tile.TileTrees;
+import tank1990.core.SpriteAnimation;
 
 public class Bullet extends DynamicGameObject {
 
@@ -105,8 +106,11 @@ public class Bullet extends DynamicGameObject {
 
     }
 
-    public void destroy() {
+    public Blast destroy() {
         this.tankInst.setBulletStatus(true);
+        // Create an blast at the current bullet position
+        return new Blast(x, y);
+
     }
 
     /**

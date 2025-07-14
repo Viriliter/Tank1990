@@ -32,6 +32,7 @@ import tank1990.panels.GameAreaPanel;
 import tank1990.player.Player;
 import tank1990.player.PlayerType;
 import tank1990.powerup.AbstractPowerup;
+import tank1990.projectiles.Blast;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.Enemy;
@@ -43,7 +44,7 @@ public class GameEngine extends Subject {
     private ArrayList<Player> players = null;       /*< List of zombies in the game. */
     private ArrayList<Enemy> enemies = null;        /*< List of enemies in the game. */
     private ArrayList<AbstractPowerup> powerups = null;     /*< List of powerups in the game. */
-    private ArrayList<TextureFX> blastFX = null;    /*< List of blast effects in the game. */
+    private ArrayList<Blast> blastFXs = null;    /*< List of blast effects in the game. */
     private ArrayList<Bullet> bullets = null;       /*< List of bullets in the game. */
 
     // Game parameters
@@ -71,7 +72,7 @@ public class GameEngine extends Subject {
         // Initialize other game objects
         this.enemies = new ArrayList<>();
         this.powerups = new ArrayList<>();
-        this.blastFX = new ArrayList<>();
+        this.blastFXs = new ArrayList<>();
         this.bullets = new ArrayList<>();
 
         // Add predefined game levels
@@ -90,36 +91,41 @@ public class GameEngine extends Subject {
      * @param g The Graphics object used to render the game area.
      */
     public void paintComponent(Graphics g) {
-        // Draw map
+        // Draw map [Layer - 0]
         GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
-        if (gameLevel!=null) gameLevel.draw(g);
+        if (gameLevel!=null) gameLevel.draw(g, 0);
         
-        // Draw player(s)
+        // Draw player(s) [Layer - 1]
         for (Player p: this.players) {
             p.draw(g);
         }
 //
-        //// Draw enemies
+        //// Draw enemies [Layer - 2]
         //for (Enemy e : this.enemies) {
         //    AbstractTank t = (AbstractTank) e;
         //    t.draw(g);
         //}
-//
-        // Draw bullets
+
+        // Draw bullets [Layer - 3]
         for (Bullet b : this.bullets) {
             if (b == null) continue;
             b.draw(g);
         }
-//
-        //// Draw powerups
+
+        // Draw higher layers of game map (trees etc.)
+        if (gameLevel!=null) gameLevel.draw(g, 1);
+
+        // Draw blast animations [Layer - 5]
+        for (Blast blastFX : this.blastFXs) {
+            blastFX.draw(g);
+        }
+
+        //// Draw powerups [Layer - 6]
         //for (Powerup p : this.powerups) {
         //    if (p == null) continue;
         //    p.draw(g);
         //}
 
-        //for (TextureFX tFX : this.TextureFX) {
-        //    tFX.draw(g);
-        //}
     }
 
     /**
@@ -262,22 +268,25 @@ public class GameEngine extends Subject {
             // Update bullet position
             b.update(gameLevel);
             
-            System.out.println("Updating bullet: " + b);
             if (b.isOutOfBounds(gameLevel.getGameAreaSize().width, gameLevel.getGameAreaSize().height)) {
-                b.destroy(); // Properly destroy bullet and notify tank
-                it.remove(); // Remove bullet if it is out of bounds
+                Blast blast = b.destroy(); // Notify the tank that bullet is destroyed
+                blastFXs.add(blast);
+                it.remove(); // Remove bullet
                 continue;
             }
             if (b.checkCollision(gameLevel)) {
-                b.destroy(); // Destroy bullet if it collides with something
-                it.remove();
+                Blast blast = b.destroy(); // Notify the tank that bullet is destroyed
+                blastFXs.add(blast);
+                it.remove(); // Remove bullet
                 continue;
             }
         }
     }
 
     private void updatePowerups(GameLevel gameLevel) {
-        // TODO implement later
+        for (AbstractPowerup p : this.powerups) {
+             p.update();
+        }
     }
 
     private void checkCollisions(GameLevel gameLevel) {
@@ -289,7 +298,16 @@ public class GameEngine extends Subject {
     }
 
     private void updateBlasts() {
-        // TODO implement later
+        Iterator<Blast> it = blastFXs.iterator();
+        while (it.hasNext()) {
+            Blast blast = it.next();
+
+            if (!blast.update()) {
+                // If the blast animation is done, remove it
+                it.remove();
+            }
+        }
+
     }
 
 }
