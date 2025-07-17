@@ -22,7 +22,7 @@
 
 package tank1990.tile;
 
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 import tank1990.core.TextureFX;
 
 public class TileTrees extends Tile {
@@ -30,6 +30,6 @@ public class TileTrees extends Tile {
         super(x, y, TileType.TILE_TREES, blockConf);
         setDepth(1);
 
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_TREES);
+        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_TREES);
     }
 }

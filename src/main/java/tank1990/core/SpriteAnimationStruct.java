@@ -125,7 +125,7 @@ public class SpriteAnimationStruct implements Serializable {
         this.columns = columns;
         this.xOffset = xOffset;
         this.yOffset = yOffset;
-        this.rOffset = GlobalConstants.degToRad(rOffset);
+        this.rOffset = Utils.degToRad(rOffset);
         this.defaultDelay = defaultDelay;
     }
 }

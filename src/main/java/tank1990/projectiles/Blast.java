@@ -26,8 +26,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import tank1990.core.DynamicGameObject;
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 import tank1990.core.SpriteAnimation;
+import tank1990.core.Utils;
 
 public class Blast extends DynamicGameObject {
     protected SpriteAnimation spriteAnimation;
@@ -35,8 +36,8 @@ public class Blast extends DynamicGameObject {
     public Blast(int x, int y) {
         setX(x);
         setY(y);
-        setSize(new Dimension(GlobalConstants.BLAST_WIDTH, GlobalConstants.BLAST_HEIGHT));
-        this.spriteAnimation = new SpriteAnimation(GlobalConstants.BLAST_ANIMATION);
+        setSize(new Dimension(Globals.BLAST_WIDTH, Globals.BLAST_HEIGHT));
+        this.spriteAnimation = new SpriteAnimation(Globals.BLAST_ANIMATION);
         this.spriteAnimation.setRepeat(1);  // Do not repeat the blast animation
     }
 
@@ -46,7 +47,7 @@ public class Blast extends DynamicGameObject {
 
     @Override
     public void draw(Graphics g) {
-        Dimension nDim = GlobalConstants.normalizeDimension(g, GlobalConstants.BLAST_WIDTH, GlobalConstants.BLAST_HEIGHT);
+        Dimension nDim = Utils.normalizeDimension(g, Globals.BLAST_WIDTH, Globals.BLAST_HEIGHT);
         
         this.spriteAnimation.setTargetSize(nDim.width, nDim.height);
         this.spriteAnimation.draw(g, x - nDim.width/2, y - nDim.height/2, 0);

@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import javax.swing.JPanel;
-
 import tank1990.tank.AbstractTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
@@ -63,7 +61,7 @@ public class GameLevel {
         this.enemyTankCounts = new HashMap<TankType, Integer>();
 
         // Set default size values for now, it will updated on draw method
-        this.gameAreaSize = new Dimension(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+        this.gameAreaSize = new Dimension(Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
         //enemyTankCounts = loadenemyTankCounts(levelPath);
     }
 

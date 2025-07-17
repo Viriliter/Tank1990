@@ -31,7 +31,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import tank1990.core.GameMode;
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
+import tank1990.core.Utils;
 
 public class MenuPanel extends SlidingPanel implements KeyListener {
 
@@ -82,7 +83,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         basePanel.add(panelScore, gbc);
 
         JLabel labelScore = new JLabel("I- 00 HI- 20000");
-        labelScore.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
+        labelScore.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 24));
         labelScore.setHorizontalAlignment(SwingConstants.CENTER);
         labelScore.setForeground(Color.WHITE);
         panelScore.setLayout(new BorderLayout());
@@ -97,7 +98,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         basePanel.add(panelGameTitle, gbc);
 
         JLabel labelTitle = new JLabel("<html><div style='text-align:center;'>TANK H<br>1990</div></html>");
-        labelTitle.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 48));
+        labelTitle.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 48));
         labelTitle.setHorizontalAlignment(SwingConstants.CENTER);
         labelTitle.setForeground(Color.WHITE);
         panelGameTitle.setLayout(new BorderLayout());
@@ -120,7 +121,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             gbcIcon.insets = new Insets(5, 5, 5, 5); // optional spacing
             gbcIcon.anchor = GridBagConstraints.WEST;
 
-            JLabel labelSelectorItem = new JLabel(GlobalConstants.loadPNGIcon(GlobalConstants.TEXTURE_PLAYER1_TANK_PATH, 20, 20));
+            JLabel labelSelectorItem = new JLabel(Utils.loadPNGIcon(Globals.TEXTURE_PLAYER1_TANK_PATH, 20, 20));
             panelSelection.add(labelSelectorItem, gbcIcon);
             labelSelectorItem.setVisible(false);
             selectorItems.add(labelSelectorItem);
@@ -132,7 +133,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             gbcText.anchor = GridBagConstraints.WEST;
 
             JLabel labelSelectionItem = new JLabel(menuItems[i]);
-            labelSelectionItem.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.PLAIN, 18));
+            labelSelectionItem.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.PLAIN, 18));
             labelSelectionItem.setForeground(Color.WHITE);
             panelSelection.add(labelSelectionItem, gbcText);
         }
@@ -147,7 +148,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
 
         JLabel labelCopyRight = new JLabel("© YS 1990");
 
-        labelCopyRight.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
+        labelCopyRight.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 24));
         labelCopyRight.setHorizontalAlignment(SwingConstants.CENTER);
         labelCopyRight.setForeground(Color.WHITE);
         panelCopyRight.setLayout(new BorderLayout());

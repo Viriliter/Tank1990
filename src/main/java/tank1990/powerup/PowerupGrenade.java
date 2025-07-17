@@ -22,11 +22,12 @@
 
 package tank1990.powerup;
 
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
+import tank1990.core.Utils;
 
 public class PowerupGrenade extends AbstractPowerup {
     public PowerupGrenade(int x, int y) {
-        super(x, y, PowerupType.POWERUP_GRENADE, GlobalConstants.Time2GameTick(GlobalConstants.DEFAULT_POWERUP_DURATION));
+        super(x, y, PowerupType.POWERUP_GRENADE, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_DURATION));
     }
 
     @Override

@@ -24,12 +24,7 @@ package tank1990.tile;
 
 import java.awt.Graphics;
 
-import tank1990.core.Direction;
-import tank1990.core.GlobalConstants;
-import tank1990.core.GridLocation;
-import tank1990.core.Location;
-import tank1990.core.StaticGameObject;
-import tank1990.core.TextureFX;
+import tank1990.core.*;
 
 public abstract class Tile extends StaticGameObject {
     protected TileType type = null;
@@ -75,8 +70,8 @@ public abstract class Tile extends StaticGameObject {
         
         // Get the clip bounds of the graphics context
         java.awt.Rectangle clipBounds = g.getClipBounds();
-        this.textureFX.setTargetSize(clipBounds.width/GlobalConstants.COL_TILE_COUNT, clipBounds.height/GlobalConstants.ROW_TILE_COUNT);
-        Location loc = GlobalConstants.gridLoc2Loc(this.gloc, clipBounds.width, clipBounds.height); 
+        this.textureFX.setTargetSize(clipBounds.width/ Globals.COL_TILE_COUNT, clipBounds.height/ Globals.ROW_TILE_COUNT);
+        Location loc = Utils.gridLoc2Loc(this.gloc);
         this.textureFX.draw(g, loc.x(), loc.y(), 0.0);
     }
 
