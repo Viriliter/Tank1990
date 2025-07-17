@@ -49,15 +49,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) {
         ObjectOutputStream os = null;
         try {
-            Tile[][] tiles = MapGenerator.createFromText("C:\\Users\\mert_\\Documents\\Tank1990\\src\\test\\java\\MapGenerator\\map-stage-01.txt");
+            Path txtPath = Paths.get("src", "test", "java", "MapGenerator", "map-stage-01.txt");
+            Path binPath = Paths.get("src", "main", "resources", "maps", "stage-01.bin");
+
+            Tile[][] tiles = MapGenerator.createFromText(txtPath.toString());
             MapGenerator.printGrid(tiles);
 
-            os = new ObjectOutputStream(new FileOutputStream("C:\\Users\\mert_\\Documents\\Tank1990\\src\\main\\resources\\maps\\stage-01.bin"));
+            os = new ObjectOutputStream(new FileOutputStream(binPath.toString()));
             os.writeObject(tiles);
             os.close();
         } catch (FileNotFoundException e) {

@@ -79,7 +79,7 @@ public class GameEngine extends Subject {
         GameLevelManager.getInstance().addLevels();
 
         // Initialize game timer
-        gameTimer = new Timer(GlobalConstants.GAME_TICK_MS, e -> this.update());
+        gameTimer = new Timer(Globals.GAME_TICK_MS, e -> this.update());
         gameTimer.setRepeats(true);
     }
 

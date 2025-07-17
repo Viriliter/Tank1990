@@ -31,7 +31,9 @@ import tank1990.core.GameEngine;
 public class GameAreaPanel extends JLayeredPane {
     private GameEngine gameEngine = null;
 
-    GameAreaPanel(GameEngine gameEngine) {
+    GameAreaPanel() { }
+
+    public void setGameEngine(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         this.gameEngine.setParentPanel(this);
     }

@@ -22,13 +22,14 @@
 
 package tank1990.powerup;
 
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 import tank1990.core.TextureFX;
+import tank1990.core.Utils;
 
 public class PowerupTank extends AbstractPowerup {
     public PowerupTank(int x, int y) {
-        super(x, y, PowerupType.POWERUP_TANK, GlobalConstants.Time2GameTick(GlobalConstants.DEFAULT_POWERUP_DURATION));
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_POWERUP_TANK);
+        super(x, y, PowerupType.POWERUP_TANK, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_DURATION));
+        this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_TANK);
     }
 
     @Override

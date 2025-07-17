@@ -22,13 +22,13 @@
 
 package tank1990.tile;
 
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 import tank1990.core.TextureFX;
 
 public class TileBricks extends Tile {
     public TileBricks(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_BRICKS, blockConf);
 
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_TILE_BRICKS);
+        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_BRICKS);
     }
 }

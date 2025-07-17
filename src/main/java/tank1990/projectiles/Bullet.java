@@ -27,10 +27,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import tank1990.core.Utils;
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
 import tank1990.core.GameLevel;
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 import tank1990.core.GridLocation;
 import tank1990.core.Location;
 import tank1990.tank.AbstractTank;
@@ -52,7 +53,7 @@ public class Bullet extends DynamicGameObject {
         setX(x);
         setY(y);
         setDir(dir);
-        setSize(new Dimension(GlobalConstants.BULLET_WIDTH, GlobalConstants.BULLET_HEIGHT));
+        setSize(new Dimension(Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT));
 
         this.speed = speed;
     }
@@ -61,7 +62,7 @@ public class Bullet extends DynamicGameObject {
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         AffineTransform oldTransform = g2d.getTransform();
-        g2d.setColor(GlobalConstants.COLOR_GRAY);
+        g2d.setColor(Globals.COLOR_GRAY);
         g2d.translate(x, y);
         g2d.fillRect((int) -getSize().getWidth(), (int) -getSize().getHeight(), 
                      (int) getSize().getWidth(), (int) getSize().getHeight());
@@ -119,13 +120,13 @@ public class Bullet extends DynamicGameObject {
         int maxHeight = (int) gameAreaSize.getHeight();
         
         // Convert bullet position to grid location
-        GridLocation gLoc = GlobalConstants.Loc2gridLoc(new Location(this.x, this.y), maxWidth, maxHeight);
+        GridLocation gLoc = Utils.Loc2GridLoc(new Location(this.x, this.y));
         
         int r = gLoc.rowIndex();
         int c = gLoc.colIndex();
         
         // Check bounds
-        if (r < 0 || r >= GlobalConstants.ROW_TILE_COUNT || c < 0 || c >= GlobalConstants.COL_TILE_COUNT) {
+        if (r < 0 || r >= Globals.ROW_TILE_COUNT || c < 0 || c >= Globals.COL_TILE_COUNT) {
             return false;
         }
         

@@ -55,8 +55,8 @@ public class MapGenerator {
 
     public static void printGrid(Tile[][] grid) {
         System.out.print("||===|===|===|===|===|===|===|===|===|===|===|===|===||\n");
-        for (int i=0; i<GlobalConstants.ROW_TILE_COUNT; i++) {
-            for (int j=0; j<GlobalConstants.COL_TILE_COUNT; j++) {
+        for (int i = 0; i< Globals.ROW_TILE_COUNT; i++) {
+            for (int j = 0; j< Globals.COL_TILE_COUNT; j++) {
                 if (j==0) System.out.print("|");
 
                 String type = "";
@@ -76,10 +76,10 @@ public class MapGenerator {
                     System.out.printf("|-%s-", type);
                 }
 
-                if (j==GlobalConstants.COL_TILE_COUNT-1) System.out.print("||\n");
+                if (j== Globals.COL_TILE_COUNT-1) System.out.print("||\n");
             }
 
-            if (i!=GlobalConstants.ROW_TILE_COUNT-1) System.out.print("||---|---|---|---|---|---|---|---|---|---|---|---|---||\n");
+            if (i!= Globals.ROW_TILE_COUNT-1) System.out.print("||---|---|---|---|---|---|---|---|---|---|---|---|---||\n");
         }
         System.out.print("||===|===|===|===|===|===|===|===|===|===|===|===|===||\n");
     }
@@ -98,7 +98,7 @@ public class MapGenerator {
     }
 
     public static Tile[][] createFromText(String filePath) throws FileNotFoundException {
-        Tile[][] grid = new Tile[GlobalConstants.ROW_TILE_COUNT][GlobalConstants.COL_TILE_COUNT];
+        Tile[][] grid = new Tile[Globals.ROW_TILE_COUNT][Globals.COL_TILE_COUNT];
 
         FileInputStream inputStream = new FileInputStream(filePath);
         assert inputStream != null;

@@ -27,10 +27,10 @@ import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
 
+import tank1990.core.Utils;
 import tank1990.core.Direction;
 import tank1990.core.DynamicGameObject;
-import tank1990.core.GlobalConstants;
-import tank1990.core.Location;
+import tank1990.core.Globals;
 import tank1990.core.TankTextureStruct;
 import tank1990.core.TextureFX;
 import tank1990.powerup.AbstractPowerup;
@@ -69,17 +69,14 @@ public abstract class AbstractTank extends DynamicGameObject {
     public void draw(Graphics g) {
         // Draw tank animations
         java.awt.Rectangle clipBounds = g.getClipBounds();
-        
-        int cellWidth = clipBounds.width/GlobalConstants.COL_TILE_COUNT;
-        int cellHeight = clipBounds.height/GlobalConstants.ROW_TILE_COUNT;
+
+        Dimension tankSize = Utils.normalizeDimension(g, Globals.TANK_WIDTH, Globals.TANK_HEIGHT);
 
         // Set the tank size for collision detection - make it smaller to allow movement
         // Tank should be about 80% of cell size to allow for movement between tiles
-        int tankWidth = (int)(cellWidth - 2);
-        int tankHeight = (int)(cellHeight - 2);
-        setSize(new Dimension(tankWidth, tankHeight));
+        //setSize(tankSize);
 
-        this.textureFXs.get(dir).setTargetSize(cellWidth, cellHeight);
+        this.textureFXs.get(dir).setTargetSize(tankSize.width, tankSize.height);
         this.textureFXs.get(dir).draw(g, getX(), getY(), 0.0);
     }
 
@@ -112,7 +109,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         // This offset is defined in the textureFXs map.
         Dimension offset = this.textureFXs.get(dir).getOffsets();
 
-        return new Bullet(this, getX() + (int) offset.getWidth(), getY() + (int) offset.getHeight(), getDir(), GlobalConstants.BULLET_SPEED_PER_TICK);
+        return new Bullet(this, getX() + (int) offset.getWidth(), getY() + (int) offset.getHeight(), getDir(), Globals.BULLET_SPEED_PER_TICK);
     }
 
     public void getDamage() {

@@ -45,10 +45,10 @@ public class GameLevelManager {
 
     public void addLevels() {
         // Add predefined game levels to the manager
-        for (int i = 1; i <= GlobalConstants.GAME_LEVEL_COUNTS; i++) {
+        for (int i = 1; i <= Globals.GAME_LEVEL_COUNTS; i++) {
             // FIXME: Use a proper path for the level files
             // For now, we will use a placeholder path
-            GameLevel level = new GameLevel(GlobalConstants.MAP_PATH + String.format("stage-%02d.bin", 1));
+            GameLevel level = new GameLevel(Globals.MAP_PATH + String.format("stage-%02d.bin", 1));
             this.gameLevels.add(level);
         }
     }

@@ -23,33 +23,21 @@
 package tank1990.core;
 
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.io.InputStream;
 
-import java.awt.Rectangle;
-import java.awt.Image;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 /**
- * @class GlobalConstants
+ * @class Globals
  * @brief Stores game specific configuration parameters and file paths of the resources that can be used throughout the application life.
  */
-public interface GlobalConstants {
+public interface Globals {
     String CONFIGURATION_FILE = "config.ini";
 
     String GAME_TITLE = "TANK 1990 - NES";
 
     // Game Window Dimensions
-    int WINDOW_WIDTH = 960;
-    int WINDOW_HEIGHT = 720;
-    double SCALE = 3.75;
+    int WINDOW_WIDTH = 1040;
+    int WINDOW_HEIGHT = 780;
 
     // Tile Parameters
     int TILE_WIDTH = 16;
@@ -106,8 +94,8 @@ public interface GlobalConstants {
     GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(12, 8);
     Direction INITIAL_PLAYER_2_DIR = Direction.DIRECTION_UPWARDS;
 
-    int PLAYER_MOVEMENT_SPEED = 5;
-    int PLAYER_MOVEMENT_MAX_SPEED = 5;
+    int PLAYER_MOVEMENT_SPEED = 4;
+    int PLAYER_MOVEMENT_MAX_SPEED = 4;
 
     /**
      * COLOR PALLETTE
@@ -213,141 +201,4 @@ public interface GlobalConstants {
      */
 
     String SOUND_BATTLE_CITY_GAME_START = "battle-city-game-start.wav";
-
-    /**
-     * UTILITY FUNCTIONS
-     */
-
-    static int Time2GameTick(int durationMs) {
-        return durationMs / GAME_TICK_MS;
-    }
-
-    static int GameTick2Time(int tick) {
-        return tick * GAME_TICK_MS;
-    }
-
-    static ImageIcon loadPNGIcon(String path, int targetWidth, int targetHeight) throws NullPointerException {
-        try {
-            InputStream inputStream = GlobalConstants.class.getClassLoader().getResourceAsStream(path);
-            if (inputStream == null) {
-                System.err.println("PNG file not found: " + path);
-                return null;
-            }
-
-            ImageIcon icon = new ImageIcon(inputStream.readAllBytes());
-            Image image = icon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);  // Resize image
-            return new ImageIcon(image);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    static Image loadTexture(String fileName) {
-        try {
-            InputStream inputStream = GlobalConstants.class.getClassLoader().getResourceAsStream(fileName);
-            if (inputStream == null) {
-                System.err.println("Texture file not found: " + fileName);
-                return null;
-            }
-            return ImageIO.read(inputStream);  // Load as BufferedImage
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    static Image loadTexture(String fileName, int width, int height) {
-        try {
-            InputStream inputStream = GlobalConstants.class.getClassLoader().getResourceAsStream(fileName);
-            if (inputStream == null) {
-                System.err.println("Texture file not found: " + fileName);
-                return null;
-            }
-            Image original = ImageIO.read(inputStream);  // Load as BufferedImage
-            return original.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Loads a custom TTF font from resources and returns a derived font.
-     *
-     * @param path  Path to the font file (e.g., "/fonts/arcade.ttf")
-     * @param style Font.PLAIN, Font.BOLD, Font.ITALIC, or Font.BOLD | Font.ITALIC
-     * @param size  Font size in points
-     * @return the custom Font or fallback Font if failed
-     */
-    static Font loadFont(String path, int style, float size) {
-        try {
-            InputStream is = GlobalConstants.class.getClassLoader().getResourceAsStream(path);
-            if (is == null) throw new IllegalArgumentException("Font not found at " + path);
-
-            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, is);
-            Font styledFont = baseFont.deriveFont(style, size);
-
-            // Optional: register it system-wide (so you can use by name if needed)
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(styledFont);
-
-            return styledFont;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Font("Monospaced", style, (int) size); // fallback font
-        }
-    }
-
-    static double radToDeg(double radians) {
-        return Math.toDegrees(radians);
-    }
-
-    // Convert degrees to radians
-    static double degToRad(double degrees) {
-        return Math.toRadians(degrees);
-    }
-
-    static boolean isObjectsCollided(Rectangle rect1, Rectangle rect2) {
-        return rect1.getBounds().intersects(rect2.getBounds()) ||
-                rect2.getBounds().contains(rect1.getBounds()) ||
-                rect1.getBounds().contains(rect2.getBounds());
-    }
-
-    static boolean isObjectsCollided(RectangleBound rectBound1, RectangleBound rectBound2) {
-        return RectangleBound.isCollided(rectBound1, rectBound2);
-    }
-
-    static boolean isObjectsCollided(Rectangle rect1, RectangleBound rectBound2) {
-        return RectangleBound.isCollided(rect1, rectBound2);
-    }
-
-    static Location gridLoc2Loc(GridLocation gloc, int width, int height) {
-        int cellWidth = width / GlobalConstants.COL_TILE_COUNT;
-        int cellHeight = height / GlobalConstants.ROW_TILE_COUNT;
-        return new Location(cellWidth * gloc.colIndex() + cellWidth/2, cellHeight * gloc.rowIndex() + cellHeight/2);
-    }
-
-    static GridLocation Loc2gridLoc(Location loc, int width, int height) {
-        int cellWidth = width / GlobalConstants.ROW_TILE_COUNT;
-        int cellHeight = height / GlobalConstants.COL_TILE_COUNT;
-
-        return new GridLocation(Math.max(Math.min((int) (loc.y() / cellHeight), GlobalConstants.ROW_TILE_COUNT-1), 0),
-                                Math.max(Math.min((int) (loc.x() / cellWidth), GlobalConstants.COL_TILE_COUNT-1), 0));
-    }
-
-    /*
-     * Normalizes width and height in respect to size of tile size.
-     *
-     * @param g Reference screen size
-     * @param width Width of source object
-     * @param height Height of source object
-     * @return normalized Dimension
-     */
-    static Dimension normalizeDimension(Graphics g, int width, int height) {
-        width = width * (g.getClipBounds().width / GlobalConstants.COL_TILE_COUNT) / GlobalConstants.TILE_WIDTH;
-        height = height * (g.getClipBounds().height / GlobalConstants.ROW_TILE_COUNT) / GlobalConstants.TILE_HEIGHT;;
-        
-        return new Dimension(width, height);
-    }
 }

@@ -28,11 +28,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
-import tank1990.core.Direction;
-import tank1990.core.GameLevel;
-import tank1990.core.GlobalConstants;
-import tank1990.core.GridLocation;
-import tank1990.core.Location;
+import tank1990.core.*;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.PlayerTank;
 import tank1990.tank.TankFactory;
@@ -50,35 +46,39 @@ public class Player {
     private int dx, dy;   // Player's position and movement direction
     private Direction dir = null;
     private int speed = 0;
+    private int maxSpeed = Globals.PLAYER_MOVEMENT_MAX_SPEED; // Maximum speed of the player
 
     private PlayerTank myTank = null;
     private PlayerType playerType = PlayerType.PLAYER_1;
 
     public Player(PlayerType playerType) {
-        this.life = GlobalConstants.INITAL_PLAYER_HEALTH;
+        this.life = Globals.INITAL_PLAYER_HEALTH;
         this.dx = 0;
         this.dy = 0;
-        this.speed = GlobalConstants.PLAYER_MOVEMENT_SPEED;
+        this.speed = Globals.PLAYER_MOVEMENT_SPEED;
 
         if (playerType == PlayerType.PLAYER_1) {
-            this.dir = GlobalConstants.INITIAL_PLAYER_1_DIR;
+            this.dir = Globals.INITIAL_PLAYER_1_DIR;
             myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_1_LOC, 720,720).x(), 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_1_LOC, 720,720).y(), 
-                                                         GlobalConstants.INITIAL_PLAYER_1_DIR);
+                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).x(),
+                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).y(),
+                                                         Globals.INITIAL_PLAYER_1_DIR);
             myTank.setPlayerType(playerType);
         } else {
-            this.dir = GlobalConstants.INITIAL_PLAYER_2_DIR;
-            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_2_LOC, 720,720).x(), 
-                                                         GlobalConstants.gridLoc2Loc(GlobalConstants.INITIAL_PLAYER_2_LOC, 720,720).y(), 
-                                                         GlobalConstants.INITIAL_PLAYER_2_DIR);
+            this.dir = Globals.INITIAL_PLAYER_2_DIR;
+            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
+                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).x(),
+                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).y(),
+                                                         Globals.INITIAL_PLAYER_2_DIR);
             myTank.setPlayerType(playerType);
         }
     }
 
     public void draw(Graphics g) {
         myTank.draw(g);
+        System.out.println("x:" + myTank.getX() + " y:" + myTank.getY() + " dir:" + myTank.getDir() + " speed:" + this.speed);
+        this.speed = Utils.normalize(g, Globals.PLAYER_MOVEMENT_SPEED);
+        this.maxSpeed = Utils.normalize(g, Globals.PLAYER_MOVEMENT_MAX_SPEED);
 
         Graphics2D g2d = (Graphics2D) g;
         AffineTransform oldTransform = g2d.getTransform();
@@ -92,15 +92,15 @@ public class Player {
         // Get tank dimensions for boundary calculations
         int tankWidth = (int) myTank.getSize().getWidth();
         int tankHeight = (int) myTank.getSize().getHeight();
-        
+
         Dimension gameAreaSize = level.getGameAreaSize();
 
         // If tank size is not set, calculate it based on grid
         if (tankWidth == 0 || tankHeight == 0) {
-            int cellWidth = (int) gameAreaSize.getWidth() / GlobalConstants.COL_TILE_COUNT;
-            int cellHeight = (int) gameAreaSize.getHeight() / GlobalConstants.ROW_TILE_COUNT;
-            tankWidth = cellWidth - 2;
-            tankHeight = cellHeight - 2;
+            int cellWidth = (int) gameAreaSize.getWidth() / Globals.COL_TILE_COUNT;
+            int cellHeight = (int) gameAreaSize.getHeight() / Globals.ROW_TILE_COUNT;
+            tankWidth = cellWidth;
+            tankHeight = cellHeight;
         }
         
         // Since tank position is center point, calculate proper boundaries
@@ -135,8 +135,8 @@ public class Player {
         
         // If tank size is not set, calculate it based on grid (80% of cell size)
         if (tankWidth == 0 || tankHeight == 0) {
-            int cellWidth = maxWidth / GlobalConstants.COL_TILE_COUNT;
-            int cellHeight = maxHeight / GlobalConstants.ROW_TILE_COUNT;
+            int cellWidth = maxWidth / Globals.COL_TILE_COUNT;
+            int cellHeight = maxHeight / Globals.ROW_TILE_COUNT;
             tankWidth = (int)(cellWidth - 2);
             tankHeight = (int)(cellHeight - 2);
         }
@@ -168,13 +168,13 @@ public class Player {
         };
         
         for (int i = 0; i < checkX.length; i++) {
-            GridLocation gLoc = GlobalConstants.Loc2gridLoc(new Location(checkX[i], checkY[i]), maxWidth, maxHeight);
+            GridLocation gLoc = Utils.Loc2GridLoc(new Location(checkX[i], checkY[i]));
             
             int r = gLoc.rowIndex();
             int c = gLoc.colIndex();
             
             // Check bounds
-            if (r < 0 || r >= GlobalConstants.ROW_TILE_COUNT || c < 0 || c >= GlobalConstants.COL_TILE_COUNT) {
+            if (r < 0 || r >= Globals.ROW_TILE_COUNT || c < 0 || c >= Globals.COL_TILE_COUNT) {
                 return false;
             }
             
@@ -186,8 +186,8 @@ public class Player {
             else if (map[r][c] instanceof TileSea) { return false; /* player cannot move through sea unless it has boat*/ }
             else if (map[r][c] instanceof TileIce && isRecursive != false && this.dx == 0 && this.dy == 0) { 
                 /* player can move through ice with skid*/
-                int new_x = (myTank.getDir()==Direction.DIRECTION_LEFT || myTank.getDir()==Direction.DIRECTION_RIGHT) ? x + GlobalConstants.SKID_DISTANCE: x;
-                int new_y = (myTank.getDir()==Direction.DIRECTION_DOWNWARDS || myTank.getDir()==Direction.DIRECTION_UPWARDS)?  y + GlobalConstants.SKID_DISTANCE: y;
+                int new_x = (myTank.getDir()==Direction.DIRECTION_LEFT || myTank.getDir()==Direction.DIRECTION_RIGHT) ? x + Globals.SKID_DISTANCE: x;
+                int new_y = (myTank.getDir()==Direction.DIRECTION_DOWNWARDS || myTank.getDir()==Direction.DIRECTION_UPWARDS)?  y + Globals.SKID_DISTANCE: y;
                 return checkMovable(new_x, new_y, level, false);
             }
             else if (map[r][c] instanceof TileEagle) { return false; /* player cannot move through eagle*/ }
@@ -195,13 +195,13 @@ public class Player {
         return true;
     }
 
-    public void decrementDx() { resetDy(); this.dx = -this.speed < -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: -this.speed; this.dir = Direction.DIRECTION_LEFT;}
+    public void decrementDx() { resetDy(); this.dx = Math.max(this.dx - this.speed, -this.maxSpeed); this.dir = Direction.DIRECTION_LEFT;}
 
-    public void incrementDx() { resetDy(); this.dx = this.speed > GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.speed; this.dir = Direction.DIRECTION_RIGHT;}
+    public void incrementDx() { resetDy(); this.dx = Math.min(this.dx + this.speed, this.maxSpeed); this.dir = Direction.DIRECTION_RIGHT;}
     
-    public void decrementDy() { resetDx(); this.dy = -this.speed < GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? -GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: -this.speed; this.dir = Direction.DIRECTION_UPWARDS;}
+    public void decrementDy() { resetDx(); this.dy = Math.max(this.dy - this.speed, -this.maxSpeed); this.dir = Direction.DIRECTION_UPWARDS; }
 
-    public void incrementDy() { resetDx(); this.dy = this.speed > GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED ? GlobalConstants.PLAYER_MOVEMENT_MAX_SPEED: this.speed; this.dir = Direction.DIRECTION_DOWNWARDS;}
+    public void incrementDy() { resetDx(); this.dy = Math.min(this.dy + this.speed, this.maxSpeed); this.dir = Direction.DIRECTION_DOWNWARDS;}
 
     public void resetDx() { this.dx=0; }
 

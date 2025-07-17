@@ -23,14 +23,14 @@
 package tank1990.tank;
 
 import tank1990.core.Direction;
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 
 public class PowerTank extends AbstractTank implements Enemy {
 
     public PowerTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
-        this.tankTextureFxStruct = GlobalConstants.TEXTURE_POWER_TANK_STRUCT;
+        this.tankTextureFxStruct = Globals.TEXTURE_POWER_TANK_STRUCT;
         createTextureFXs();
     }
 

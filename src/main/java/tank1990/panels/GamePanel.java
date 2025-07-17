@@ -29,15 +29,12 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import tank1990.core.EventType;
-import tank1990.core.GameEngine;
-import tank1990.core.GameMode;
-import tank1990.core.GlobalConstants;
-import tank1990.core.LevelState;
-import tank1990.core.Observer;
+import tank1990.core.*;
 import tank1990.player.Player;
 
 public class GamePanel extends AbstractPanel implements ActionListener, KeyListener, Observer {
+
+    private static Dimension gameAreaDimension = null;
 
     GameEngine gameEngine = null;
     
@@ -49,9 +46,12 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     public GamePanel(JFrame frame, GameMode gameMode) {
         super(frame);
 
+        initLayeredPanels();
+
         this.gameEngine = new GameEngine(gameMode);
         this.gameEngine.subscribe((Observer) this);
-        initLayeredPanels();
+
+        gameplayArea.setGameEngine(this.gameEngine);
     }
 
     @Override
@@ -83,25 +83,26 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
         // Root Panel as JLayeredPane
         this.rootPanel = new JLayeredPane();
-        this.rootPanel.setPreferredSize(new Dimension(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT));
+        this.rootPanel.setPreferredSize(new Dimension(Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT));
 
         // Game Content Panel (contains gameplay area and info panel)
         this.gamePanel = new JPanel(new BorderLayout());
-        this.gamePanel.setBounds(0, 0, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+        this.gamePanel.setBounds(0, 0, Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
 
         // Gameplay Area (3/4 of the width)
-        this.gameplayArea = new GameAreaPanel(this.gameEngine);
+        this.gameplayArea = new GameAreaPanel();
         this.gameplayArea.setBackground(Color.BLACK);
         this.gameplayArea.setOpaque(true);
 
         // Calculate dimensions for square gameplay area
-        int gameplaySize = Math.min(GlobalConstants.WINDOW_WIDTH * 3 / 4, GlobalConstants.WINDOW_HEIGHT);
+        int gameplaySize = Math.min(Globals.WINDOW_WIDTH * 3 / 4, Globals.WINDOW_HEIGHT);
         this.gameplayArea.setPreferredSize(new Dimension(gameplaySize, gameplaySize));
+        gameAreaDimension = this.gameplayArea.getPreferredSize();
 
         // Game Info Panel (1/4 of the width)
         JPanel gameInfoPanel = new GameInfoPanel();
-        gameInfoPanel.setBackground(GlobalConstants.COLOR_GRAY);
-        gameInfoPanel.setPreferredSize(new Dimension(GlobalConstants.WINDOW_WIDTH / 4, gameplaySize));
+        gameInfoPanel.setBackground(Globals.COLOR_GRAY);
+        gameInfoPanel.setPreferredSize(new Dimension(Globals.WINDOW_WIDTH / 4, gameplaySize));
         gameInfoPanel.setBorder(BorderFactory.createTitledBorder("Game Info"));
 
         // Add placeholder content to game info panel
@@ -130,6 +131,10 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     public void addNotify() {
         super.addNotify();
         requestFocus();
+    }
+
+    public static Dimension getGameAreaDimension() {
+        return gameAreaDimension;
     }
 
     /**
@@ -266,39 +271,39 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         
         Player player = null; 
         switch (key) {
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_UP):
+            case (Globals.KEY_PLAYER_1_MOVE_UP):
                 player = gameEngine.getPlayer1();
                 if(player!=null) player.decrementDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_RIGHT):
+            case (Globals.KEY_PLAYER_1_MOVE_RIGHT):
                 player = gameEngine.getPlayer1();
                 if(player!=null) player.incrementDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_DOWN):
+            case (Globals.KEY_PLAYER_1_MOVE_DOWN):
                 player = gameEngine.getPlayer1();
                 if(player!=null) player.incrementDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_LEFT):
+            case (Globals.KEY_PLAYER_1_MOVE_LEFT):
                 player = gameEngine.getPlayer1();
                 if(player!=null) player.decrementDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_UP):
+            case (Globals.KEY_PLAYER_2_MOVE_UP):
                 player = gameEngine.getPlayer2();
                 if(player!=null) player.decrementDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_RIGHT):
+            case (Globals.KEY_PLAYER_2_MOVE_RIGHT):
                 player = gameEngine.getPlayer2();
                 if(player!=null) player.incrementDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_DOWN):
+            case (Globals.KEY_PLAYER_2_MOVE_DOWN):
                 player = gameEngine.getPlayer2();
                 if(player!=null) player.incrementDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_LEFT):
+            case (Globals.KEY_PLAYER_2_MOVE_LEFT):
                 player = gameEngine.getPlayer2();
                 if(player!=null) player.decrementDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT):
+            case (Globals.KEY_PLAYER_1_MOVE_SHOOT):
                 System.out.println("Fire for Player 1");
                 player = gameEngine.getPlayer1();
                 if (player!=null) gameEngine.triggerPlayerShooting(player);
@@ -330,39 +335,39 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
         Player player = null;
         switch (key) {
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_UP):
+            case (Globals.KEY_PLAYER_1_MOVE_UP):
                 player = gameEngine.getPlayer1();
                 if (player!=null) player.resetDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_RIGHT):
+            case (Globals.KEY_PLAYER_1_MOVE_RIGHT):
                 player = gameEngine.getPlayer1();
                 if (player!=null) player.resetDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_DOWN):
+            case (Globals.KEY_PLAYER_1_MOVE_DOWN):
                 player = gameEngine.getPlayer1();
                 if (player!=null) player.resetDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_LEFT):
+            case (Globals.KEY_PLAYER_1_MOVE_LEFT):
                 player = gameEngine.getPlayer1();
                 if (player!=null) player.resetDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_UP):
+            case (Globals.KEY_PLAYER_2_MOVE_UP):
                 player = gameEngine.getPlayer2();
                 if (player!=null) player.resetDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_RIGHT):
+            case (Globals.KEY_PLAYER_2_MOVE_RIGHT):
                 player = gameEngine.getPlayer2();
                 if (player!=null) player.resetDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_DOWN):
+            case (Globals.KEY_PLAYER_2_MOVE_DOWN):
                 player = gameEngine.getPlayer2();
                 if (player!=null) player.resetDy();
                 break;
-            case (GlobalConstants.KEY_PLAYER_2_MOVE_LEFT):
+            case (Globals.KEY_PLAYER_2_MOVE_LEFT):
                 player = gameEngine.getPlayer2();
                 if (player!=null) player.resetDx();
                 break;
-            case (GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT):
+            case (Globals.KEY_PLAYER_1_MOVE_SHOOT):
                 System.out.println("Stopping fire for Player 1");
                 break;
             /*
@@ -422,12 +427,12 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         this.getReadyPanel.setLayout(new BorderLayout());
 
         JLabel getReadyLabel = new JLabel(String.format("STAGE\t%2d", levelIndex), SwingConstants.CENTER);
-        getReadyLabel.setFont(GlobalConstants.loadFont(GlobalConstants.FONT_PRESS_START_2P, Font.BOLD, 24));
+        getReadyLabel.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 24));
         getReadyLabel.setForeground(Color.BLACK);
 
         this.getReadyPanel.add(getReadyLabel, BorderLayout.CENTER);
-        this.getReadyPanel.setBackground(GlobalConstants.COLOR_GRAY);
-        this.getReadyPanel.setBounds(0, 0, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+        this.getReadyPanel.setBackground(Globals.COLOR_GRAY);
+        this.getReadyPanel.setBounds(0, 0, Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
         this.getReadyPanel.setVisible(true);
         
         // Add get ready panel to layered pane (foreground layer)

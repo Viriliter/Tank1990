@@ -22,13 +22,14 @@
 
 package tank1990.powerup;
 
-import tank1990.core.GlobalConstants;
+import tank1990.core.Globals;
 import tank1990.core.TextureFX;
+import tank1990.core.Utils;
 
 public class PowerupShovel extends AbstractPowerup {
     public PowerupShovel(int x, int y) {
-        super(x, y, PowerupType.POWERUP_SHOVEL, GlobalConstants.Time2GameTick(GlobalConstants.DEFAULT_POWERUP_DURATION));
-        this.textureFX = new TextureFX(GlobalConstants.TEXTURE_POWERUP_SHOVEL);
+        super(x, y, PowerupType.POWERUP_SHOVEL, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_DURATION));
+        this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_SHOVEL);
     }
 
     @Override
