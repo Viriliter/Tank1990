@@ -5,4 +5,6 @@ public enum EventType {
     UPDATE,
     REPAINT,
     UPDATE_MAP,
+    PAUSED,
+    STARTED,
 }

@@ -42,6 +42,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     JPanel getReadyPanel = null;        // Store reference to get ready panel
     JPanel gamePanel = null;            // Store reference to game content panel
     GameAreaPanel gameplayArea = null;  // Store reference to gameplay area
+    JPanel pausePanel = null;           // Store reference to pause overlay panel
 
     public GamePanel(JFrame frame, GameMode gameMode) {
         super(frame);
@@ -63,7 +64,13 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case EventType.UPDATE_MAP:
                 // Handle map update
                 break;
+            case EventType.PAUSED:
+                showPauseOverlay();
+                break;
             case EventType.UPDATE:
+            case EventType.STARTED:
+                hidePauseOverlay();
+                break;
             default:
                 break;
         }
@@ -308,6 +315,14 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 player = gameEngine.getPlayer1();
                 if (player!=null) gameEngine.triggerPlayerShooting(player);
                 break;
+            case KeyEvent.VK_ESCAPE:
+                // Toggle pause state when ESC is pressed
+                if (gameEngine.isPaused()) {
+                    gameEngine.start();
+                } else {
+                    gameEngine.pause();
+                }
+                break;
             /*
              * TODO: implement Player 2 shooting later
                 case (KeyEvent.VK_CONTROL):
@@ -461,5 +476,58 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         requestFocus(); // Ensure game panel has focus for key events
         this.rootPanel.revalidate();
         this.rootPanel.repaint();
+    }
+
+    /**
+     * Shows the pause overlay on top of the game area.
+     * Displays "PAUSE" text centered over the gameplay area.
+     */
+    private void showPauseOverlay() {
+        // Don't create multiple pause panels
+        if (this.pausePanel != null) {
+            return;
+        }
+
+        // Create pause overlay panel that covers only the gameplay area
+        this.pausePanel = new JPanel();
+        this.pausePanel.setLayout(new BorderLayout());
+
+        // Create the PAUSE label
+        JLabel pauseLabel = new JLabel("PAUSE", SwingConstants.CENTER);
+        pauseLabel.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 48));
+        pauseLabel.setForeground(Color.YELLOW);
+
+        // Add label to panel
+        this.pausePanel.add(pauseLabel, BorderLayout.CENTER);
+
+        // Set semi-transparent background
+        this.pausePanel.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent black
+        this.pausePanel.setOpaque(true);
+
+        // Position the pause panel to cover only the gameplay area
+        // Calculate the gameplay area position within the game panel
+        int gameplaySize = Math.min(Globals.WINDOW_WIDTH * 3 / 4, Globals.WINDOW_HEIGHT);
+        this.pausePanel.setBounds(0, 0, gameplaySize, gameplaySize);
+        this.pausePanel.setVisible(true);
+
+        // Add pause panel to the highest layer
+        this.rootPanel.add(this.pausePanel, JLayeredPane.MODAL_LAYER);
+
+        this.rootPanel.revalidate();
+        this.rootPanel.repaint();
+    }
+
+    /**
+     * Hides the pause overlay from the game area.
+     */
+    private void hidePauseOverlay() {
+        if (this.pausePanel != null) {
+            this.pausePanel.setVisible(false);
+            this.rootPanel.remove(this.pausePanel);
+            this.pausePanel = null;
+
+            this.rootPanel.revalidate();
+            this.rootPanel.repaint();
+        }
     }
 }

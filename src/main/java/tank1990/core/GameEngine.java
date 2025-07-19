@@ -186,16 +186,24 @@ public class GameEngine extends Subject {
         return this.isStopped;
     }
 
+    public boolean isPaused() {
+        return this.isPaused;
+    }
+
     public void start() {
         this.isStopped = false;
         this.isPaused = false;
         this.gameTimer.start();
+
+        notify(EventType.STARTED, null);  // Notify observers to repaint event
     }
 
     public void pause() {
         this.isStopped = false;
         this.isPaused = true;
         this.gameTimer.stop();
+
+        notify(EventType.PAUSED, null);  // Notify observers to repaint event
     }
 
     public void stop() {
