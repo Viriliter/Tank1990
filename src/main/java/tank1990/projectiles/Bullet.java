@@ -70,7 +70,7 @@ public class Bullet extends DynamicGameObject {
     }
 
     public void update(GameLevel level) {
-        System.out.printf("Bullet update: x=%d, y=%d, dir=%s, speed=%d%n", x, y, dir, speed);
+        //System.out.printf("Bullet update: x=%d, y=%d, dir=%s, speed=%d%n", x, y, dir, speed);
         switch (this.dir) {
             case DIRECTION_UPWARDS: y -= (int) this.speed; break; 
             case DIRECTION_RIGHT: x += (int) this.speed; break; 

@@ -23,6 +23,7 @@
 package tank1990.tank;
 
 import tank1990.core.Direction;
+import tank1990.core.GameLevel;
 import tank1990.core.Globals;
 import tank1990.player.PlayerType;
 
@@ -33,6 +34,9 @@ public class PlayerTank extends AbstractTank {
 
         this.tankTextureFxStruct = Globals.TEXTURE_PLAYER1_TANK_STRUCT;
         createTextureFXs();
+
+        setSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_SPEED);
+        setMaxSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_MAX_SPEED);
     }
 
     public void setPlayerType(PlayerType playerType) {
@@ -42,8 +46,9 @@ public class PlayerTank extends AbstractTank {
             this.tankTextureFxStruct = Globals.TEXTURE_PLAYER2_TANK_STRUCT;
         }
         createTextureFXs();
-    } 
+    }
 
     @Override
-    public void update() {}
+    public void move(GameLevel level) {}
+
 }

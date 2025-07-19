@@ -29,6 +29,6 @@ public class TileEagle extends Tile {
     public TileEagle(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_EAGLE, blockConf);
 
-        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_BRICKS);
+        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_EAGLE);
     }
 }

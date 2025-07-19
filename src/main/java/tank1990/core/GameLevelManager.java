@@ -22,12 +22,16 @@
 
 package tank1990.core;
 
+import tank1990.tank.AbstractTank;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameLevelManager {
     List<GameLevel> gameLevels; // List of game levels
     int currentLevelIndex; // Index of the current game level
+
+    TimeTick spawnTick;
 
     private static GameLevelManager instance;
 
@@ -72,7 +76,20 @@ public class GameLevelManager {
         return this.gameLevels.get(levelIndex);
     }
 
-    public void update() {
+    public AbstractTank update() {
+        GameLevel gameLevel = getCurrentLevel();
+        if (this.spawnTick!=null) this.spawnTick.updateTick();
 
+        if (gameLevel.getActiveEnemyTankCount()<4 && gameLevel.getEnemyTankCounts()>0) {
+            if (this.spawnTick==null) {
+                this.spawnTick = new TimeTick(Globals.ENEMY_SPAWN_DELAY);
+                this.spawnTick.setRepeats(1);
+                return null;
+            }
+
+            return this.spawnTick.isTimeOut() ? gameLevel.spawnEnemyTank(): null;
+        }
+
+        return null;
     }
 }

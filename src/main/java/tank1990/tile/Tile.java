@@ -25,12 +25,15 @@ package tank1990.tile;
 import java.awt.Graphics;
 
 import tank1990.core.*;
+import tank1990.tank.AbstractTank;
 
 public abstract class Tile extends StaticGameObject {
     protected TileType type = null;
     protected BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
     protected TextureFX textureFX = null;
     protected boolean needDraw = false;
+
+    protected AbstractTank includedTankInst = null;
 
     GridLocation gloc = null;
 
@@ -75,4 +78,15 @@ public abstract class Tile extends StaticGameObject {
         this.textureFX.draw(g, loc.x(), loc.y(), 0.0);
     }
 
+    public void addTank(AbstractTank tank) {
+        this.includedTankInst = tank;
+    }
+
+    public void removeTank() {
+        this.includedTankInst = null;
+    }
+
+    public boolean includesTank() {
+        return this.includedTankInst!=null;
+    }
 }

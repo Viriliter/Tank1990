@@ -23,7 +23,6 @@
 package tank1990.player;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -33,52 +32,38 @@ import tank1990.projectiles.Bullet;
 import tank1990.tank.PlayerTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
-import tank1990.tile.Tile;
-import tank1990.tile.TileBricks;
-import tank1990.tile.TileEagle;
-import tank1990.tile.TileIce;
-import tank1990.tile.TileSea;
-import tank1990.tile.TileSteel;
-import tank1990.tile.TileTrees;
 
 public class Player {
     private int life;
-    private int dx, dy;   // Player's position and movement direction
-    private Direction dir = null;
-    private int speed = 0;
-    private int maxSpeed = Globals.PLAYER_MOVEMENT_MAX_SPEED; // Maximum speed of the player
 
     private PlayerTank myTank = null;
-    private PlayerType playerType = PlayerType.PLAYER_1;
+    private final PlayerType playerType = PlayerType.PLAYER_1;
 
     public Player(PlayerType playerType) {
         this.life = Globals.INITAL_PLAYER_HEALTH;
-        this.dx = 0;
-        this.dy = 0;
-        this.speed = Globals.PLAYER_MOVEMENT_SPEED;
 
         if (playerType == PlayerType.PLAYER_1) {
-            this.dir = Globals.INITIAL_PLAYER_1_DIR;
-            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK, 
+            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
                                                          Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).x(),
                                                          Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).y(),
                                                          Globals.INITIAL_PLAYER_1_DIR);
+            assert myTank== null : "PlayerTank is null for player type: " + playerType;
+            myTank.setDir(Globals.INITIAL_PLAYER_1_DIR);
             myTank.setPlayerType(playerType);
         } else {
-            this.dir = Globals.INITIAL_PLAYER_2_DIR;
             myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
                                                          Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).x(),
                                                          Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).y(),
                                                          Globals.INITIAL_PLAYER_2_DIR);
+            assert myTank== null : "PlayerTank is null for player type: " + playerType;
+            myTank.setDir(Globals.INITIAL_PLAYER_2_DIR);
             myTank.setPlayerType(playerType);
         }
     }
 
     public void draw(Graphics g) {
         myTank.draw(g);
-        System.out.println("x:" + myTank.getX() + " y:" + myTank.getY() + " dir:" + myTank.getDir() + " speed:" + this.speed);
-        this.speed = Utils.normalize(g, Globals.PLAYER_MOVEMENT_SPEED);
-        this.maxSpeed = Utils.normalize(g, Globals.PLAYER_MOVEMENT_MAX_SPEED);
+        //System.out.println("x:" + myTank.getX() + " y:" + myTank.getY() + " dir:" + myTank.getDir() + " speed:" + this.speed);
 
         Graphics2D g2d = (Graphics2D) g;
         AffineTransform oldTransform = g2d.getTransform();
@@ -89,123 +74,24 @@ public class Player {
     }
 
     public void update(GameLevel level) {
-        // Get tank dimensions for boundary calculations
-        int tankWidth = (int) myTank.getSize().getWidth();
-        int tankHeight = (int) myTank.getSize().getHeight();
+        myTank.update(level);
 
-        Dimension gameAreaSize = level.getGameAreaSize();
-
-        // If tank size is not set, calculate it based on grid
-        if (tankWidth == 0 || tankHeight == 0) {
-            int cellWidth = (int) gameAreaSize.getWidth() / Globals.COL_TILE_COUNT;
-            int cellHeight = (int) gameAreaSize.getHeight() / Globals.ROW_TILE_COUNT;
-            tankWidth = cellWidth;
-            tankHeight = cellHeight;
-        }
-        
-        // Since tank position is center point, calculate proper boundaries
-        int halfWidth = tankWidth / 2;
-        int halfHeight = tankHeight / 2;
-        
-        // Calculate new position with boundary checking (accounting for center position)
-        int newX = Math.max(halfWidth, Math.min(myTank.getX() + this.dx, (int) gameAreaSize.getWidth() - halfWidth));
-        int newY = Math.max(halfHeight, Math.min(myTank.getY() + this.dy, (int) gameAreaSize.getHeight() - halfHeight));
-        //System.out.println("newX:" + newX + " newY:" + newY + " maxWidth:" + maxWidth + " maxHeight:" + maxHeight);
-
-        // Check map constraints by checking neighbor tiles of the player tank
-        boolean isMovable = checkMovable(newX, newY, level, true);
-        if (isMovable) {
-            // Update tank position and direction
-            myTank.setX(newX);
-            myTank.setY(newY);
-        } else {}
-
-        myTank.setDir(dir);
+        // Update player location in the level
+        GridLocation gLoc = Utils.Loc2GridLoc(new Location(myTank.getX(), myTank.getY()));
+        level.setPlayerLocation(gLoc);
     }
 
-    public boolean checkMovable(int x, int y, GameLevel level, boolean isRecursive) {
-        int maxWidth = level.getGameAreaSize().width;
-        int maxHeight = level.getGameAreaSize().height;
+    public void decrementDx() { this.myTank.decrementDx(); }
 
-        Tile[][] map = level.getMap();
+    public void incrementDx() { this.myTank.incrementDx(); }
 
-        // Get tank dimensions
-        int tankWidth = (int) myTank.getSize().getWidth();
-        int tankHeight = (int) myTank.getSize().getHeight();
-        
-        // If tank size is not set, calculate it based on grid (80% of cell size)
-        if (tankWidth == 0 || tankHeight == 0) {
-            int cellWidth = maxWidth / Globals.COL_TILE_COUNT;
-            int cellHeight = maxHeight / Globals.ROW_TILE_COUNT;
-            tankWidth = (int)(cellWidth - 2);
-            tankHeight = (int)(cellHeight - 2);
-        }
-        
-        // x and y are the CENTER coordinates of the tank, so we need to calculate the actual corners
-        int halfWidth = tankWidth / 2;
-        int halfHeight = tankHeight / 2;
-        
-        // Calculate the actual bounding box corners from the center point
-        int topLeftX = x - halfWidth;
-        int topLeftY = y - halfHeight;
-        int bottomRightX = x + halfWidth - 1;
-        int bottomRightY = y + halfHeight - 1;
-        
-        // Check key points around the tank's perimeter
-        int[] checkX = {
-            topLeftX,               // Top-left corner
-            bottomRightX,           // Top-right corner  
-            topLeftX,               // Bottom-left corner
-            bottomRightX,           // Bottom-right corner
-            x                       // Center point for good measure
-        };
-        int[] checkY = {
-            topLeftY,               // Top-left corner
-            topLeftY,               // Top-right corner
-            bottomRightY,           // Bottom-left corner
-            bottomRightY,           // Bottom-right corner
-            y                       // Center point for good measure
-        };
-        
-        for (int i = 0; i < checkX.length; i++) {
-            GridLocation gLoc = Utils.Loc2GridLoc(new Location(checkX[i], checkY[i]));
-            
-            int r = gLoc.rowIndex();
-            int c = gLoc.colIndex();
-            
-            // Check bounds
-            if (r < 0 || r >= Globals.ROW_TILE_COUNT || c < 0 || c >= Globals.COL_TILE_COUNT) {
-                return false;
-            }
-            
-            //System.out.println("Checking point " + i + " at row:" + r + " col:" + c + " (coords: " + checkX[i] + "," + checkY[i] + ")");
+    public void decrementDy() { this.myTank.decrementDy(); }
 
-            if (map[r][c] instanceof TileBricks) { return false; }
-            else if (map[r][c] instanceof TileSteel) { return false; /* player cannot move through steel*/ }
-            else if (map[r][c] instanceof TileTrees) { /* player can move through trees*/ }
-            else if (map[r][c] instanceof TileSea) { return false; /* player cannot move through sea unless it has boat*/ }
-            else if (map[r][c] instanceof TileIce && isRecursive != false && this.dx == 0 && this.dy == 0) { 
-                /* player can move through ice with skid*/
-                int new_x = (myTank.getDir()==Direction.DIRECTION_LEFT || myTank.getDir()==Direction.DIRECTION_RIGHT) ? x + Globals.SKID_DISTANCE: x;
-                int new_y = (myTank.getDir()==Direction.DIRECTION_DOWNWARDS || myTank.getDir()==Direction.DIRECTION_UPWARDS)?  y + Globals.SKID_DISTANCE: y;
-                return checkMovable(new_x, new_y, level, false);
-            }
-            else if (map[r][c] instanceof TileEagle) { return false; /* player cannot move through eagle*/ }
-        }
-        return true;
-    }
+    public void incrementDy() { this.myTank.incrementDy(); }
 
-    public void decrementDx() { resetDy(); this.dx = Math.max(this.dx - this.speed, -this.maxSpeed); this.dir = Direction.DIRECTION_LEFT;}
+    public void resetDx() { this.myTank.resetDx(); }
 
-    public void incrementDx() { resetDy(); this.dx = Math.min(this.dx + this.speed, this.maxSpeed); this.dir = Direction.DIRECTION_RIGHT;}
-    
-    public void decrementDy() { resetDx(); this.dy = Math.max(this.dy - this.speed, -this.maxSpeed); this.dir = Direction.DIRECTION_UPWARDS; }
-
-    public void incrementDy() { resetDx(); this.dy = Math.min(this.dy + this.speed, this.maxSpeed); this.dir = Direction.DIRECTION_DOWNWARDS;}
-
-    public void resetDx() { this.dx=0; }
-
-    public void resetDy() { this.dy=0; }
+    public void resetDy() { this.myTank.resetDy(); }
 
     public Bullet shoot() {
         return myTank.shoot();

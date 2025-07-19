@@ -27,8 +27,8 @@ import java.awt.event.KeyEvent;
 import java.awt.Color;
 
 /**
- * @class Globals
- * @brief Stores game specific configuration parameters and file paths of the resources that can be used throughout the application life.
+ * Globals
+ * Stores game specific configuration parameters and file paths of the resources that can be used throughout the application life.
  */
 public interface Globals {
     String CONFIGURATION_FILE = "config.ini";
@@ -94,8 +94,23 @@ public interface Globals {
     GridLocation INITIAL_PLAYER_2_LOC = new GridLocation(12, 8);
     Direction INITIAL_PLAYER_2_DIR = Direction.DIRECTION_UPWARDS;
 
-    int PLAYER_MOVEMENT_SPEED = 4;
-    int PLAYER_MOVEMENT_MAX_SPEED = 4;
+    int PLAYER_TANK_MOVEMENT_SPEED = 4;
+    int PLAYER_TANK_MOVEMENT_MAX_SPEED = 4;
+
+    /**
+     * ENEMY PARAMETERS
+     */
+    int BASIC_TANK_MOVEMENT_SPEED = 4;
+    int BASIC_TANK_MOVEMENT_MAX_SPEED = 4;
+
+    int FAST_TANK_MOVEMENT_SPEED = 8;
+    int FAST_TANK_MOVEMENT_MAX_SPEED = 8;
+
+    int POWER_TANK_MOVEMENT_SPEED = 4;
+    int POWER_TANK_MOVEMENT_MAX_SPEED = 4;
+
+    int ARMOR_TANK_MOVEMENT_SPEED = 2;
+    int ARMOR_TANK_MOVEMENT_MAX_SPEED = 2;
 
     /**
      * COLOR PALLETTE
@@ -105,7 +120,7 @@ public interface Globals {
     /**
      * GAME ENGINE PARAMETERS
      */
-    int GAME_TICK_MS = 10;
+    int GAME_TICK_MS = 100;
 
     int BULLET_SPEED_PER_TICK = 20;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
 
@@ -118,6 +133,7 @@ public interface Globals {
      * GAME LEVEL PARAMETERS
      */
     int GAME_LEVEL_COUNTS = 5; // Total number of game levels
+    int ENEMY_SPAWN_DELAY = 100;
 
     /**
      * POWERUPS
@@ -160,28 +176,28 @@ public interface Globals {
     );
 
     TankTextureStruct TEXTURE_BASIC_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/basic-tank-upwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/basic-tank-right.png",0,0,0),
-            new TextureFXStruct("textures/tank/basic-tank-downwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/basic-tank-left.png",0,0,0)
+            new TextureFXStruct("textures/tank/tank-basic-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-basic-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-basic-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-basic-left.png",0,0,0)
     );
     TankTextureStruct TEXTURE_FAST_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/fast-tank-upwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/fast-tank-right.png",0,0,0),
-            new TextureFXStruct("textures/tank/fast-tank-downwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/fast-tank-left.png",0,0,0)
+            new TextureFXStruct("textures/tank/tank-fast-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-fast-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-fast-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-fast-left.png",0,0,0)
     );
     TankTextureStruct TEXTURE_POWER_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/power-tank-upwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/power-tank-right.png",0,0,0),
-            new TextureFXStruct("textures/tank/power-tank-downwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/power-tank-left.png",0,0,0)
+            new TextureFXStruct("textures/tank/tank-power-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-power-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-power-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-power-left.png",0,0,0)
     );
     TankTextureStruct TEXTURE_ARMOR_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/armor-tank-upwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/armor-tank-right.png",0,0,0),
-            new TextureFXStruct("textures/tank/armor-tank-downwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/armor-tank-left.png",0,0,0)
+            new TextureFXStruct("textures/tank/tank-armor-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-left.png",0,0,0)
     );
 
     /**

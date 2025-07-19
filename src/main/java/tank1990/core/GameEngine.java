@@ -85,7 +85,6 @@ public class GameEngine extends Subject {
 
     /**
      * Custom paint method for rendering the game area.
-     *
      * This method is responsible for drawing all game objects (player, zombies, projectiles, etc.) on the screen.
      *
      * @param g The Graphics object used to render the game area.
@@ -99,12 +98,12 @@ public class GameEngine extends Subject {
         for (Player p: this.players) {
             p.draw(g);
         }
-//
-        //// Draw enemies [Layer - 2]
-        //for (Enemy e : this.enemies) {
-        //    AbstractTank t = (AbstractTank) e;
-        //    t.draw(g);
-        //}
+
+        // Draw enemies [Layer - 2]
+        for (Enemy e : this.enemies) {
+            AbstractTank t = (AbstractTank) e;
+            t.draw(g);
+        }
 
         // Draw bullets [Layer - 3]
         for (Bullet b : this.bullets) {
@@ -130,14 +129,13 @@ public class GameEngine extends Subject {
 
     /**
      * Updates all game objects, and draw them into the screen accordingly.
-     * 
      * This method is called periodically to update all the game objects and check for collisions.
      */
     public void update() {
         // Update map
         GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
-        if (gameLevel!=null) gameLevel.update();
-        
+        GameLevelManager.getInstance().update();
+
         // Update players
         updatePlayers(gameLevel);
 
@@ -246,8 +244,15 @@ public class GameEngine extends Subject {
      */
     private void updateGameLevel() {
         GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
+
         if (gameLevel.getRemainingEnemyTanks() == 0) {
             //finishLevel();            
+        }
+
+        AbstractTank newEnemyTank = GameLevelManager.getInstance().update();
+        if (newEnemyTank != null) {
+            this.enemies.add((Enemy) newEnemyTank);
+            //notify(EventType.ENEMY_TANK_SPAWNED, newEnemyTank);
         }
 
         //gameLevel.updateAsync();
@@ -256,7 +261,11 @@ public class GameEngine extends Subject {
     private void updateEnemies(GameLevel gameLevel) {
         for (Enemy e: this.enemies) {
             AbstractTank t = (AbstractTank) e;
-            t.update();
+            t.update(gameLevel);
+            Bullet bullet = t.shoot();
+            if (bullet != null) {
+                addBullet(bullet);
+            }
         }
     }
 

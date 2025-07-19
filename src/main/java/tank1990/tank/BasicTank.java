@@ -22,8 +22,9 @@
 
 package tank1990.tank;
 
-import tank1990.core.Direction;
-import tank1990.core.Globals;
+import tank1990.core.*;
+
+import java.util.Random;
 
 public class BasicTank extends AbstractTank implements Enemy {
 
@@ -32,8 +33,21 @@ public class BasicTank extends AbstractTank implements Enemy {
 
         this.tankTextureFxStruct = Globals.TEXTURE_BASIC_TANK_STRUCT;
         createTextureFXs();
+
+        setSpeedUnit(Globals.BASIC_TANK_MOVEMENT_SPEED);
+        setMaxSpeedUnit(Globals.BASIC_TANK_MOVEMENT_MAX_SPEED);
     }
 
     @Override
-    public void update() {}
+    public void move(GameLevel level) {
+        Random random = new Random();
+        int behavior = random.nextInt(1,11);
+
+        if (behavior<=8) { // Move towards to target with %80 percentage
+            moveToTarget(level);
+        } else {  // Move randomly with %20 percentage
+            moveToRandom();
+        }
+    }
+
 }
