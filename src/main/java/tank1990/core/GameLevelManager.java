@@ -28,16 +28,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameLevelManager {
-    List<GameLevel> gameLevels; // List of game levels
-    int currentLevelIndex; // Index of the current game level
+    private List<GameLevel> gameLevels; // List of game levels
+    private int currentLevelIndex; // Index of the current game level
+    private int playerScore; // Player's score
 
-    TimeTick spawnTick;
+    private TimeTick spawnTick;
 
     private static GameLevelManager instance;
 
     private GameLevelManager() {
         this.gameLevels = new ArrayList<>();
         this.currentLevelIndex = 0;
+        this.playerScore = 0;
     }
 
     public static GameLevelManager getInstance() {
@@ -57,12 +59,14 @@ public class GameLevelManager {
         }
     }
 
-    public int getCurrentIndex() {
-        return this.currentLevelIndex;
-    }
+    public int getCurrentIndex() { return this.currentLevelIndex; }
 
     public GameLevel getCurrentLevel() {
         return this.gameLevels.get(this.currentLevelIndex);
+    }
+
+    public int getPlayerScore() {
+        return this.playerScore;
     }
 
     public GameLevel nextLevel() {

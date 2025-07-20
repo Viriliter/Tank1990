@@ -578,7 +578,24 @@ public class GameEngine extends Subject {
                         case TILE_EAGLE:
                             map[checkR][checkC] = null;
                             stop();  // Stop the game engine
-                            notify(EventType.GAMEOVER, null);   // Eagle is destroyed - this triggers game over
+                            GameScoreStruct gameScore = new GameScoreStruct();
+                            gameScore.setTotalScore(GameLevelManager.getInstance().getPlayerScore());
+                            gameScore.setReachedLevel(GameLevelManager.getInstance().getCurrentIndex());
+
+                            // TODO: Add dummy score for now
+                            gameScore.setHiScore(20000);
+                            gameScore.setTotalScore(4900);
+                            gameScore.setReachedLevel(2);
+                            gameScore.setBasicTankCount(6);
+                            gameScore.setBasicTankScore(600);
+                            gameScore.setFastTankCount(5);
+                            gameScore.setFastTankScore(1000);
+                            gameScore.setPowerTankCount(3);
+                            gameScore.setPowerTankScore(900);
+                            gameScore.setArmorTankCount(6);
+                            gameScore.setArmorTankScore(2400);
+
+                            notify(EventType.GAMEOVER, gameScore);   // Eagle is destroyed - this triggers game over
                             return true;
                         default: break;
                     }

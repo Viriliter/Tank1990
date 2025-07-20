@@ -121,7 +121,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             gbcIcon.insets = new Insets(5, 5, 5, 5); // optional spacing
             gbcIcon.anchor = GridBagConstraints.WEST;
 
-            JLabel labelSelectorItem = new JLabel(Utils.loadPNGIcon(Globals.TEXTURE_PLAYER1_TANK_PATH, 20, 20));
+            JLabel labelSelectorItem = new JLabel(Utils.loadPNGIcon(Globals.ICON_PLAYER1_TANK_PATH, 20, 20));
             panelSelection.add(labelSelectorItem, gbcIcon);
             labelSelectorItem.setVisible(false);
             selectorItems.add(labelSelectorItem);
@@ -236,6 +236,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     }
 
     @Override public void keyReleased(KeyEvent e) {}
+
     @Override public void keyTyped(KeyEvent e) {}
 
     @Override protected void animationStarted() { }

@@ -117,6 +117,8 @@ public interface Globals {
      * COLOR PALLETTE
      */
     Color COLOR_GRAY = new Color(114, 116, 114); // Gray
+    Color COLOR_RED  = new Color(177, 68, 31); // Red
+    Color COLOR_ORANGE  = new Color(222, 156, 71); // orange
 
     /**
      * GAME ENGINE PARAMETERS
@@ -161,8 +163,12 @@ public interface Globals {
     /**
      * TANKS
      */
-    String TEXTURE_PLAYER1_TANK_PATH = "textures/tank/tank-player-1-right.png";
-    
+    String ICON_PLAYER1_TANK_PATH = "textures/tank/tank-player-1-right.png";
+    String ICON_BASIC_TANK_PATH = "textures/tank/tank-basic-upwards.png";
+    String ICON_FAST_TANK_PATH = "textures/tank/tank-fast-upwards.png";
+    String ICON_POWER_TANK_PATH = "textures/tank/tank-power-upwards.png";
+    String ICON_ARMOR_TANK_PATH = "textures/tank/tank-armor-upwards.png";
+
     TankTextureStruct TEXTURE_PLAYER1_TANK_STRUCT = new TankTextureStruct(
             new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,-32,0),
             new TextureFXStruct("textures/tank/tank-player-1-right.png",32,0,0),
