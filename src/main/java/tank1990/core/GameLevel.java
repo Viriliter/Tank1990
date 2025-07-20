@@ -289,8 +289,8 @@ public class GameLevel {
             return -1;
         }
 
-        int dx = this.eagleLocation.colIndex() - origin.colIndex();
-        int dy = this.eagleLocation.rowIndex() - origin.rowIndex();
+        int dx = Math.abs(this.eagleLocation.colIndex() - origin.colIndex());
+        int dy = Math.abs(this.eagleLocation.rowIndex() - origin.rowIndex());
 
         return dx+dy;
     }
@@ -308,8 +308,8 @@ public class GameLevel {
             return -1;
         }
 
-        int dx = this.playerLocation.colIndex() - origin.colIndex();
-        int dy = this.playerLocation.rowIndex() - origin.rowIndex();
+        int dx = Math.abs(this.playerLocation.colIndex() - origin.colIndex());
+        int dy = Math.abs(this.playerLocation.rowIndex() - origin.rowIndex());
 
         return dx+dy;
     }

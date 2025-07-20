@@ -36,6 +36,7 @@ import tank1990.projectiles.Blast;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.Enemy;
+import tank1990.tile.Tile;
 
 public class GameEngine extends Subject {
     private GameAreaPanel parentPanel = null;
@@ -128,7 +129,7 @@ public class GameEngine extends Subject {
     }
 
     /**
-     * Updates all game objects, and draw them into the screen accordingly.
+     * Updates all game objects, and notify the panel to draw them accordingly.
      * This method is called periodically to update all the game objects and check for collisions.
      */
     public void update() {
@@ -163,33 +164,72 @@ public class GameEngine extends Subject {
         notify(EventType.REPAINT, null);  // Notify observers to repaint event
     }
 
+    /**
+     * Sets the parent panel for this game engine.
+     *
+     * @param parentPanel The parent GameAreaPanel
+     */
     public void setParentPanel(GameAreaPanel parentPanel) {
         this.parentPanel = parentPanel;
     }
 
+    /**
+     * Gets current game level.
+     *
+     * @return Current game level
+     */
     public GameLevel getCurrentLevel() {
         return GameLevelManager.getInstance().getCurrentLevel();
     }
 
+    /**
+     * Gets the index of the current game level.
+     *
+     * @return Index of the current game level
+     */
     public int getCurrentLevelIndex() {
         return GameLevelManager.getInstance().getCurrentIndex();
     }
 
+    /**
+     * Gets the first player in multiplayer mode.
+     * If the game mode is single player, this method returns the only player.
+     *
+     * @return The first player in multiplayer mode or the only player in single player mode.
+     */
     public Player getPlayer1() { return players.getFirst(); }
 
+    /**
+     * Gets the second player in multiplayer mode.
+     * If the game mode is single player, this method returns null.
+     *
+     * @return The second player if in multiplayer mode, otherwise null.
+     */
     public Player getPlayer2() {
         if (this.gameMode==GameMode.MODE_MULTI_PLAYER) return players.getLast();
         return null;
     }
 
+    /**
+     * Checks if the game is stopped.
+     * @return true if the game is stopped, false otherwise.
+     */
     public boolean isStopped() {
         return this.isStopped;
     }
 
+    /**
+     * Checks if the game is paused.
+     * @return true if the game is paused, false otherwise.
+     */
     public boolean isPaused() {
         return this.isPaused;
     }
 
+    /**
+     * Starts the game engine.
+     * This method initializes the game state and starts the game timer.
+     */
     public void start() {
         this.isStopped = false;
         this.isPaused = false;
@@ -198,6 +238,10 @@ public class GameEngine extends Subject {
         notify(EventType.STARTED, null);  // Notify observers to repaint event
     }
 
+    /**
+     * Resumes the game engine if it was paused.
+     * This method resumes the game timer and updates the game state.
+     */
     public void pause() {
         this.isStopped = false;
         this.isPaused = true;
@@ -206,12 +250,20 @@ public class GameEngine extends Subject {
         notify(EventType.PAUSED, null);  // Notify observers to repaint event
     }
 
+    /**
+     * Stops the game engine.
+     * This method stops the game timer and sets the game state to stopped.
+     */
     public void stop() {
         this.isStopped = true;
         this.isPaused = false;
         if (this.gameTimer!=null) this.gameTimer.stop();
     }
 
+    /**
+     * Loads the next game level.
+     * This method stops the current game level and loads the next one from the GameLevelManager.
+     */
     public void loadGameLevel() {
         this.stop();
 
@@ -222,6 +274,10 @@ public class GameEngine extends Subject {
         }
     }
 
+    /**
+     * Starts the current game level.
+     * This method starts the game timer and sets the game level state to PLAYING.
+     */
     public void startGameLevel() {
         start();
         this.currentGameLevel.setCurrentState(LevelState.PLAYING);
@@ -235,15 +291,45 @@ public class GameEngine extends Subject {
         if (bullet != null) addBullet(bullet);
     }
 
+    /**
+     * Adds a bullet to the game.
+     * @param bullet The bullet to be added
+     */
     private void addBullet(Bullet bullet) {
         if (bullet==null) return;
 
         this.bullets.add(bullet);
     } 
 
+    /**
+     * Updates the players' tanks and checks for player deaths.
+     * If a player's tank is destroyed, it spawns a new tank.
+     * If a player has no remaining lives, they are removed from the game.
+     */
     private void updatePlayers(GameLevel gameLevel) {
-        for (Player p: this.players) {
+        // Remove players' tank
+        Iterator<Player> it = this.players.iterator();
+        while (it.hasNext()) {
+            Player p = it.next();
+
+            if (p.isTankDestroyed()) {
+                p.spawnTank();
+            }
+
+            if (p.getRemainingLife() < 0) {
+                // Player is dead, remove from the game
+                it.remove();
+            }
+
             p.update(gameLevel);
+        }
+
+        // If there are no players left, game is over
+        if (this.players.isEmpty()) {
+            // No players left, stop the game
+            this.stop();
+            notify(EventType.GAMEOVER, null);  // Notify observers that the game is over
+            return;
         }
     }
 
@@ -266,7 +352,19 @@ public class GameEngine extends Subject {
         //gameLevel.updateAsync();
     }
 
+    /**
+     * Updates the enemies' tanks and checks for enemy deaths.
+     * If an enemy's tank is destroyed, it is removed from the game.
+     */
     private void updateEnemies(GameLevel gameLevel) {
+        // Remove destroyed enemies
+        Iterator<Enemy> it = this.enemies.iterator();
+        while (it.hasNext()) {
+            AbstractTank t = (AbstractTank) it.next();
+            if (t.isDestroyed()) it.remove();
+        }
+
+        // Update remaining enemies
         for (Enemy e: this.enemies) {
             AbstractTank t = (AbstractTank) e;
             t.update(gameLevel);
@@ -277,6 +375,11 @@ public class GameEngine extends Subject {
         }
     }
 
+    /**
+     * Updates the projectiles in the game.
+     * This method updates the position of each bullet and checks if they are out of bounds.
+     * If a bullet is out of bounds, it is destroyed and removed from the game.
+     */
     private void updateProjectiles(GameLevel gameLevel) {
         Iterator<Bullet> it = this.bullets.iterator();
         while (it.hasNext()) {
@@ -291,29 +394,207 @@ public class GameEngine extends Subject {
                 it.remove(); // Remove bullet
                 continue;
             }
-            if (b.checkCollision(gameLevel)) {
-                Blast blast = b.destroy(); // Notify the tank that bullet is destroyed
-                blastFXs.add(blast);
-                it.remove(); // Remove bullet
-                continue;
-            }
+
         }
     }
 
+    /**
+     * Updates the powerups in the game.
+     * This method updates the position of each powerup and checks if they are collected by players.
+     */
     private void updatePowerups(GameLevel gameLevel) {
         for (AbstractPowerup p : this.powerups) {
              p.update();
         }
     }
 
+    /**
+     * Checks for collisions between bullets and other game objects (tiles, tanks, etc.).
+     * This method iterates through all bullets and checks for collisions with tiles, player tanks, enemy tanks, and other bullets.
+     * If a collision occurs, the bullet is destroyed and the appropriate effects are applied.
+     */
     private void checkCollisions(GameLevel gameLevel) {
-        // TODO implement later
+        // Check bullet collisions with tiles, tanks, and other bullets
+        Iterator<Bullet> bulletIt = this.bullets.iterator();
+        while (bulletIt.hasNext()) {
+            Bullet bullet = bulletIt.next();
+            RectangleBound bulletBounds = bullet.getBoundingBox();
+            boolean bulletDestroyed = false;
+
+            // 1. Check collision with tiles
+            if (!bulletDestroyed && checkBulletTileCollision(bullet, gameLevel)) {
+                Blast blast = bullet.destroy();
+                blastFXs.add(blast);
+                bulletIt.remove();
+                bulletDestroyed = true;
+                continue;
+            }
+
+            // 2. Check collision with player tanks
+            if (!bulletDestroyed) {
+                for (Player player : this.players) {
+                    if (!player.isTankDestroyed()) {
+                        RectangleBound tankBounds = player.getBoundingBox();
+                        if (tankBounds==null) continue;
+
+                        // Check if bullet intersects with player tank
+                        if (bulletBounds.intersects(tankBounds)) {
+                            // Check if bullet belongs to enemy
+                            if (bullet.isEnemyBullet()) {
+                                // Player tank hit by enemy bullet
+                                // TODO uncomment this line to enable player damage
+                                //player.getDamage();
+
+                                Blast blast = bullet.destroy();
+                                blastFXs.add(blast);
+                                bulletIt.remove();
+                                bulletDestroyed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Check collision with enemy tanks
+            if (!bulletDestroyed) {
+                Iterator<Enemy> enemyIt = this.enemies.iterator();
+                while (enemyIt.hasNext() && !bulletDestroyed) {
+                    Enemy enemy = enemyIt.next();
+                    AbstractTank enemyTank = (AbstractTank) enemy;
+                    if (!enemyTank.isDestroyed()) {
+                        RectangleBound tankBounds = enemyTank.getBoundingBox();
+                        if (bulletBounds.intersects(tankBounds)) {
+                            // Check if bullet belongs to player (don't let enemies shoot themselves)
+                            if (!bullet.isEnemyBullet()) {
+                                // Enemy tank hit by player bullet
+                                enemyTank.getDamage();
+
+                                // Remove enemy if destroyed
+                                if (enemyTank.isDestroyed()) {
+                                    enemyIt.remove();
+                                }
+
+                                Blast blast = bullet.destroy();
+                                blastFXs.add(blast);
+                                bulletIt.remove();
+                                bulletDestroyed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 4. Check collision with other bullets
+            if (!bulletDestroyed) {
+                Iterator<Bullet> otherBulletIt = this.bullets.iterator();
+                while (otherBulletIt.hasNext() && !bulletDestroyed) {
+                    Bullet otherBullet = otherBulletIt.next();
+
+                    // Don't check bullet against itself
+                    if (bullet == otherBullet) {
+                        continue;
+                    }
+
+                    RectangleBound otherBulletBounds = otherBullet.getBoundingBox();
+                    if (bulletBounds.intersects(otherBulletBounds)) {
+                        // Check if bullets belong to different teams
+                        if (bullet.isEnemyBullet() != otherBullet.isEnemyBullet()) {
+                            // Bullets from different teams (enemy vs player tanks) collided - destroy both
+                            Blast blast1 = bullet.destroy();
+                            Blast blast2 = otherBullet.destroy();
+                            blastFXs.add(blast1);
+                            blastFXs.add(blast2);
+
+                            bulletIt.remove();
+                            otherBulletIt.remove();
+                            bulletDestroyed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Updates the game information such as score, lives, etc.
+     * This method can be expanded later to include more detailed game statistics.
+     */
     private void updateGameInfo() {
         // TODO implement later
     }
 
+    /**
+     * Checks if a bullet collides with any destroyable tiles.
+     * @param bullet The bullet to check
+     * @param gameLevel The current game level
+     * @return true if collision occurred and tile was destroyed
+     */
+    private boolean checkBulletTileCollision(Bullet bullet, GameLevel gameLevel) {
+        if (gameLevel == null || gameLevel.getMap() == null) {
+            return false;
+        }
+
+        RectangleBound bulletBounds = bullet.getBoundingBox();
+        Tile[][] map = gameLevel.getMap();
+
+        // Convert bullet position to grid coordinates
+        GridLocation bulletGridLoc = Utils.Loc2GridLoc(new Location(bullet.getX(), bullet.getY()));
+        int r = bulletGridLoc.rowIndex();
+        int c = bulletGridLoc.colIndex();
+
+        // Check the current tile and surrounding tiles for collision
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                int checkR = r + dr;
+                int checkC = c + dc;
+
+                // Check bounds
+                if (checkR < 0 || checkR >= Globals.ROW_TILE_COUNT ||
+                    checkC < 0 || checkC >= Globals.COL_TILE_COUNT) {
+                    continue;
+                }
+
+                Tile tile = map[checkR][checkC];
+                if (tile == null) {
+                    continue;
+                }
+
+                // Get tile position and create bounding box
+                Location tilePos = Utils.gridLoc2Loc(new GridLocation(checkR, checkC));
+                RectangleBound tileBounds = new RectangleBound(
+                    tilePos.x(), tilePos.y(),
+                    60, 60
+                );
+
+                // Check for intersection
+                if (bulletBounds.intersects(tileBounds)) {
+                    // Handle different tile types
+                    switch(tile.getType()) {
+                        case TILE_BRICKS: map[checkR][checkC] = null; return true;
+                        case TILE_STEEL: return true;  // Steel blocks bullets but isn't destroyed
+                        case TILE_EAGLE:
+                            map[checkR][checkC] = null;
+                            stop();  // Stop the game engine
+                            notify(EventType.GAMEOVER, null);   // Eagle is destroyed - this triggers game over
+                            return true;
+                        default: break;
+                    }
+                    // Trees, ice, and water don't stop bullets
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Updates the blast effects in the game.
+     * This method iterates through all blast effects and updates their animations.
+     * If a blast effect is done, it is removed from the list.
+     */
     private void updateBlasts() {
         Iterator<Blast> it = blastFXs.iterator();
         while (it.hasNext()) {
@@ -324,7 +605,5 @@ public class GameEngine extends Subject {
                 it.remove();
             }
         }
-
     }
-
 }

@@ -38,8 +38,6 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     private int points = 200;
     private int armorLevel = 1;
-    private int movement = 3;
-    private int bullet = 2;
 
     private int dx, dy;   // Player's position and movement direction
     private int speedUnit;
@@ -83,7 +81,6 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         // Set the tank size for collision detection - make it smaller to allow movement
         // Tank should be about 80% of cell size to allow for movement between tiles
-        //setSize(tankSize);
         this.textureFXs.get(dir).setTargetSize(tankSize.width, tankSize.height);
         this.textureFXs.get(dir).draw(g, getX(), getY(), 0.0);
 
@@ -108,7 +105,8 @@ public abstract class AbstractTank extends DynamicGameObject {
             tankHeight = cellHeight;
         }
 
-        setSize(new Dimension(tankWidth, tankHeight));
+        // TODO: Dynamically updating size is not ideal, but necessary for now.
+        setSize(new Dimension(tankWidth, tankHeight));  // Dynamically update tank size.
 
         // Since tank position is center point, calculate proper boundaries
         int halfWidth = tankWidth / 2;
@@ -125,6 +123,10 @@ public abstract class AbstractTank extends DynamicGameObject {
             // Update tank position and direction
             setX(newX);
             setY(newY);
+
+            //GridLocation gLoc = Utils.Loc2GridLoc(new Location(x, y));
+            //GridLocation newGLoc = Utils.Loc2GridLoc(new Location(newX, newY));
+
         } else {}
 
         setDir(dir);
@@ -137,10 +139,6 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     public int getArmorLevel() {return this.armorLevel;}
 
-    public int getMovement() {return this.movement;}
-
-    public int getBullet() {return this.bullet;}
-
     public int getSpeedUnit() {return this.speedUnit;}
 
     public int getMaxSpeedUnit() {return this.maxSpeedUnit;}
@@ -148,10 +146,6 @@ public abstract class AbstractTank extends DynamicGameObject {
     public void setPoints(int points) {this.points = points;}
 
     public void setArmorLevel(int armorLevel) {this.armorLevel = armorLevel;}
-
-    public void setMovement(int movement) {this.movement = movement;}
-
-    public void setBullet(int bullet) {this.bullet = bullet;}
 
     public void setSpeedUnit(int speedUnit) {this.speedUnit = speedUnit;}
 
@@ -206,6 +200,11 @@ public abstract class AbstractTank extends DynamicGameObject {
         armorLevel = armorLevel>0 ? --armorLevel: 0;
     }
 
+    public boolean isDestroyed() {
+        // If armor level is zero, tank is destroyed
+        return this.armorLevel <= 0;
+    }
+
     public void getPowerup(AbstractPowerup powerup) {
 
     }
@@ -239,7 +238,7 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         GridLocation targetLoc;
         if (eagleDistance == -1 && playerDistance == -1) {
-            System.err.println("Eagle or Player distance is null for grid location: " + gLoc);
+            System.err.println("Eagle and Player distance are null for grid location: " + gLoc);
             return;
         } else if (eagleDistance == -1) {
             targetLoc = playerLoc; // If eagle is not reachable, target player

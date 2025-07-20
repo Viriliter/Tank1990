@@ -30,9 +30,12 @@ public abstract class GameObject implements Serializable {
     protected int x;
     protected int y;
     protected Direction dir;
-    protected int depth=0;
+    protected int depth = 0;
     protected int width;
     protected int height;
+
+    // Marked as transient since it can be reconstructed from other fields
+    protected transient RectangleBound boundingBox = null;
 
     public int getX() { return this.x; }
 
@@ -56,4 +59,19 @@ public abstract class GameObject implements Serializable {
 
     public abstract void draw(Graphics g);
 
+    public RectangleBound getBoundingBox() {
+        return new RectangleBound(this.x, this.y, this.width, this.height);
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws java.io.IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        // Reset transient fields after deserialization
+        this.boundingBox = null;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws java.io.IOException {
+        out.defaultWriteObject();
+    }
 }

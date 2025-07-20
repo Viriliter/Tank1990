@@ -35,6 +35,7 @@ import tank1990.core.Globals;
 import tank1990.core.GridLocation;
 import tank1990.core.Location;
 import tank1990.tank.AbstractTank;
+import tank1990.tank.Enemy;
 import tank1990.tile.Tile;
 import tank1990.tile.TileBricks;
 import tank1990.tile.TileEagle;
@@ -98,6 +99,10 @@ public class Bullet extends DynamicGameObject {
         return this.x < 0 || this.x > width || this.y < 0 || this.y > height;
     }
 
+    public boolean isEnemyBullet() {
+        return this.tankInst instanceof Enemy;
+    }
+
     // Implementation of abstract method from DynamicGameObject
     @Override
     public boolean checkCollision() {
@@ -156,6 +161,5 @@ public class Bullet extends DynamicGameObject {
     public String toString() {
         return String.format("Bullet [x=%d, y=%d, dir=%s, speed=%d]", x, y, dir, speed);
     }
-
 
 }

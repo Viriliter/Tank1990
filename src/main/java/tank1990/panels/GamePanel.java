@@ -43,6 +43,8 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     JPanel gamePanel = null;            // Store reference to game content panel
     GameAreaPanel gameplayArea = null;  // Store reference to gameplay area
     JPanel pausePanel = null;           // Store reference to pause overlay panel
+    JPanel gameOverPanel = null;        // Store reference to game over overlay panel
+    JPanel gameScorePanel = null;        // Store reference to game over overlay panel
 
     public GamePanel(JFrame frame, GameMode gameMode) {
         super(frame);
@@ -70,6 +72,16 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case EventType.UPDATE:
             case EventType.STARTED:
                 hidePauseOverlay();
+                break;
+            case EventType.GAMEOVER:
+                showGameOverOverlay();
+                // Add timer to show game score overlay after GAMEOVER_OVERLAY_DURATION seconds
+                Timer gameScoreTimer = new Timer(Globals.GAMEOVER_OVERLAY_DURATION, e -> {
+                    showGameScoreOverlay();
+                });
+                gameScoreTimer.setRepeats(false); // Only execute once
+                gameScoreTimer.start();
+
                 break;
             default:
                 break;
@@ -530,4 +542,65 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             this.rootPanel.repaint();
         }
     }
+
+    private void showGameOverOverlay() {
+        // Don't create multiple pause panels
+        if (this.gameOverPanel != null) {
+            return;
+        }
+
+        // Create pause overlay panel that covers only the gameplay area
+        this.gameOverPanel = new JPanel();
+        this.gameOverPanel.setLayout(new BorderLayout());
+
+        // Create the PAUSE label
+        JLabel pauseLabel = new JLabel("GAME OVER", SwingConstants.CENTER);
+        pauseLabel.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 48));
+        pauseLabel.setForeground(Color.RED);
+
+        // Add label to panel
+        this.gameOverPanel.add(pauseLabel, BorderLayout.CENTER);
+
+        // Set semi-transparent background
+        this.gameOverPanel.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent black
+        this.gameOverPanel.setOpaque(true);
+
+        // Position the pause panel to cover only the gameplay area
+        // Calculate the gameplay area position within the game panel
+        int gameplaySize = Math.min(Globals.WINDOW_WIDTH * 3 / 4, Globals.WINDOW_HEIGHT);
+        this.gameOverPanel.setBounds(0, 0, gameplaySize, gameplaySize);
+        this.gameOverPanel.setVisible(true);
+
+        // Add pause panel to the highest layer
+        this.rootPanel.add(this.gameOverPanel, JLayeredPane.MODAL_LAYER);
+
+        this.rootPanel.revalidate();
+        this.rootPanel.repaint();
+
+
+    }
+
+    private void showGameScoreOverlay() {
+        // Don't create multiple pause panels
+        if (this.gameScorePanel != null) {
+            return;
+        }
+
+        // Create pause overlay panel that covers only the gameplay area
+        // TODO: Reimplement this panel to show game score
+        this.gameScorePanel = new JPanel();
+        this.gameScorePanel.setLayout(new BorderLayout());
+
+        this.gameScorePanel.setBackground(Globals.COLOR_GRAY); // Semi-transparent black
+        this.gameScorePanel.setOpaque(true);
+        this.gameScorePanel.setBounds(0, 0, Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
+        this.gameScorePanel.setVisible(true);
+
+        // Add pause panel to the highest layer
+        this.rootPanel.add(this.gameScorePanel, JLayeredPane.POPUP_LAYER);
+
+        this.rootPanel.revalidate();
+        this.rootPanel.repaint();
+    }
+
 }

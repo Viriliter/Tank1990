@@ -61,7 +61,6 @@ public abstract class Tile extends StaticGameObject {
     public BlockConfiguration getBlockConf() { return this.blockConf; }
 
     public void update() {
-    
     }
     
     public void draw(Graphics g) {

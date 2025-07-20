@@ -39,6 +39,8 @@ public interface Globals {
     int WINDOW_WIDTH = 1040;
     int WINDOW_HEIGHT = 780;
 
+    int GAMEOVER_OVERLAY_DURATION = 3000;
+
     // Tile Parameters
     int TILE_WIDTH = 16;
     int TILE_HEIGHT = 16;
@@ -82,7 +84,6 @@ public interface Globals {
     //KeyEvent.VK_CONTROL: 17: 00010001
     //KeyEvent.KEY_LOCATION_RIGHT: 3: 00000011
     //KeyEvent.KEY_LOCATION_LEFT: 2: 00000010
-
 
     /**
      * PLAYER PARAMETERS
@@ -163,10 +164,10 @@ public interface Globals {
     String TEXTURE_PLAYER1_TANK_PATH = "textures/tank/tank-player-1-right.png";
     
     TankTextureStruct TEXTURE_PLAYER1_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/tank-player-1-right.png",0,0,0),
-            new TextureFXStruct("textures/tank/tank-player-1-downwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/tank-player-1-left.png",0,0,0)
+            new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,-32,0),
+            new TextureFXStruct("textures/tank/tank-player-1-right.png",32,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-downwards.png",0,32,0),
+            new TextureFXStruct("textures/tank/tank-player-1-left.png",-32,0,0)
     );
     TankTextureStruct TEXTURE_PLAYER2_TANK_STRUCT = new TankTextureStruct(
             new TextureFXStruct("textures/tank/tank-player-2-upwards.png",0,0,0),
@@ -203,7 +204,7 @@ public interface Globals {
     /**
      * MISCS TEXTURES
      */
-    int FRAME_DELAY = 5;
+    int FRAME_DELAY = 1;
     SpriteAnimationStruct BLAST_ANIMATION = new SpriteAnimationStruct("textures/miscs/blast.png", 3, FRAME_DELAY, 1, 3, 0, 0);
 
     /**

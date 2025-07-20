@@ -238,4 +238,8 @@ public class RectangleBound extends Rectangle {
         g2d.setTransform(oldTransform);
     }
 
+    public String toString() {
+        return String.format("RectangleBound [x=%d, y=%d, width=%d, height=%d, rRad=%.2f]",
+                             this.x, this.y, this.width, this.height, this.rRad);
+    }
 }

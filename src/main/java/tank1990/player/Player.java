@@ -29,36 +29,22 @@ import java.awt.geom.AffineTransform;
 
 import tank1990.core.*;
 import tank1990.projectiles.Bullet;
+import tank1990.tank.AbstractTank;
 import tank1990.tank.PlayerTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 
 public class Player {
-    private int life;
+    private int remainingLife;
 
     private PlayerTank myTank = null;
     private final PlayerType playerType = PlayerType.PLAYER_1;
 
     public Player(PlayerType playerType) {
-        this.life = Globals.INITAL_PLAYER_HEALTH;
+        this.remainingLife = Globals.INITAL_PLAYER_HEALTH;
 
-        if (playerType == PlayerType.PLAYER_1) {
-            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
-                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).x(),
-                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).y(),
-                                                         Globals.INITIAL_PLAYER_1_DIR);
-            assert myTank== null : "PlayerTank is null for player type: " + playerType;
-            myTank.setDir(Globals.INITIAL_PLAYER_1_DIR);
-            myTank.setPlayerType(playerType);
-        } else {
-            myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
-                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).x(),
-                                                         Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).y(),
-                                                         Globals.INITIAL_PLAYER_2_DIR);
-            assert myTank== null : "PlayerTank is null for player type: " + playerType;
-            myTank.setDir(Globals.INITIAL_PLAYER_2_DIR);
-            myTank.setPlayerType(playerType);
-        }
+        // While creating a player, we spawn the tank
+        spawnTank();
     }
 
     public void draw(Graphics g) {
@@ -98,13 +84,40 @@ public class Player {
     }
 
     public void getDamage() {
-        life = life>0? --life: 0;
+        remainingLife = --remainingLife;
     }
 
     public int getRemainingLife() {
-        return life;
+        return remainingLife;
     }
+
+    public AbstractTank getMyTank() { return myTank; }
+
+    public boolean isTankDestroyed() { return myTank.isDestroyed(); }
 
     public PlayerType getPlayerType() {return this.playerType;}
 
+    public RectangleBound getBoundingBox() { return myTank.getBoundingBox(); }
+
+    public void spawnTank() {
+        remainingLife = remainingLife>0? --remainingLife: 0;
+
+        if (remainingLife >= 0) {
+            if (playerType == PlayerType.PLAYER_1) {
+                myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
+                                                             Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).x(),
+                                                             Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).y(),
+                                                             Globals.INITIAL_PLAYER_1_DIR);
+                myTank.setDir(Globals.INITIAL_PLAYER_1_DIR);
+                myTank.setPlayerType(playerType);
+            } else {
+                myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
+                                                             Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).x(),
+                                                             Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_2_LOC).y(),
+                                                             Globals.INITIAL_PLAYER_2_DIR);
+                myTank.setDir(Globals.INITIAL_PLAYER_2_DIR);
+                myTank.setPlayerType(playerType);
+            }
+        }
+    }
 }
