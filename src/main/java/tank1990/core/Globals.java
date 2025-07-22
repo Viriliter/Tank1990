@@ -151,6 +151,7 @@ public interface Globals {
     /**
      * TILES
      */
+    String TEXTURE_TILE_BRICKS_PATH = "textures/tiles/tile-bricks.png";
 
     TextureFXStruct TEXTURE_TILE_BRICKS = new TextureFXStruct("textures/tiles/tile-bricks.png",0,0,0);
     TextureFXStruct TEXTURE_TILE_STEEL = new TextureFXStruct("textures/tiles/tile-steel.png",0,0,0);
@@ -169,10 +170,10 @@ public interface Globals {
     String ICON_ARMOR_TANK_PATH = "textures/tank/tank-armor-upwards.png";
 
     TankTextureStruct TEXTURE_PLAYER1_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,-32,0),
-            new TextureFXStruct("textures/tank/tank-player-1-right.png",32,0,0),
-            new TextureFXStruct("textures/tank/tank-player-1-downwards.png",0,32,0),
-            new TextureFXStruct("textures/tank/tank-player-1-left.png",-32,0,0)
+            new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-player-1-left.png",0,0,0)
     );
     TankTextureStruct TEXTURE_PLAYER2_TANK_STRUCT = new TankTextureStruct(
             new TextureFXStruct("textures/tank/tank-player-2-upwards.png",0,0,0),

@@ -101,7 +101,6 @@ public abstract class AbstractTank extends DynamicGameObject {
         if (!movementTick.isTimeOut()) return;
         movementTick.reset();
 
-        System.out.println("Tank update time (" + this + "): " +  System.currentTimeMillis());
         this.move(level);
 
         // Get tank dimensions for boundary calculations

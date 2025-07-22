@@ -35,6 +35,8 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
 
     private boolean keyPressDisabled = true;
 
+    private boolean isAnimationFinished = false;
+
     private JLabel labelScoreBasicTank;
     private JLabel labelScoreFastTank;
     private JLabel labelScorePowerTank;
@@ -55,8 +57,10 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
 
     private Timer animationTimer;
 
-    public ScorePanel(JFrame frame, GameScoreStruct gameScore) {
+    public ScorePanel(JFrame frame, JPanel parentPanel, GameScoreStruct gameScore) {
         super(frame);
+
+        setParentPanel(parentPanel);
 
         this.gameScore = gameScore;
 
@@ -373,7 +377,17 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
                         this.gameScore.getPowerTankCount() +
                         this.gameScore.getArmorTankCount()));
 
+                // Stop the animation timer
                 animationTimer.stop();
+                isAnimationFinished = true;
+
+                // Add a delay before calling onAnimationFinished
+                Timer delayTimer = new Timer(3000, e -> {
+                    GamePanel gamePanel = (GamePanel) getParentPanel();
+                    gamePanel.onScorePanelAnimationFinished();
+                });
+                delayTimer.setRepeats(false); // Only execute once
+                delayTimer.start();
             }
         }
 

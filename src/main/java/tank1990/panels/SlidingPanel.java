@@ -78,4 +78,13 @@ public abstract class SlidingPanel extends AbstractPanel{
     protected abstract void animationStarted();
 
     protected abstract void animationFinished();
+
+    protected void resetPanel() {
+        isAnimationFinished = false;
+
+        super.resetPanel();
+
+
+    }
+
 }

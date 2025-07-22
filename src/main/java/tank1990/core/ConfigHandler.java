@@ -41,16 +41,8 @@ public class ConfigHandler implements Serializable{
             int y
     ) {}
 
-    public record PlayerProperties (
-            int initialHealth,
-            int speed
-    ) {}
-
-    public record TankProperties (
-            int points,
-            int health,
-            int movementSpeed,
-            int bulletSpeed
+    public record BattleCityProperties (
+            int hiScore
     ) {}
 
     public record LevelProperties (
@@ -111,63 +103,15 @@ public class ConfigHandler implements Serializable{
         return new WindowProperties(windowWidth, windowHeight, x ,y);
     }
 
-    /**
-     * Returns player properties.
-     * @return The player properties.
-     */
-    public PlayerProperties getPlayerProperties() {
-        int initialHealth = Integer.parseInt(ConfigHandler.ini.get("Player").get("InitialHealth"));
-        int speed = 2; //Integer.parseInt(ConfigHandler.ini.get("Player").get("Speed"));
-        return new PlayerProperties(initialHealth, speed);
-    }
 
     /**
-     * Returns tank properties of the basic type.
-     * @return The enemy properties.
+     * Returns window properties of the game.
+     * @return The weapon properties.
      */
-    public TankProperties getBasicTankProperties() {
-        int points = Integer.parseInt(ConfigHandler.ini.get("BasicTank").get("Points"));
-        int health = Integer.parseInt(ConfigHandler.ini.get("BasicTank").get("Health"));
-        int movement = Integer.parseInt(ConfigHandler.ini.get("BasicTank").get("Movement"));
-        int bullet = Integer.parseInt(ConfigHandler.ini.get("BasicTank").get("Bullet"));
-        return new TankProperties(points, health, movement, bullet);
+    public BattleCityProperties getBattleCityProperties() {
+        int hiScore = Integer.parseInt(ConfigHandler.ini.get("BattleCity").get("HiScore"));
+        return new BattleCityProperties(hiScore);
     }
-    /**
-     * Returns tank properties of the fast type.
-     * @return The enemy properties.
-     */
-    public TankProperties getFastTankProperties() {
-        int points = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Points"));
-        int health = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Health"));
-        int movement = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Movement"));
-        int bullet = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Bullet"));
-        return new TankProperties(points, health, movement, bullet);
-    }
-
-    /**
-     * Returns tank properties of the power type.
-     * @return The enemy properties.
-     */
-    public TankProperties getPowerTankProperties() {
-        int points = Integer.parseInt(ConfigHandler.ini.get("PowerTank").get("Points"));
-        int health = Integer.parseInt(ConfigHandler.ini.get("PowerTank").get("Health"));
-        int movement = Integer.parseInt(ConfigHandler.ini.get("PowerTank").get("Movement"));
-        int bullet = Integer.parseInt(ConfigHandler.ini.get("PowerTank").get("Bullet"));
-        return new TankProperties(points, health, movement, bullet);
-    }
-
-    /**
-     * Returns tank properties of the armor type.
-     * @return The enemy properties.
-     */
-    public TankProperties getArmorTankProperties() {
-        int points = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Points"));
-        int health = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Health"));
-        int movement = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Movement"));
-        int bullet = Integer.parseInt(ConfigHandler.ini.get("FastTank").get("Bullet"));
-        return new TankProperties(points, health, movement, bullet);
-    }
-
 
     /**
      * Returns level properties of the level.

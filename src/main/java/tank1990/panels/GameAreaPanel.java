@@ -42,7 +42,7 @@ public class GameAreaPanel extends JLayeredPane {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        this.gameEngine.paintComponent(g);
+        if (this.gameEngine!=null) this.gameEngine.paintComponent(g);
     }
 }
 

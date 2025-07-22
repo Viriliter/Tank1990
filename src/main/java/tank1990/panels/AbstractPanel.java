@@ -30,7 +30,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class AbstractPanel extends JPanel {
-    protected JFrame frame;                   //*< The parent JFrame that holds this panel. */
+    protected JFrame frame;
+
+    protected JPanel parentPanel;
 
     public AbstractPanel(JFrame frame) {
         this.frame = frame;
@@ -38,6 +40,34 @@ public abstract class AbstractPanel extends JPanel {
         initPanel();
     }
 
+    public void setParentPanel(JPanel parentPanel) { this.parentPanel = parentPanel; }
+
+    public JPanel getParentPanel() { return this.parentPanel; }
+
     protected abstract void initPanel();
 
+    protected void resetPanel() {
+        this.frame.getContentPane().removeAll();
+        this.removeAll();
+        this.setLayout(new BorderLayout());
+        this.setBackground(Color.BLACK);
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+
+        // Add mouse listeners for dragging
+        addMouseListener(new MouseAdapter() {});
+        addMouseMotionListener(new MouseMotionAdapter() {});
+
+        initPanel();
+
+        postInitPanel();
+
+        this.frame.add(this);
+
+        // Revalidate and repaint the panel
+        revalidate();
+        repaint();
+    }
+
+    protected void postInitPanel() {}
 }

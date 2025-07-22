@@ -29,6 +29,7 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import tank1990.Game;
 import tank1990.core.*;
 import tank1990.player.Player;
 
@@ -46,10 +47,12 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     JPanel gameOverPanel = null;        // Store reference to game over overlay panel
     ScorePanel gameScorePanel = null;        // Store reference to game over overlay panel
 
-    public GamePanel(JFrame frame, GameMode gameMode) {
+    public GamePanel(JFrame frame, JPanel parentPanel, GameMode gameMode) {
         super(frame);
 
-        initLayeredPanels();
+        setParentPanel(parentPanel);
+
+        postInitPanel();
 
         this.gameEngine = new GameEngine(gameMode);
         this.gameEngine.subscribe((Observer) this);
@@ -74,6 +77,15 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 hidePauseOverlay();
                 break;
             case EventType.GAMEOVER:
+                // Update Player score if current game score is higher
+                int playerCurrentScore = ((GameScoreStruct) data).getTotalScore();
+                Game.iPlayerScore = Math.max (Game.iPlayerScore, playerCurrentScore);
+
+                // Update high score if current score is higher than the saved high score
+                if (playerCurrentScore > ConfigHandler.getInstance().getBattleCityProperties().hiScore()) {
+                    ConfigHandler.getInstance().setProperty("BattleCity", "HiScore", Integer.toString(playerCurrentScore));
+                }
+
                 showGameOverOverlay();
                 // Add timer to show game score overlay after GAMEOVER_OVERLAY_DURATION seconds
                 Timer gameScoreTimer = new Timer(Globals.GAMEOVER_OVERLAY_DURATION, e -> {
@@ -81,7 +93,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 });
                 gameScoreTimer.setRepeats(false); // Only execute once
                 gameScoreTimer.start();
-
                 break;
             default:
                 break;
@@ -96,7 +107,8 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         addKeyListener(this);
     }
 
-    private void initLayeredPanels() {
+    @Override
+    protected void postInitPanel() {
         // Set this panel's layout to BorderLayout to contain the root panel
         this.setLayout(new BorderLayout());
 
@@ -587,7 +599,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         }
 
         // Create pause overlay panel that covers only the gameplay area
-        this.gameScorePanel = new ScorePanel(this.frame, gameScore);
+        this.gameScorePanel = new ScorePanel(this.frame, this, gameScore);
         this.gameScorePanel.setLayout(new BorderLayout());
 
         this.rootPanel.add(this.gameScorePanel, JLayeredPane.POPUP_LAYER);
@@ -598,4 +610,21 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         this.rootPanel.repaint();
     }
 
+    public void onScorePanelAnimationFinished() {
+        // Reset the game engine
+        this.gameEngine = null;
+
+        // Reset current panel
+        resetPanel();
+
+        // Reset menu panel
+        SwingUtilities.invokeLater(() -> {
+            if (getParentPanel() != null) {
+                MenuPanel menuPanel = (MenuPanel) getParentPanel();
+                menuPanel.resetPanel();
+                this.frame.revalidate();
+                this.frame.repaint();
+            }
+        });
+    }
 }

@@ -3,15 +3,20 @@ package tank1990;
 import javax.swing.*;
 import java.awt.*;
 
+import tank1990.core.ConfigHandler;
 import tank1990.core.Globals;
 import tank1990.panels.MenuPanel;
 
 public class Game {
+    public static int iPlayerScore = 0; // Static variable to hold the player's score
+
     public static void main(String[] args) {
         // Disable DPI scaling to ensure exact pixel dimensions
         //System.setProperty("sun.java2d.dpiaware", "false");
         //System.setProperty("sun.java2d.uiScale", "1.0");
-        
+
+        ConfigHandler.getInstance().parse(Globals.CONFIGURATION_FILE);
+
         SwingUtilities.invokeLater(() -> {
 
             JFrame frame = new JFrame(Globals.GAME_TITLE);

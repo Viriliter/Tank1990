@@ -30,6 +30,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import tank1990.Game;
+import tank1990.core.ConfigHandler;
 import tank1990.core.GameMode;
 import tank1990.core.Globals;
 import tank1990.core.Utils;
@@ -82,7 +84,8 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         panelScore.setBackground(Color.BLACK);
         basePanel.add(panelScore, gbc);
 
-        JLabel labelScore = new JLabel("I- 00 HI- 20000");
+        String textScore = String.format("I-  %02d HI- %05d", Game.iPlayerScore, ConfigHandler.getInstance().getBattleCityProperties().hiScore());
+        JLabel labelScore = new JLabel(textScore);
         labelScore.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 24));
         labelScore.setHorizontalAlignment(SwingConstants.CENTER);
         labelScore.setForeground(Color.WHITE);
@@ -93,16 +96,30 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         gbc.gridy = 1;
         gbc.weighty = 0.35;
         JPanel panelGameTitle = new JPanel();
+        panelGameTitle.setLayout(new BoxLayout(panelGameTitle, BoxLayout.Y_AXIS));
         panelGameTitle.setOpaque(true);
         panelGameTitle.setBackground(Color.BLACK);
-        basePanel.add(panelGameTitle, gbc);
 
-        JLabel labelTitle = new JLabel("<html><div style='text-align:center;'>TANK H<br>1990</div></html>");
-        labelTitle.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 48));
-        labelTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        labelTitle.setForeground(Color.WHITE);
-        panelGameTitle.setLayout(new BorderLayout());
-        panelGameTitle.add(labelTitle, BorderLayout.CENTER);
+        TexturedFontPanel labelTitle = new TexturedFontPanel(Utils.loadPNGIcon(Globals.TEXTURE_TILE_BRICKS_PATH, 64, 64));
+        labelTitle.setText("TANK H");
+        labelTitle.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 68));
+        labelTitle.setBackground(Color.BLACK);
+        labelTitle.setOpaque(true);
+        labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+
+        TexturedFontPanel labelTitle2 = new TexturedFontPanel(Utils.loadPNGIcon(Globals.TEXTURE_TILE_BRICKS_PATH, 64, 64));
+        labelTitle2.setText("1990");
+        labelTitle2.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 68));
+        labelTitle2.setBackground(Color.BLACK);
+        labelTitle2.setOpaque(true);
+        labelTitle2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelTitle2.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
+
+        panelGameTitle.add(labelTitle, BorderLayout.NORTH);
+        panelGameTitle.add(labelTitle2, BorderLayout.SOUTH);
+
+        basePanel.add(panelGameTitle, gbc);
 
         // Selection - 25% height
         gbc.gridy = 2;
@@ -218,7 +235,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             if (selectedIndex==0) {
                 this.frame.getContentPane().removeAll();
 
-                GamePanel gamePanel = new GamePanel(frame, GameMode.MODE_SINGLE_PLAYER);
+                GamePanel gamePanel = new GamePanel(frame, this, GameMode.MODE_SINGLE_PLAYER);
                 this.frame.add(gamePanel);
                 SwingUtilities.invokeLater(() -> {
                     gamePanel.requestFocusInWindow();
@@ -230,7 +247,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             } else if (selectedIndex==1) {
                 this.frame.getContentPane().removeAll();
 
-                GamePanel gamePanel = new GamePanel(frame, GameMode.MODE_MULTI_PLAYER);
+                GamePanel gamePanel = new GamePanel(frame, this, GameMode.MODE_MULTI_PLAYER);
                 this.frame.add(gamePanel);
                 SwingUtilities.invokeLater(() -> {
                     gamePanel.requestFocusInWindow();
@@ -252,6 +269,13 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
 
     @Override protected void animationFinished() {
         updateSelectorVisibility();  // Set the selector icon visible for the selected item after animation finishes
+    }
+
+    @Override
+    protected void resetPanel() {
+        selectedIndex = 0;
+
+        super.resetPanel();
     }
 
 }
