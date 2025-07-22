@@ -61,12 +61,23 @@ public class Bullet extends DynamicGameObject {
 
     @Override
     public void draw(Graphics g) {
+        Dimension dim = Utils.normalizeDimension(g, Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT);
+        this.speed = Utils.normalize(g, Globals.BULLET_SPEED_PER_TICK);
+        setSize(dim);
+
         Graphics2D g2d = (Graphics2D) g;
         AffineTransform oldTransform = g2d.getTransform();
         g2d.setColor(Globals.COLOR_GRAY);
         g2d.translate(x, y);
-        g2d.fillRect((int) -getSize().getWidth(), (int) -getSize().getHeight(), 
-                     (int) getSize().getWidth(), (int) getSize().getHeight());
+
+        if (this.dir == Direction.DIRECTION_DOWNWARDS || this.dir == Direction.DIRECTION_UPWARDS) {
+            g2d.fillRect((int) -dim.getWidth(), (int) -dim.getHeight(),
+                    (int) dim.getWidth(), (int) dim.getHeight());
+        } else {
+            g2d.fillRect((int) -dim.getHeight(), (int) -dim.getWidth(),
+                    (int) dim.getHeight(), (int) dim.getWidth());
+        }
+
         g2d.setTransform(oldTransform);
     }
 

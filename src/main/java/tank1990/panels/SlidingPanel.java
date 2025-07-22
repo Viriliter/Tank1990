@@ -26,32 +26,53 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class SlidingPanel extends AbstractPanel{
+    protected boolean isAnimationFinished = false; // Flag to check if animation is finished
+    private JPanel panel; // The panel to animate
+
     public SlidingPanel(JFrame frame) {
         super(frame);
     }
 
     protected void startAnimation(JPanel panel, int delay) {
+        this.panel = panel;
         int finalY = 0; // Target position (top)
         int step = 5; // Pixels to move per tick
 
         Timer timer = new Timer(delay, null);
         timer.addActionListener(e -> {
-            Point current = panel.getLocation();
+            Point current = this.panel.getLocation();
             int newY = current.y - step;
 
             if (newY <= finalY) {
-                panel.setLocation(0, finalY);
+                this.panel.setLocation(0, finalY);
                 timer.stop();
+                isAnimationFinished = true;
                 animationFinished();
             } else {
-                panel.setLocation(0, newY);
+                this.panel.setLocation(0, newY);
             }
 
-            panel.repaint();
+            this.panel.repaint();
         });
 
         timer.start();
         animationStarted();
+    }
+
+    /**
+     * Finishes the animation forcefully by setting the panel's location to the final position.
+     */
+    protected void finishAnimation() {
+        if (this.panel==null) {
+            System.err.println("Panel is null, the animation might not be started yet.");
+            return;
+        }
+
+        int finalY = 0; // Target position (top)
+        this.panel.setLocation(0, finalY);
+        isAnimationFinished = true;
+        animationFinished();
+        this.panel.repaint();
     }
 
     protected abstract void animationStarted();

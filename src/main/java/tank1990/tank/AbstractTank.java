@@ -45,6 +45,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     private int speed;
     private int maxSpeed; // Maximum speed of the player
 
+    // Do not move tanks after each update call, but after a certain time interval.
+    private TimeTick movementTick;
 
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
@@ -59,6 +61,10 @@ public abstract class AbstractTank extends DynamicGameObject {
         maxSpeedUnit = 0;
         speed = 0;
         maxSpeed = 0;
+
+        // From experimental results, updating tank movement in every 100 milliseconds is a good value.
+        movementTick = new TimeTick(Utils.Time2GameTick(100));
+        movementTick.setRepeats(-1);  // Repeat indefinitely
     }
 
     public void createTextureFXs() {
@@ -89,6 +95,13 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     public void update(GameLevel level) {
+        movementTick.updateTick();
+
+        // Do not update tank position if movement tick is not timed out.
+        if (!movementTick.isTimeOut()) return;
+        movementTick.reset();
+
+        System.out.println("Tank update time (" + this + "): " +  System.currentTimeMillis());
         this.move(level);
 
         // Get tank dimensions for boundary calculations

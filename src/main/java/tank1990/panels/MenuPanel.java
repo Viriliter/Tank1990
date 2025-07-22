@@ -121,9 +121,12 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             gbcIcon.insets = new Insets(5, 5, 5, 5); // optional spacing
             gbcIcon.anchor = GridBagConstraints.WEST;
 
-            JLabel labelSelectorItem = new JLabel(Utils.loadPNGIcon(Globals.ICON_PLAYER1_TANK_PATH, 20, 20));
-            panelSelection.add(labelSelectorItem, gbcIcon);
+            JLabel labelSelectorItem = new JLabel(Utils.loadPNGIcon(Globals.ICON_PLAYER1_TANK_PATH, 32, 32));
+            labelSelectorItem.setPreferredSize(new Dimension(32, 32));
+            labelSelectorItem.setMinimumSize(new Dimension(32, 32));
+            labelSelectorItem.setMaximumSize(new Dimension(32, 32));
             labelSelectorItem.setVisible(false);
+            panelSelection.add(labelSelectorItem, gbcIcon);
             selectorItems.add(labelSelectorItem);
 
             GridBagConstraints gbcText = new GridBagConstraints();
@@ -205,6 +208,12 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             selectedIndex = (selectedIndex + 1) % menuItems.length;
             updateSelectorVisibility();
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            // If animation is not finished yet, finish it before proceeding
+            if (!isAnimationFinished) {
+                finishAnimation();
+            }
+
+
             System.out.println("Selected: " + menuItems[selectedIndex]);
             if (selectedIndex==0) {
                 this.frame.getContentPane().removeAll();
@@ -242,7 +251,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     @Override protected void animationStarted() { }
 
     @Override protected void animationFinished() {
-        if (!selectorItems.isEmpty()) selectorItems.getFirst().setVisible(true);
+        updateSelectorVisibility();  // Set the selector icon visible for the selected item after animation finishes
     }
 
 }
