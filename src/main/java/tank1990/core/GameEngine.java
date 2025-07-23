@@ -446,7 +446,7 @@ public class GameEngine extends Subject {
                         if (tankBounds==null) continue;
 
                         // Check if bullet intersects with player tank
-                        if (bulletBounds.intersects(tankBounds)) {
+                        if (RectangleBound.isCollided(bulletBounds, tankBounds)) {
                             // Check if bullet belongs to enemy
                             if (bullet.isEnemyBullet()) {
                                 // Player tank hit by enemy bullet
@@ -472,7 +472,7 @@ public class GameEngine extends Subject {
                     AbstractTank enemyTank = (AbstractTank) enemy;
                     if (!enemyTank.isDestroyed()) {
                         RectangleBound tankBounds = enemyTank.getBoundingBox();
-                        if (bulletBounds.intersects(tankBounds)) {
+                        if (RectangleBound.isCollided(bulletBounds, tankBounds)) {
                             // Check if bullet belongs to player (don't let enemies shoot themselves)
                             if (!bullet.isEnemyBullet()) {
                                 // Enemy tank hit by player bullet
@@ -508,7 +508,7 @@ public class GameEngine extends Subject {
                     }
 
                     RectangleBound otherBulletBounds = otherBullet.getBoundingBox();
-                    if (bulletBounds.intersects(otherBulletBounds)) {
+                    if (RectangleBound.isCollided(bulletBounds, otherBulletBounds)) {
                         // Check if bullets belong to different teams
                         if (bullet.isEnemyBullet() != otherBullet.isEnemyBullet()) {
                             // Bullets from different teams (enemy vs player tanks) collided - destroy both
@@ -551,73 +551,60 @@ public class GameEngine extends Subject {
         }
 
         RectangleBound bulletBounds = bullet.getBoundingBox();
-        Tile[][] map = gameLevel.getMap();
 
         // Convert bullet position to grid coordinates
         GridLocation bulletGridLoc = Utils.Loc2GridLoc(new Location(bullet.getX(), bullet.getY()));
-        int r = bulletGridLoc.rowIndex();
-        int c = bulletGridLoc.colIndex();
 
-        // Check the current tile and surrounding tiles for collision
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                int checkR = r + dr;
-                int checkC = c + dc;
+        // Get the neighboring tiles of the bullet's grid location
+        Tile[] neighborTiles = gameLevel.getNeighbors(bulletGridLoc);
+        for (Tile tile: neighborTiles) {
 
-                // Check bounds
-                if (checkR < 0 || checkR >= Globals.ROW_TILE_COUNT ||
-                    checkC < 0 || checkC >= Globals.COL_TILE_COUNT) {
-                    continue;
+            if (tile == null) { continue; }
+            RectangleBound tileBounds = tile.getBoundingBox();
+
+            // Check for intersection
+            if (RectangleBound.isCollided(bulletBounds, tileBounds)) {
+                // If the bullet hits to any tile, try to destroy the tile
+                switch(tile.getType()) {
+                    case TILE_BRICKS, TILE_STEEL, TILE_TREES: return tile.destroy(bullet);
+                    case TILE_EAGLE: return destroyEagleTile(tile);
+                    default: break;
                 }
-
-                Tile tile = map[checkR][checkC];
-                if (tile == null) {
-                    continue;
-                }
-
-                // Get tile position and create bounding box
-                Location tilePos = Utils.gridLoc2Loc(new GridLocation(checkR, checkC));
-                RectangleBound tileBounds = new RectangleBound(
-                    tilePos.x(), tilePos.y(),
-                    60, 60
-                );
-
-                // Check for intersection
-                if (bulletBounds.intersects(tileBounds)) {
-                    // Handle different tile types
-                    switch(tile.getType()) {
-                        case TILE_BRICKS: map[checkR][checkC] = null; return true;
-                        case TILE_STEEL: return true;  // Steel blocks bullets but isn't destroyed
-                        case TILE_EAGLE:
-                            map[checkR][checkC] = null;
-                            stop();  // Stop the game engine
-                            GameScoreStruct gameScore = new GameScoreStruct();
-                            gameScore.setTotalScore(GameLevelManager.getInstance().getPlayerScore());
-                            gameScore.setReachedLevel(GameLevelManager.getInstance().getCurrentIndex());
-
-                            // TODO: Add dummy score for now
-                            gameScore.setHiScore(20000);
-                            gameScore.setTotalScore(4900);
-                            gameScore.setReachedLevel(2);
-                            gameScore.setBasicTankCount(6);
-                            gameScore.setBasicTankScore(600);
-                            gameScore.setFastTankCount(5);
-                            gameScore.setFastTankScore(1000);
-                            gameScore.setPowerTankCount(3);
-                            gameScore.setPowerTankScore(900);
-                            gameScore.setArmorTankCount(6);
-                            gameScore.setArmorTankScore(2400);
-
-                            notify(EventType.GAMEOVER, gameScore);   // Eagle is destroyed - this triggers game over
-                            return true;
-                        default: break;
-                    }
-                    // Trees, ice, and water don't stop bullets
-                }
+                // Trees, ice, and water don't stop bullets
+                break;
             }
         }
 
-        return false;
+        return false;  // Do not stop bullet if no collision occurred
+    }
+
+    private boolean destroyEagleTile(Tile tile) {
+        tile.destroy(null);
+
+        stop();  // Stop the game engine
+        GameScoreStruct gameScore = new GameScoreStruct();
+        gameScore.setTotalScore(GameLevelManager.getInstance().getPlayerScore());
+        gameScore.setReachedLevel(GameLevelManager.getInstance().getCurrentIndex());
+
+        // TODO: Add dummy score for now
+        gameScore.setHiScore(20000);
+        gameScore.setTotalScore(4900);
+        gameScore.setReachedLevel(2);
+        gameScore.setBasicTankCount(6);
+        gameScore.setBasicTankScore(600);
+        gameScore.setFastTankCount(5);
+        gameScore.setFastTankScore(1000);
+        gameScore.setPowerTankCount(3);
+        gameScore.setPowerTankScore(900);
+        gameScore.setArmorTankCount(6);
+        gameScore.setArmorTankScore(2400);
+
+        // Add some delay before notifying observers
+        Timer delayedTimer = new Timer(2000, e -> {
+            notify(EventType.GAMEOVER, gameScore);  // Notify observers that the game is over
+        });
+        delayedTimer.start();
+        return true;  // Stop bullet
     }
 
     /**

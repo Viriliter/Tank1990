@@ -24,6 +24,7 @@ package tank1990.tile;
 
 import tank1990.core.Globals;
 import tank1990.core.TextureFX;
+import tank1990.projectiles.Bullet;
 
 public class TileEagle extends Tile {
     public TileEagle(int x, int y, BlockConfiguration blockConf) {
@@ -31,4 +32,11 @@ public class TileEagle extends Tile {
 
         this.textureFX = new TextureFX(Globals.TEXTURE_TILE_EAGLE);
     }
+
+    public boolean destroy(Bullet b) {
+        // Set the texture to the withdraw texture
+        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_WITHDRAW);
+        return true;
+    }
+
 }

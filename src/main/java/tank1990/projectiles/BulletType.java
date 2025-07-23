@@ -20,23 +20,9 @@
  * SOFTWARE.
  */
 
-package tank1990.tile;
+package tank1990.projectiles;
 
-import tank1990.core.Globals;
-import tank1990.core.TextureFX;
-import tank1990.projectiles.Bullet;
-import tank1990.projectiles.BulletType;
-
-public class TileTrees extends Tile {
-    public TileTrees(int x, int y, BlockConfiguration blockConf) {
-        super(x, y, TileType.TILE_TREES, blockConf);
-        setDepth(1);
-
-        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_TREES);
-    }
-
-    public boolean destroy(Bullet b) {
-        if (b.getType() == BulletType.UPGRADED) setAsDestroyed();
-        return false;
-    }
+public enum BulletType {
+    NORMAL,
+    UPGRADED
 }

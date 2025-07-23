@@ -46,8 +46,9 @@ import tank1990.tile.TileTrees;
 
 public class Bullet extends DynamicGameObject {
 
-    AbstractTank tankInst = null;
-    int speed;
+    private AbstractTank tankInst = null;
+    private int speed;
+    private BulletType type;
 
     public Bullet(AbstractTank tankInst, int x, int y, Direction dir, int speed) {
         this.tankInst = tankInst;
@@ -55,8 +56,18 @@ public class Bullet extends DynamicGameObject {
         setY(y);
         setDir(dir);
         setSize(new Dimension(Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT));
-
         this.speed = speed;
+        this.type = BulletType.NORMAL;
+    }
+
+    public Bullet(AbstractTank tankInst, int x, int y, Direction dir, int speed, BulletType type) {
+        this.tankInst = tankInst;
+        setX(x);
+        setY(y);
+        setDir(dir);
+        setSize(new Dimension(Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT));
+        this.speed = speed;
+        this.type = type;
     }
 
     @Override
@@ -90,6 +101,15 @@ public class Bullet extends DynamicGameObject {
             case DIRECTION_LEFT: x -= (int) this.speed; break;
             default: break; 
         }
+    }
+
+
+    public BulletType getType() {
+        return this.type;
+    }
+
+    public void setType(BulletType type) {
+        this.type = type;
     }
 
     public Blast destroy() {

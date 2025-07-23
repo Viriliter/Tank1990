@@ -114,6 +114,21 @@ public class GameLevel {
         this.currentState = state;
     }
 
+    public void update() {
+        for (int row = 0; row < this.map.length; row++) {
+            for (int col = 0; col < this.map[row].length; col++) {
+                Tile tile = this.map[row][col];
+                if (tile == null) continue;
+
+                if (tile.isDestroyed()) {
+                    this.map[row][col] = null; // Set the array element to null
+                } else {
+                    tile.update();
+                }
+            }
+        }
+    }
+
     /**
      * Draws the game level on the provided graphics context.
      * This method iterates through all tiles in the map and draws them
@@ -141,6 +156,25 @@ public class GameLevel {
      */
     public Tile[][] getMap() {
         return this.map;
+    }
+
+    public Tile[] getNeighbors(GridLocation gloc) {
+        if (gloc == null) return null;
+
+        Tile[] neighbors = new Tile[5];
+        int row = gloc.rowIndex();
+        int col = gloc.colIndex();
+
+        // Add the center tile
+        neighbors[0] = this.map[row][col];
+
+        // Check bounds and get neighbors
+        if (row > 0) neighbors[1] = this.map[row - 1][col]; // Up
+        if (col < Globals.COL_TILE_COUNT - 1) neighbors[2] = this.map[row][col + 1]; // Right
+        if (row < Globals.ROW_TILE_COUNT - 1) neighbors[3] = this.map[row + 1][col]; // Down
+        if (col > 0) neighbors[4] = this.map[row][col - 1]; // Left
+
+        return neighbors;
     }
 
     /**

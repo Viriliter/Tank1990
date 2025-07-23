@@ -60,7 +60,7 @@ public abstract class GameObject implements Serializable {
     public abstract void draw(Graphics g);
 
     public RectangleBound getBoundingBox() {
-        return new RectangleBound(this.x, this.y, this.width, this.height);
+        return new RectangleBound(this.x - (int) (this.width*0.5), this.y - (int) (this.height*0.5), this.width, this.height);
     }
 
     private void readObject(java.io.ObjectInputStream in)

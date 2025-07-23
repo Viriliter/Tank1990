@@ -124,7 +124,7 @@ public interface Globals {
     /**
      * GAME ENGINE PARAMETERS
      */
-    int GAME_TICK_MS = 16;
+    int GAME_TICK_MS = 12;
 
     int ENEMY_SPAWN_PROTECTION_TIME = 3;    // Protection time in seconds
     int PLAYER_SPAWN_PROTECTION_TIME = 3;   // Protection time in seconds
@@ -159,6 +159,7 @@ public interface Globals {
     TextureFXStruct TEXTURE_TILE_SEA = new TextureFXStruct("textures/tiles/tile-sea.png",0,0,0);
     TextureFXStruct TEXTURE_TILE_ICE = new TextureFXStruct("textures/tiles/tile-ice.png",0,0,0);
     TextureFXStruct TEXTURE_TILE_EAGLE = new TextureFXStruct("textures/tiles/tile-eagle.png",0,0,0);
+    TextureFXStruct TEXTURE_TILE_WITHDRAW = new TextureFXStruct("textures/tiles/tile-withdraw.png",0,0,0);
 
     /**
      * TANKS

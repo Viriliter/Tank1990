@@ -22,16 +22,17 @@
 
 package tank1990.tile;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 import tank1990.core.*;
+import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 
 public abstract class Tile extends StaticGameObject {
     protected TileType type = null;
     protected BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
     protected TextureFX textureFX = null;
-    protected boolean needDraw = false;
+    protected boolean isDestroyed = false;
 
     protected AbstractTank includedTankInst = null;
 
@@ -41,7 +42,6 @@ public abstract class Tile extends StaticGameObject {
         setX(x);
         setY(y);
         setDir(Direction.DIRECTION_INVALID);
-        //this.gloc = new GridLocation(y, x);
 
         this.type = type;
     }
@@ -50,7 +50,6 @@ public abstract class Tile extends StaticGameObject {
         setX(x);
         setY(y);
         setDir(Direction.DIRECTION_INVALID);
-        this.gloc = new GridLocation(y, x);
 
         this.type = type;
         this.blockConf = blockConf;
@@ -60,21 +59,28 @@ public abstract class Tile extends StaticGameObject {
 
     public BlockConfiguration getBlockConf() { return this.blockConf; }
 
-    public void update() {
-    }
+    public void update() { }
     
     public void draw(Graphics g) {
-        //if (!this.needDraw) return;
         if (this.textureFX == null) {
             System.err.println("Tile textureFX is null for tile: " + this.type);
             return;
         }
-        
+
+        setSize(Utils.normalizeDimension(g, Globals.TILE_WIDTH, Globals.TILE_HEIGHT));
+
+        if (this.gloc==null) {
+            this.gloc = new GridLocation(y, x);
+            Location loc = Utils.gridLoc2Loc(this.gloc);
+
+            setX(loc.x());
+            setY(loc.y());
+        }
+
         // Get the clip bounds of the graphics context
         java.awt.Rectangle clipBounds = g.getClipBounds();
-        this.textureFX.setTargetSize(clipBounds.width/ Globals.COL_TILE_COUNT, clipBounds.height/ Globals.ROW_TILE_COUNT);
-        Location loc = Utils.gridLoc2Loc(this.gloc);
-        this.textureFX.draw(g, loc.x(), loc.y(), 0.0);
+        this.textureFX.setTargetSize(getSize().width, getSize().height);
+        this.textureFX.draw(g, x, y, 0.0);
     }
 
     public void addTank(AbstractTank tank) {
@@ -87,5 +93,35 @@ public abstract class Tile extends StaticGameObject {
 
     public boolean includesTank() {
         return this.includedTankInst!=null;
+    }
+
+    /**
+     * Destroys the tile and returns true if it was successfully destroyed.
+     * If the tile cannot be destroyed, it should return false.
+     * This method should be overridden by subclasses to implement specific destruction logic.
+     * @param b the bullet that is attempting to destroy the tile
+     *
+     * @return true if the tile was successfully destroyed, false otherwise
+     */
+    public abstract boolean destroy(Bullet b);
+
+    public boolean isDestroyed() {
+        return this.isDestroyed;
+    }
+
+    public void setAsDestroyed() {
+        this.isDestroyed = true;
+    }
+
+    public String toString() {
+        return "Tile{" +
+                "type=" + type +
+                ", x=" + x +
+                ", y=" + y +
+                ", width=" + getSize().width +
+                ", height=" + getSize().height +
+                ", LocX=" + Utils.gridLoc2Loc(this.gloc).x() +
+                ", LocY=" + Utils.gridLoc2Loc(this.gloc).y() +
+                '}';
     }
 }

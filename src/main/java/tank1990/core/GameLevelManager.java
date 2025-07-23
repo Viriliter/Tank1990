@@ -82,6 +82,8 @@ public class GameLevelManager {
 
     public AbstractTank update() {
         GameLevel gameLevel = getCurrentLevel();
+        gameLevel.update();
+
         if (this.spawnTick!=null) this.spawnTick.updateTick();
 
         if (gameLevel.getActiveEnemyTankCount()<4 && gameLevel.getEnemyTankCounts()>0) {

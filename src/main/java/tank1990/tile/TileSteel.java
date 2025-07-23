@@ -24,11 +24,18 @@ package tank1990.tile;
 
 import tank1990.core.Globals;
 import tank1990.core.TextureFX;
+import tank1990.projectiles.Bullet;
+import tank1990.projectiles.BulletType;
 
 public class TileSteel extends Tile {
     public TileSteel(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_STEEL, blockConf);
 
         this.textureFX = new TextureFX(Globals.TEXTURE_TILE_STEEL);
+    }
+
+    public boolean destroy(Bullet b) {
+        if (b.getType() == BulletType.UPGRADED) setAsDestroyed();
+        return true;
     }
 }
