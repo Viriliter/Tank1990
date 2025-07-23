@@ -52,7 +52,7 @@ public interface Globals {
     // Bullet Parameters
     int BULLET_WIDTH = 1;
     int BULLET_HEIGHT = 3;
-    int BULLET_SPEED_PER_TICK = 5;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
+    int BULLET_SPEED_PER_TICK = 3;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
     int BLAST_WIDTH = 8;
     int BLAST_HEIGHT = 8;
 
@@ -124,7 +124,7 @@ public interface Globals {
     /**
      * GAME ENGINE PARAMETERS
      */
-    int GAME_TICK_MS = 30;
+    int GAME_TICK_MS = 16;
 
     int ENEMY_SPAWN_PROTECTION_TIME = 3;    // Protection time in seconds
     int PLAYER_SPAWN_PROTECTION_TIME = 3;   // Protection time in seconds

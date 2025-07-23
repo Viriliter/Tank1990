@@ -62,8 +62,8 @@ public abstract class AbstractTank extends DynamicGameObject {
         speed = 0;
         maxSpeed = 0;
 
-        // From experimental results, updating tank movement in every 100 milliseconds is a good value.
-        movementTick = new TimeTick(Utils.Time2GameTick(100));
+        // From experimental results, updating tank movement in every 60 milliseconds is a good value.
+        movementTick = new TimeTick(Utils.Time2GameTick(60));
         movementTick.setRepeats(-1);  // Repeat indefinitely
     }
 

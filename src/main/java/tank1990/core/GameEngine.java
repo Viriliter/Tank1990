@@ -414,6 +414,9 @@ public class GameEngine extends Subject {
      * If a collision occurs, the bullet is destroyed and the appropriate effects are applied.
      */
     private void checkCollisions(GameLevel gameLevel) {
+        // Collect bullets to be removed to avoid ConcurrentModificationException
+        ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
+
         // Check bullet collisions with tiles, tanks, and other bullets
         Iterator<Bullet> bulletIt = this.bullets.iterator();
         while (bulletIt.hasNext()) {
@@ -421,11 +424,16 @@ public class GameEngine extends Subject {
             RectangleBound bulletBounds = bullet.getBoundingBox();
             boolean bulletDestroyed = false;
 
+            // Skip if bullet is already marked for removal
+            if (bulletsToRemove.contains(bullet)) {
+                continue;
+            }
+
             // 1. Check collision with tiles
             if (!bulletDestroyed && checkBulletTileCollision(bullet, gameLevel)) {
                 Blast blast = bullet.destroy();
                 blastFXs.add(blast);
-                bulletIt.remove();
+                bulletsToRemove.add(bullet);
                 bulletDestroyed = true;
                 continue;
             }
@@ -447,7 +455,7 @@ public class GameEngine extends Subject {
 
                                 Blast blast = bullet.destroy();
                                 blastFXs.add(blast);
-                                bulletIt.remove();
+                                bulletsToRemove.add(bullet);
                                 bulletDestroyed = true;
                                 break;
                             }
@@ -477,7 +485,7 @@ public class GameEngine extends Subject {
 
                                 Blast blast = bullet.destroy();
                                 blastFXs.add(blast);
-                                bulletIt.remove();
+                                bulletsToRemove.add(bullet);
                                 bulletDestroyed = true;
                                 break;
                             }
@@ -488,12 +496,14 @@ public class GameEngine extends Subject {
 
             // 4. Check collision with other bullets
             if (!bulletDestroyed) {
-                Iterator<Bullet> otherBulletIt = this.bullets.iterator();
-                while (otherBulletIt.hasNext() && !bulletDestroyed) {
-                    Bullet otherBullet = otherBulletIt.next();
-
+                for (Bullet otherBullet : this.bullets) {
                     // Don't check bullet against itself
                     if (bullet == otherBullet) {
+                        continue;
+                    }
+
+                    // Skip if other bullet is already marked for removal
+                    if (bulletsToRemove.contains(otherBullet)) {
                         continue;
                     }
 
@@ -507,8 +517,8 @@ public class GameEngine extends Subject {
                             blastFXs.add(blast1);
                             blastFXs.add(blast2);
 
-                            bulletIt.remove();
-                            otherBulletIt.remove();
+                            bulletsToRemove.add(bullet);
+                            bulletsToRemove.add(otherBullet);
                             bulletDestroyed = true;
                             break;
                         }
@@ -516,6 +526,9 @@ public class GameEngine extends Subject {
                 }
             }
         }
+
+        // Remove all bullets that were marked for removal
+        this.bullets.removeAll(bulletsToRemove);
     }
 
     /**
