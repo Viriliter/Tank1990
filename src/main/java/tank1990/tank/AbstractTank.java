@@ -22,8 +22,7 @@
 
 package tank1990.tank;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -31,7 +30,6 @@ import java.util.Random;
 import tank1990.core.*;
 import tank1990.powerup.AbstractPowerup;
 import tank1990.projectiles.Bullet;
-import tank1990.tile.*;
 
 public abstract class AbstractTank extends DynamicGameObject {
     private boolean isBulletDestroyed = true;  // Flag to indicate if the bullet fired from the tank is destroyed or not
@@ -50,6 +48,8 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
+
+    RectangleBound mBoundingBoxInfo = null;
 
     public AbstractTank(int x, int y, Direction dir) {
         setX(x);
@@ -92,6 +92,11 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         this.speed = Utils.normalize(g, this.speedUnit);
         this.maxSpeed = Utils.normalize(g, this.maxSpeedUnit);
+
+        if (Globals.SHOW_BOUNDING_BOX) {
+            g.setColor(Color.CYAN);
+            g.drawRect((int) getBoundingBox().getX(), (int) getBoundingBox().getY(), (int) getBoundingBox().getWidth(), (int) getBoundingBox().getHeight());
+        }
     }
 
     public void update(GameLevel level) {
@@ -128,9 +133,10 @@ public abstract class AbstractTank extends DynamicGameObject {
         int newX = Math.max(halfWidth, Math.min(getX() + this.dx, (int) gameAreaSize.getWidth() - halfWidth));
         int newY = Math.max(halfHeight, Math.min(getY() + this.dy, (int) gameAreaSize.getHeight() - halfHeight));
         //System.out.println("newX:" + newX + " newY:" + newY);
+        RectangleBound newTankBound = new RectangleBound(newX-halfWidth, newY-halfHeight, tankWidth, tankHeight);
 
         // Check map constraints by checking neighbor tiles of the player tank
-        boolean isMovable = level.checkMovable(new Location(newX, newY), getSize());
+        boolean isMovable = level.checkMovable(newTankBound);
         if (isMovable) {
             // Update tank position and direction
             setX(newX);
@@ -242,23 +248,25 @@ public abstract class AbstractTank extends DynamicGameObject {
         GridLocation gLoc = Utils.Loc2GridLoc(new Location(x, y));
 
         GridLocation eagleLoc = level.getEagleLocation();
-        GridLocation playerLoc = level.getPlayerLocation();
+        //GridLocation playerLoc = level.getPlayerLocation();
 
         int eagleDistance = level.getEagleDistance(gLoc);
-        int playerDistance = level.getPlayerDistance(gLoc);
-        System.out.println("eagleDistance:" + eagleDistance + " playerDistance:" + playerDistance);
+        //int playerDistance = level.getPlayerDistance(gLoc);
+        System.out.println("eagleDistance:" + eagleDistance /*+ " playerDistance:" + playerDistance*/);
 
-        GridLocation targetLoc;
-        if (eagleDistance == -1 && playerDistance == -1) {
-            System.err.println("Eagle and Player distance are null for grid location: " + gLoc);
-            return;
-        } else if (eagleDistance == -1) {
-            targetLoc = playerLoc; // If eagle is not reachable, target player
-        } else if (playerDistance == -1) {
-            targetLoc = eagleLoc; // If player is not reachable, target eagle
-        } else {
-            targetLoc = (eagleDistance <= playerDistance) ? eagleLoc : playerLoc;
-        }
+        //GridLocation targetLoc;
+        //if (eagleDistance == -1 && playerDistance == -1) {
+        //    System.err.println("Eagle and Player distance are null for grid location: " + gLoc);
+        //    return;
+        //} else if (eagleDistance == -1) {
+        //    targetLoc = playerLoc; // If eagle is not reachable, target player
+        //} else if (playerDistance == -1) {
+        //    targetLoc = eagleLoc; // If player is not reachable, target eagle
+        //} else {
+        //    targetLoc = (eagleDistance <= playerDistance) ? eagleLoc : playerLoc;
+        //}
+
+        GridLocation targetLoc = eagleLoc;
 
         // Determine the direction to move towards the target
         Direction targetDir = null;
@@ -311,7 +319,8 @@ public abstract class AbstractTank extends DynamicGameObject {
         }
 
         // Check if the intended new position is movable
-        boolean isMovable = level.checkMovable(new Location(newX, newY), getSize());
+        RectangleBound newTankBound = new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize().width, getSize().height);
+        boolean isMovable = level.checkMovable(newTankBound);
 
         if (isMovable) {
             // Set the direction and move in the target direction
@@ -358,7 +367,8 @@ public abstract class AbstractTank extends DynamicGameObject {
                         continue;
                 }
 
-                if (level.checkMovable(new Location(lateralX, lateralY), getSize())) {
+                RectangleBound newTankBound_2 = new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize().width, getSize().height);
+                if (level.checkMovable(newTankBound_2)) {
                     // Move laterally
                     setDir(lateralDir);
                     switch (lateralDir) {

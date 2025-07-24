@@ -25,7 +25,10 @@ package tank1990.tile;
 /**
  * Block Configurations
  *
- * X => FULL, 0 => FULL
+ * X => FULL, 0 => EMPTY
+ *
+ * 00 BLOCK_CONF_EMPTY
+ * 00
  *
  * XX BLOCK_CONF_FULL
  * XX
@@ -38,6 +41,7 @@ package tank1990.tile;
  *
  */
 public enum BlockConfiguration {
+    BLOCK_CONF_EMPTY,
     BLOCK_CONF_FULL,
     BLOCK_CONF_1,
     BLOCK_CONF_2,
@@ -50,6 +54,7 @@ public enum BlockConfiguration {
 
     public static BlockConfiguration valueOf(int val) {
         return switch (val) {
+            case (-1) -> BLOCK_CONF_EMPTY;
             case (0) -> BLOCK_CONF_FULL;
             case (1) -> BLOCK_CONF_1;
             case (2) -> BLOCK_CONF_2;

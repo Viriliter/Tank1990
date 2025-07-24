@@ -161,18 +161,22 @@ public class GameLevel {
     public Tile[] getNeighbors(GridLocation gloc) {
         if (gloc == null) return null;
 
-        Tile[] neighbors = new Tile[5];
+        Tile[] neighbors = new Tile[9];
         int row = gloc.rowIndex();
         int col = gloc.colIndex();
 
         // Add the center tile
         neighbors[0] = this.map[row][col];
 
-        // Check bounds and get neighbors
+        // Check bounds and get all 8 neighbors (including corners)
         if (row > 0) neighbors[1] = this.map[row - 1][col]; // Up
         if (col < Globals.COL_TILE_COUNT - 1) neighbors[2] = this.map[row][col + 1]; // Right
         if (row < Globals.ROW_TILE_COUNT - 1) neighbors[3] = this.map[row + 1][col]; // Down
         if (col > 0) neighbors[4] = this.map[row][col - 1]; // Left
+        if (row > 0 && col > 0) neighbors[5] = this.map[row - 1][col - 1]; // Top-Left
+        if (row > 0 && col < Globals.COL_TILE_COUNT - 1) neighbors[6] = this.map[row - 1][col + 1]; // Top-Right
+        if (row < Globals.ROW_TILE_COUNT - 1 && col < Globals.COL_TILE_COUNT - 1) neighbors[7] = this.map[row + 1][col + 1]; // Bottom-Right
+        if (row < Globals.ROW_TILE_COUNT - 1 && col > 0) neighbors[8] = this.map[row + 1][col - 1]; // Bottom-Left
 
         return neighbors;
     }
@@ -358,7 +362,25 @@ public class GameLevel {
         return this.eagleLocation != null && this.map[this.eagleLocation.rowIndex()][this.eagleLocation.colIndex()] != null;
     }
 
-    public boolean checkMovable(Location location, Dimension size) {
+    public boolean checkMovable(RectangleBound tankBound) {
+        GridLocation tankGLoc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX() ,tankBound.getOriginY()));
+        Tile[] neighbors = getNeighbors(tankGLoc);
+
+        for (Tile neighbor : neighbors) {
+            if (neighbor == null) continue;
+
+            if (neighbor.getType() == TileType.TILE_ICE) continue;
+            if (neighbor.getType() == TileType.TILE_TREES) continue;
+
+            RectangleBound tileBound = neighbor.getBoundingBox();
+            // Check if the neighbor tile is occupied by a tank
+            boolean isCollided = RectangleBound.isCollided(tileBound, tankBound);
+            if (isCollided) return false;
+        }
+        return true;
+    }
+
+    public boolean checkMovable2(Location location, Dimension size) {
         int maxWidth = getGameAreaSize().width;
         int maxHeight = getGameAreaSize().height;
 

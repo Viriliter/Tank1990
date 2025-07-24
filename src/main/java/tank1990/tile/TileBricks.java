@@ -97,8 +97,8 @@ public class TileBricks extends Tile {
     }
 
     public boolean destroy(Bullet b) {
-        findHitLocation(b);
-        setAsDestroyed();
+        hit(b.getDir());
+
         return true;
     }
 

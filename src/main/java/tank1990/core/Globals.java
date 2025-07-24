@@ -35,6 +35,9 @@ public interface Globals {
 
     String GAME_TITLE = "TANK 1990 - NES";
 
+    // Debugging Parameters
+    Boolean SHOW_BOUNDING_BOX = false;  // Show bounding box of game objects
+
     // Game Window Dimensions
     int WINDOW_WIDTH = 1040;
     int WINDOW_HEIGHT = 780;

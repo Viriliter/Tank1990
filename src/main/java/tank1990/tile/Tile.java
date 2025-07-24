@@ -38,12 +38,17 @@ public abstract class Tile extends StaticGameObject {
 
     GridLocation gloc = null;
 
+    protected Boolean[][] subpieces = null;
+
     public Tile(int x, int y, TileType type) {
         setX(x);
         setY(y);
         setDir(Direction.DIRECTION_INVALID);
 
         this.type = type;
+        this.blockConf = BlockConfiguration.BLOCK_CONF_FULL;
+        this.subpieces = new Boolean[Globals.TILE_SUBDIVISION][Globals.TILE_SUBDIVISION];
+        setSubPieceVisibility(this.blockConf);
     }
 
     public Tile(int x, int y, TileType type, BlockConfiguration blockConf) {
@@ -53,6 +58,8 @@ public abstract class Tile extends StaticGameObject {
 
         this.type = type;
         this.blockConf = blockConf;
+        this.subpieces = new Boolean[Globals.TILE_SUBDIVISION][Globals.TILE_SUBDIVISION];
+        setSubPieceVisibility(this.blockConf);
     }
 
     public TileType getType() { return this.type; }
@@ -81,14 +88,31 @@ public abstract class Tile extends StaticGameObject {
         java.awt.Rectangle clipBounds = g.getClipBounds();
         this.textureFX.setTargetSize(getSize().width, getSize().height);
         this.textureFX.draw(g, x, y, 0.0);
-    }
 
-    public void addTank(AbstractTank tank) {
-        this.includedTankInst = tank;
-    }
+        boolean allSubpiecesDestroyed = true;
+        // If the sub-pieces are not visible, draw it as a black rectangle
+        for (int r=0; r<Globals.TILE_SUBDIVISION; r++) {
+            for (int c=0; c<Globals.TILE_SUBDIVISION; c++) {
+                if (!this.subpieces[r][c]) {
+                    int subX = x + ((c-2) * getSize().width / Globals.TILE_SUBDIVISION);
+                    int subY = y + ((r-2) * getSize().height / Globals.TILE_SUBDIVISION);
+                    g.setColor(Color.BLACK);
+                    g.fillRect(subX, subY, getSize().width / Globals.TILE_SUBDIVISION, getSize().height / Globals.TILE_SUBDIVISION);
+                } else {
+                    allSubpiecesDestroyed = false;
+                }
+            }
+        }
 
-    public void removeTank() {
-        this.includedTankInst = null;
+        // If all sub-pieces are not visible, set the tile as destroyed
+        if (allSubpiecesDestroyed) {
+            setAsDestroyed();
+        }
+
+        if (Globals.SHOW_BOUNDING_BOX) {
+            g.setColor(Color.pink);
+            g.drawRect((int) getBoundingBox().getX(), (int) getBoundingBox().getY(), (int) getBoundingBox().getWidth(), (int) getBoundingBox().getHeight());
+        }
     }
 
     public boolean includesTank() {
@@ -110,7 +134,195 @@ public abstract class Tile extends StaticGameObject {
     }
 
     public void setAsDestroyed() {
+        System.out.println("setAsDestroyed called for tile: " + this.type);
         this.isDestroyed = true;
+    }
+
+    protected void setSubPieceVisibility(BlockConfiguration blockConfiguration) {
+        for (int r=0; r<Globals.TILE_SUBDIVISION; r++) {
+            for (int c=0; c<Globals.TILE_SUBDIVISION; c++) {
+                this.subpieces[r][c] = false;
+            }
+        }
+
+        if (blockConfiguration == BlockConfiguration.BLOCK_CONF_FULL) {
+            for (int r=0; r<Globals.TILE_SUBDIVISION; r++) {
+                for (int c=0; c<Globals.TILE_SUBDIVISION; c++) {
+                    this.subpieces[r][c] = true;
+                }
+            }
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_1) {
+            this.subpieces[0][0] = true;
+            this.subpieces[0][1] = true;
+            this.subpieces[1][0] = true;
+            this.subpieces[1][1] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_2) {
+            this.subpieces[0][2] = true;
+            this.subpieces[0][3] = true;
+            this.subpieces[1][2] = true;
+            this.subpieces[1][3] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_3) {
+            this.subpieces[2][2] = true;
+            this.subpieces[2][3] = true;
+            this.subpieces[3][2] = true;
+            this.subpieces[3][3] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_4) {
+            this.subpieces[2][0] = true;
+            this.subpieces[2][1] = true;
+            this.subpieces[3][0] = true;
+            this.subpieces[3][1] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_5) {
+            this.subpieces[0][0] = true;
+            this.subpieces[0][1] = true;
+            this.subpieces[0][2] = true;
+            this.subpieces[0][3] = true;
+            this.subpieces[1][0] = true;
+            this.subpieces[1][1] = true;
+            this.subpieces[1][2] = true;
+            this.subpieces[1][3] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_6) {
+            this.subpieces[0][2] = true;
+            this.subpieces[0][3] = true;
+            this.subpieces[1][2] = true;
+            this.subpieces[1][3] = true;
+            this.subpieces[2][2] = true;
+            this.subpieces[2][3] = true;
+            this.subpieces[3][2] = true;
+            this.subpieces[3][3] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_7) {
+            this.subpieces[2][0] = true;
+            this.subpieces[2][1] = true;
+            this.subpieces[2][2] = true;
+            this.subpieces[2][3] = true;
+            this.subpieces[3][0] = true;
+            this.subpieces[3][1] = true;
+            this.subpieces[3][2] = true;
+            this.subpieces[3][3] = true;
+        } else if (blockConfiguration == BlockConfiguration.BLOCK_CONF_8) {
+            this.subpieces[0][0] = true;
+            this.subpieces[0][1] = true;
+            this.subpieces[1][0] = true;
+            this.subpieces[1][1] = true;
+            this.subpieces[2][0] = true;
+            this.subpieces[2][1] = true;
+            this.subpieces[3][0] = true;
+            this.subpieces[3][1] = true;
+        } else { }
+    }
+
+    protected boolean hitRow(Direction hitDir) {
+        boolean isHit = false;
+        if (hitDir == Direction.DIRECTION_DOWNWARDS) {
+            for (int r=0; r<Globals.TILE_SUBDIVISION; r++) {
+                if (this.subpieces[r][0] || this.subpieces[r][1] |
+                    this.subpieces[r][2] || this.subpieces[r][3]) {
+                    this.subpieces[r][0] = false;
+                    this.subpieces[r][1] = false;
+                    this.subpieces[r][2] = false;
+                    this.subpieces[r][3] = false;
+                    isHit = true;
+                    break;
+                }
+            }
+        } else {  // Direction.DIRECTION_UPWARDS
+            for (int r=Globals.TILE_SUBDIVISION-1; r>=0; r--) {
+                if (this.subpieces[r][0] || this.subpieces[r][1] |
+                    this.subpieces[r][2] || this.subpieces[r][3]) {
+                    this.subpieces[r][0] = false;
+                    this.subpieces[r][1] = false;
+                    this.subpieces[r][2] = false;
+                    this.subpieces[r][3] = false;
+                    isHit = true;
+                    break;
+                }
+            }
+        }
+        return isHit;
+    }
+
+    protected boolean hitColumn(Direction hitDir) {
+        boolean isHit = false;
+        if (hitDir == Direction.DIRECTION_LEFT) {
+            for (int c=Globals.TILE_SUBDIVISION-1; c>=0; c--) {
+                if (this.subpieces[0][c] || this.subpieces[1][c] |
+                    this.subpieces[2][c] || this.subpieces[3][c]) {
+                    this.subpieces[0][c] = false;
+                    this.subpieces[1][c] = false;
+                    this.subpieces[2][c] = false;
+                    this.subpieces[3][c] = false;
+                    isHit = true;
+                    break;
+                }
+            }
+        } else {  // Direction.DIRECTION_RIGHT
+            for (int c=0; c<Globals.TILE_SUBDIVISION; c++) {
+                if (this.subpieces[0][c] || this.subpieces[1][c] |
+                    this.subpieces[2][c] || this.subpieces[3][c]) {
+                    this.subpieces[0][c] = false;
+                    this.subpieces[1][c] = false;
+                    this.subpieces[2][c] = false;
+                    this.subpieces[3][c] = false;
+                    isHit = true;
+                    break;
+                }
+            }
+        }
+        return isHit;
+    }
+
+    protected void hit(Direction hitDir) {
+        boolean isHit;
+
+        if (hitDir == Direction.DIRECTION_DOWNWARDS ||
+            hitDir == Direction.DIRECTION_UPWARDS) {
+            isHit = hitRow(hitDir);
+        } else {
+            isHit = hitColumn(hitDir);
+        }
+
+        // If no sub-pieces were hit, set the tile as destroyed
+        if (!isHit) setAsDestroyed();
+    }
+
+    public RectangleBound getBoundingBox() {
+        int minRow = Globals.TILE_SUBDIVISION;
+        int maxRow = -1;
+        int minCol = Globals.TILE_SUBDIVISION;
+        int maxCol = -1;
+
+        // Find the bounds of visible sub-pieces
+        boolean hasVisibleSubpieces = false;
+        for (int r = 0; r < Globals.TILE_SUBDIVISION; r++) {
+            for (int c = 0; c < Globals.TILE_SUBDIVISION; c++) {
+                if (this.subpieces[r][c]) {
+                    hasVisibleSubpieces = true;
+                    minRow = Math.min(minRow, r);
+                    maxRow = Math.max(maxRow, r);
+                    minCol = Math.min(minCol, c);
+                    maxCol = Math.max(maxCol, c);
+                }
+            }
+        }
+
+        // If no visible sub-pieces, return empty bounding box
+        if (!hasVisibleSubpieces) {
+            return new RectangleBound(getX(), getY(), 0, 0);
+        }
+
+        // Calculate sub-piece dimensions
+        int subpieceWidth = getSize().width / Globals.TILE_SUBDIVISION;
+        int subpieceHeight = getSize().height / Globals.TILE_SUBDIVISION;
+
+        // Calculate the actual bounding box dimensions
+        int boundingWidth = (maxCol - minCol + 1) * subpieceWidth;
+        int boundingHeight = (maxRow - minRow + 1) * subpieceHeight;
+
+        // Calculate the top-left position of the visible area (not center)
+        int topLeftX = (getX() - getSize().width / 2) + (minCol * subpieceWidth);
+        int topLeftY = (getY() - getSize().height / 2) + (minRow * subpieceHeight);
+
+        // Return bounding box with top-left position
+        return new RectangleBound(topLeftX, topLeftY, boundingWidth, boundingHeight);
     }
 
     public String toString() {

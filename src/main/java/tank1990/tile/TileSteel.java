@@ -35,7 +35,7 @@ public class TileSteel extends Tile {
     }
 
     public boolean destroy(Bullet b) {
-        if (b.getType() == BulletType.UPGRADED) setAsDestroyed();
+        if (b.getType() == BulletType.UPGRADED) hit(b.getDir());
         return true;
     }
 }
