@@ -139,6 +139,7 @@ public interface Globals {
      */
     int GAME_LEVEL_COUNTS = 5; // Total number of game levels
     int ENEMY_SPAWN_DELAY = 100;
+    int ENEMY_TANK_SPAWN_DELAY_MS = 3000;
 
     /**
      * POWERUPS

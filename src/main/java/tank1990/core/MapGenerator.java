@@ -23,28 +23,30 @@
 package tank1990.core;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import tank1990.tile.BlockConfiguration;
 import tank1990.tile.Tile;
 import tank1990.tile.TileFactory;
 import tank1990.tile.TileType;
+import tank1990.tank.TankType;
 
 public class MapGenerator {
 
-    public static Tile[][] createMap(String filePath) {
-        Tile[][] tiles = loadFromBinary(filePath);
+    public static LevelInfo readLevelInfo(String filePath) {
+        LevelInfo levelInfo = loadFromBinary(filePath);
 
-        return tiles;//createPanel(tiles);
+        return levelInfo;
     }
 
     public static void saveToBinary(String sourceTxtPath, String targetBinPath) {
         ObjectOutputStream os = null;
         try {
-            Tile[][] tiles = MapGenerator.createFromText(sourceTxtPath);
+            LevelInfo levelInfo = MapGenerator.createFromText(sourceTxtPath);
 
             os = new ObjectOutputStream(new FileOutputStream(targetBinPath));
-            os.writeObject(tiles);
+            os.writeObject(levelInfo);
             os.close();
         } catch (FileNotFoundException e) {
             System.err.println("File not found.");
@@ -84,29 +86,51 @@ public class MapGenerator {
         System.out.print("||===|===|===|===|===|===|===|===|===|===|===|===|===||\n");
     }
 
-    private static Tile[][] loadFromBinary(String filePath) {
+    private static LevelInfo loadFromBinary(String filePath) {
         try {
             InputStream inputStream = MapGenerator.class.getClassLoader().getResourceAsStream(filePath);
             ObjectInputStream os = new ObjectInputStream(inputStream);
-            Tile[][] grid = (Tile[][]) os.readObject();
+            LevelInfo levelInfo = (LevelInfo) os.readObject();
             os.close();
-            return grid;
+            return levelInfo;
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static Tile[][] createFromText(String filePath) throws FileNotFoundException {
+    public static LevelInfo createFromText(String filePath) throws FileNotFoundException {
         Tile[][] grid = new Tile[Globals.ROW_TILE_COUNT][Globals.COL_TILE_COUNT];
+        HashMap<TankType, Integer> enemyTankCount = new HashMap<>();
 
         FileInputStream inputStream = new FileInputStream(filePath);
         assert inputStream != null;
         Scanner scanner = new Scanner(inputStream);
+
+        boolean isFirstLine = true;
         try {
             while(scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] params = line.split("\\s+");
+
+                // First line of the text file contains number of enemy tanks
+                if (isFirstLine) {
+                    int i=0;
+
+                    TankType tankType = null;
+                    for (String param : params) {
+                        if (i%2 == 0) {
+                            tankType = TankType.valueOf(param);
+                        } else {
+                            int tankCount = Integer.parseInt(param);
+                            enemyTankCount.put(tankType, tankCount);
+                        }
+                        i++;
+                    }
+
+                    isFirstLine = false;
+                    continue;
+                }
 
                 if (params.length<3) continue;
 
@@ -126,6 +150,6 @@ public class MapGenerator {
             scanner.close();
         }
 
-        return grid;
+        return new LevelInfo(grid, enemyTankCount);
     }
 }

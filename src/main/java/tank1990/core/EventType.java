@@ -7,5 +7,6 @@ public enum EventType {
     UPDATE_MAP,
     PAUSED,
     STARTED,
+    NEXT_LEVEL,
     GAMEOVER
 }

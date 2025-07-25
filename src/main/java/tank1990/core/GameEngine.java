@@ -135,13 +135,12 @@ public class GameEngine extends Subject {
     public void update() {
         // Update map
         GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
-        GameLevelManager.getInstance().update();
+
+        // Update game level
+        updateGameLevel();
 
         // Update players
         updatePlayers(gameLevel);
-
-        // Update players
-        updateGameLevel();
 
         // Update enemies movement
         updateEnemies(gameLevel);
@@ -339,8 +338,10 @@ public class GameEngine extends Subject {
     private void updateGameLevel() {
         GameLevel gameLevel = GameLevelManager.getInstance().getCurrentLevel();
 
-        if (gameLevel.getRemainingEnemyTanks() == 0) {
-            //finishLevel();            
+        // If all tanks are destroyed, go to the next level
+        if (gameLevel.getRemainingEnemyTanks()==0 && gameLevel.getActiveEnemyTankCount()==0) {
+            //goToNextLevel();
+            return;
         }
 
         AbstractTank newEnemyTank = GameLevelManager.getInstance().update();
@@ -480,6 +481,7 @@ public class GameEngine extends Subject {
 
                                 // Remove enemy if destroyed
                                 if (enemyTank.isDestroyed()) {
+                                    gameLevel.decreaseActiveEnemyTank();
                                     enemyIt.remove();
                                 }
 
@@ -578,9 +580,15 @@ public class GameEngine extends Subject {
         return false;  // Do not stop bullet if no collision occurred
     }
 
-    private boolean destroyEagleTile(Tile tile) {
-        tile.destroy(null);
+    private void goToNextLevel() {
+        // Add some delay before notifying observers
+        Timer delayedTimer = new Timer(2000, e -> {
+            notify(EventType.NEXT_LEVEL, null);  // Notify observers that the next level is loaded
+        });
+        delayedTimer.start();
+    }
 
+    private void endGame() {
         stop();  // Stop the game engine
         GameScoreStruct gameScore = new GameScoreStruct();
         gameScore.setTotalScore(GameLevelManager.getInstance().getPlayerScore());
@@ -604,6 +612,12 @@ public class GameEngine extends Subject {
             notify(EventType.GAMEOVER, gameScore);  // Notify observers that the game is over
         });
         delayedTimer.start();
+    }
+
+    private boolean destroyEagleTile(Tile tile) {
+        tile.destroy(null);
+
+        endGame();
         return true;  // Stop bullet
     }
 

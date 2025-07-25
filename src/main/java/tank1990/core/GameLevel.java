@@ -24,9 +24,7 @@
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import tank1990.tank.AbstractTank;
 import tank1990.tank.TankFactory;
@@ -34,6 +32,9 @@ import tank1990.tank.TankType;
 import tank1990.tile.*;
 
 public class GameLevel {
+    // Create a min-heap for spawn location which spawn location anbd timestamp of last enemy tank created.
+    PriorityQueue<Map.Entry<GridLocation, Long>> spawnLocations = new PriorityQueue<>(Comparator.comparingLong(Map.Entry::getValue));
+
     GridLocation[] SPAWN_LOCATIONS = new GridLocation[] {
         new GridLocation(0, 0), new GridLocation(0, 6), new GridLocation(0, 12)
     };
@@ -42,7 +43,7 @@ public class GameLevel {
 
     private LevelState currentState;
 
-    private Tile[][] map;
+    private LevelInfo levelInfo;
 
     private Dimension gameAreaSize;
 
@@ -53,22 +54,22 @@ public class GameLevel {
     
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
-        this.map = MapGenerator.createMap(levelPath);
+        this.levelInfo = MapGenerator.readLevelInfo(levelPath);
         this.enemyTankCounts = new HashMap<TankType, Integer>();
         this.activeEnemyTankCount = 0;
 
         // Set default size values for now, it will be updated on draw method
         this.gameAreaSize = new Dimension(Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
 
-        Map<TankType, Integer> enemyTankCounts = new HashMap<>();
-        enemyTankCounts.put(TankType.FAST_TANK, 2);
-        enemyTankCounts.put(TankType.ARMOR_TANK, 4);
-        enemyTankCounts.put(TankType.POWER_TANK, 3);
-        enemyTankCounts.put(TankType.BASIC_TANK, 11);
-
-        this.setEnemyTankCounts(enemyTankCounts);
+        Map<TankType, Integer> enemyTankCount = this.levelInfo.enemyTankCount;
+        this.setEnemyTankCount(enemyTankCount);
 
         this.eagleLocation = findEagleLocation();
+
+        // Default timestamp for spawn locations is -1 which means invalid
+        spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
+        spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
+        spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
     }
 
     /**
@@ -103,6 +104,10 @@ public class GameLevel {
         return this.activeEnemyTankCount;
     }
 
+    public void decreaseActiveEnemyTank() {
+        this.activeEnemyTankCount = this.activeEnemyTankCount>0 ? this.activeEnemyTankCount - 1 : 0;
+    }
+
     /**
      * Sets the current state of the game level.
      * This method allows the game level to change its state, which can be used
@@ -115,13 +120,25 @@ public class GameLevel {
     }
 
     public void update() {
-        for (int row = 0; row < this.map.length; row++) {
-            for (int col = 0; col < this.map[row].length; col++) {
-                Tile tile = this.map[row][col];
+        // Check timestamp of spawn time. Set the timestamp to invalid if it is too old
+        Map.Entry<GridLocation, Long> oldestSpawnLocationEntry = this.spawnLocations.poll();
+
+        if (oldestSpawnLocationEntry!=null) {
+            if (System.currentTimeMillis() - oldestSpawnLocationEntry.getValue() > Globals.ENEMY_TANK_SPAWN_DELAY_MS) {
+                // Set the timestamp to invalid
+                oldestSpawnLocationEntry.setValue(-1L);
+            }
+            // Update the list
+            this.spawnLocations.add(oldestSpawnLocationEntry);
+        }
+
+        for (int row = 0; row < this.levelInfo.levelGrid.length; row++) {
+            for (int col = 0; col < this.levelInfo.levelGrid[row].length; col++) {
+                Tile tile = this.levelInfo.levelGrid[row][col];
                 if (tile == null) continue;
 
                 if (tile.isDestroyed()) {
-                    this.map[row][col] = null; // Set the array element to null
+                    this.levelInfo.levelGrid[row][col] = null; // Set the array element to null
                 } else {
                     tile.update();
                 }
@@ -138,7 +155,7 @@ public class GameLevel {
      * @param minDepth The minimum depth of tiles to draw.
      */
     public void draw(Graphics g, int minDepth) {
-        for (Tile[] tileRows: this.map) {
+        for (Tile[] tileRows: this.levelInfo.levelGrid) {
             for (Tile tile: tileRows) {
                 if (tile!=null && tile.depth>=minDepth) tile.draw(g);
             }
@@ -155,7 +172,7 @@ public class GameLevel {
      * @return A 2D array of Tile objects representing the game level map.
      */
     public Tile[][] getMap() {
-        return this.map;
+        return this.levelInfo.levelGrid;
     }
 
     public Tile[] getNeighbors(GridLocation gloc) {
@@ -166,17 +183,17 @@ public class GameLevel {
         int col = gloc.colIndex();
 
         // Add the center tile
-        neighbors[0] = this.map[row][col];
+        neighbors[0] = this.levelInfo.levelGrid[row][col];
 
         // Check bounds and get all 8 neighbors (including corners)
-        if (row > 0) neighbors[1] = this.map[row - 1][col]; // Up
-        if (col < Globals.COL_TILE_COUNT - 1) neighbors[2] = this.map[row][col + 1]; // Right
-        if (row < Globals.ROW_TILE_COUNT - 1) neighbors[3] = this.map[row + 1][col]; // Down
-        if (col > 0) neighbors[4] = this.map[row][col - 1]; // Left
-        if (row > 0 && col > 0) neighbors[5] = this.map[row - 1][col - 1]; // Top-Left
-        if (row > 0 && col < Globals.COL_TILE_COUNT - 1) neighbors[6] = this.map[row - 1][col + 1]; // Top-Right
-        if (row < Globals.ROW_TILE_COUNT - 1 && col < Globals.COL_TILE_COUNT - 1) neighbors[7] = this.map[row + 1][col + 1]; // Bottom-Right
-        if (row < Globals.ROW_TILE_COUNT - 1 && col > 0) neighbors[8] = this.map[row + 1][col - 1]; // Bottom-Left
+        if (row > 0) neighbors[1] = this.levelInfo.levelGrid[row - 1][col]; // Up
+        if (col < Globals.COL_TILE_COUNT - 1) neighbors[2] = this.levelInfo.levelGrid[row][col + 1]; // Right
+        if (row < Globals.ROW_TILE_COUNT - 1) neighbors[3] = this.levelInfo.levelGrid[row + 1][col]; // Down
+        if (col > 0) neighbors[4] = this.levelInfo.levelGrid[row][col - 1]; // Left
+        if (row > 0 && col > 0) neighbors[5] = this.levelInfo.levelGrid[row - 1][col - 1]; // Top-Left
+        if (row > 0 && col < Globals.COL_TILE_COUNT - 1) neighbors[6] = this.levelInfo.levelGrid[row - 1][col + 1]; // Top-Right
+        if (row < Globals.ROW_TILE_COUNT - 1 && col < Globals.COL_TILE_COUNT - 1) neighbors[7] = this.levelInfo.levelGrid[row + 1][col + 1]; // Bottom-Right
+        if (row < Globals.ROW_TILE_COUNT - 1 && col > 0) neighbors[8] = this.levelInfo.levelGrid[row + 1][col - 1]; // Bottom-Left
 
         return neighbors;
     }
@@ -203,7 +220,7 @@ public class GameLevel {
      *
      * @param enemyTankCounts A map where keys are TankType and values are the counts of each type.
      */
-    public void setEnemyTankCounts(Map<TankType, Integer> enemyTankCounts) {
+    public void setEnemyTankCount(Map<TankType, Integer> enemyTankCounts) {
         this.enemyTankCounts = enemyTankCounts;
     }
 
@@ -235,15 +252,30 @@ public class GameLevel {
             return null;
         }
 
-        int spawnIndex = random.nextInt(SPAWN_LOCATIONS.length);
-        GridLocation spawnLocation = SPAWN_LOCATIONS[spawnIndex];
+        Map.Entry<GridLocation, Long> spawnLocationEntry = this.spawnLocations.poll();
+
+        if (spawnLocationEntry==null) return null;
+
+        //If spawn time is not old enough, do not spawn any tank
+        if (spawnLocationEntry.getValue()>0) {
+            //Update the list
+            this.spawnLocations.add(spawnLocationEntry);
+            return null;
+        }
+
+        // Set timestamp of spawn time
+        spawnLocationEntry.setValue(System.currentTimeMillis());
+
+        // Update the list
+        this.spawnLocations.add(spawnLocationEntry);
+
         Direction[] directions = Direction.values();
         Direction spawnDir = directions[random.nextInt(1,directions.length)];
 
-        activeEnemyTankCount++;
+        this.activeEnemyTankCount++;
         enemyTankCounts.put(currentTankType, enemyTankCounts.get(currentTankType) - 1);
-        System.out.println("Spawning enemy tank: " + currentTankType + " at " + spawnLocation + " facing " + spawnDir + ". Remaining: " + enemyTankCounts.get(currentTankType) + " Active: " + activeEnemyTankCount);
-        Location loc = Utils.gridLoc2Loc(spawnLocation);
+        System.out.println("Spawning enemy tank: " + currentTankType + " at " + spawnLocationEntry.getKey() + " facing " + spawnDir + ". Remaining: " + enemyTankCounts.get(currentTankType) + " Active: " + activeEnemyTankCount);
+        Location loc = Utils.gridLoc2Loc(spawnLocationEntry.getKey());
 
         return TankFactory.createTank(currentTankType, loc.x(), loc.y(), spawnDir);
     }
@@ -272,7 +304,7 @@ public class GameLevel {
 
         for (int i = 0; i < Globals.ROW_TILE_COUNT; i++) {
             for (int j = 0; j < Globals.COL_TILE_COUNT; j++) {
-                Tile tile = this.map[i][j];
+                Tile tile = this.levelInfo.levelGrid[i][j];
                 if (tile==null) continue;
 
                 if (tile.getType() == TileType.TILE_EAGLE) {
@@ -359,7 +391,7 @@ public class GameLevel {
      * @return true if the eagle is alive, false otherwise.
      */
     public boolean isEagleAlive() {
-        return this.eagleLocation != null && this.map[this.eagleLocation.rowIndex()][this.eagleLocation.colIndex()] != null;
+        return this.eagleLocation != null && this.levelInfo.levelGrid[this.eagleLocation.rowIndex()][this.eagleLocation.colIndex()] != null;
     }
 
     public boolean checkMovable(RectangleBound tankBound) {
@@ -376,77 +408,6 @@ public class GameLevel {
             // Check if the neighbor tile is occupied by a tank
             boolean isCollided = RectangleBound.isCollided(tileBound, tankBound);
             if (isCollided) return false;
-        }
-        return true;
-    }
-
-    public boolean checkMovable2(Location location, Dimension size) {
-        int maxWidth = getGameAreaSize().width;
-        int maxHeight = getGameAreaSize().height;
-
-        Tile[][] map = getMap();
-
-        // Get tank dimensions
-        int tankWidth = (int) size.getWidth();
-        int tankHeight = (int) size.getHeight();
-
-        // If tank size is not set, calculate it based on grid
-        if (tankWidth == 0 || tankHeight == 0) {
-            int cellWidth = maxWidth / Globals.COL_TILE_COUNT;
-            int cellHeight = maxHeight / Globals.ROW_TILE_COUNT;
-            tankWidth = cellWidth - 2;
-            tankHeight = cellHeight - 2;
-        }
-
-        // x and y are the CENTER coordinates of the tank, so we need to calculate the actual corners
-        int halfWidth = tankWidth / 2;
-        int halfHeight = tankHeight / 2;
-
-        // Calculate the actual bounding box corners from the center point
-        int topLeftX = location.x() - halfWidth;
-        int topLeftY = location.y() - halfHeight;
-        int bottomRightX = location.x() + halfWidth - 1;
-        int bottomRightY = location.y() + halfHeight - 1;
-
-        // Check key points around the tank's perimeter
-        int[] checkX = {
-                topLeftX,               // Top-left corner
-                bottomRightX,           // Top-right corner
-                topLeftX,               // Bottom-left corner
-                bottomRightX,           // Bottom-right corner
-                location.x()            // Center point for good measure
-        };
-        int[] checkY = {
-                topLeftY,               // Top-left corner
-                topLeftY,               // Top-right corner
-                bottomRightY,           // Bottom-left corner
-                bottomRightY,           // Bottom-right corner
-                location.y()            // Center point for good measure
-        };
-
-        for (int i = 0; i < checkX.length; i++) {
-            GridLocation gLoc = Utils.Loc2GridLoc(new Location(checkX[i], checkY[i]));
-
-            int r = gLoc.rowIndex();
-            int c = gLoc.colIndex();
-
-            // Check bounds
-            if (r < 0 || r >= Globals.ROW_TILE_COUNT || c < 0 || c >= Globals.COL_TILE_COUNT) {
-                return false;
-            }
-
-            //System.out.println("Checking point " + i + " at row:" + r + " col:" + c + " (coords: " + checkX[i] + "," + checkY[i] + ")");
-
-            if (map[r][c] instanceof TileBricks) { return false; /* player cannot move through bricks*/ }
-            else if (map[r][c] instanceof TileSteel) { return false; /* player cannot move through steel*/ }
-            else if (map[r][c] instanceof TileTrees) { /* player can move through trees*/ }
-            else if (map[r][c] instanceof TileSea) { return false; /* player cannot move through sea unless it has boat*/ }
-            else if (map[r][c] instanceof TileIce) {  /* player can move through ice*/  }
-            else if (map[r][c] instanceof TileEagle) { return false; /* player cannot move through eagle*/ }
-            else { }
-
-            // Check if the tile owns a tank
-            if (map[r][c] != null && map[r][c].includesTank()) return false;
         }
         return true;
     }

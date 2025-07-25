@@ -20,34 +20,20 @@
  * SOFTWARE.
  */
 
-package MapGenerator;
+package tank1990.core;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.Serializable;
+import java.util.HashMap;
 
-import tank1990.core.LevelInfo;
-import tank1990.core.MapGenerator;
+import tank1990.tank.TankType;
+import tank1990.tile.Tile;
 
-public class Main {
-    public static void main(String[] args) {
-        ObjectOutputStream os = null;
-        try {
-            Path txtPath = Paths.get("src", "test", "java", "MapGenerator", "map-stage-01.txt");
-            Path binPath = Paths.get("src", "main", "resources", "maps", "stage-01.bin");
+public class LevelInfo implements Serializable {
+    public Tile[][] levelGrid;
+    public HashMap<TankType, Integer> enemyTankCount;
 
-            LevelInfo levelInfo = MapGenerator.createFromText(txtPath.toString());
-            MapGenerator.printGrid(levelInfo.levelGrid);
-
-            os = new ObjectOutputStream(new FileOutputStream(binPath.toString()));
-            os.writeObject(levelInfo);
-            os.close();
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }    }
+    public LevelInfo(Tile[][] levelGrid, HashMap<TankType, Integer> enemyTankCount) {
+        this.levelGrid = levelGrid;
+        this.enemyTankCount = enemyTankCount;
+    }
 }

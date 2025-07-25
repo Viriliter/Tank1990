@@ -76,6 +76,8 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case EventType.STARTED:
                 hidePauseOverlay();
                 break;
+            case EventType.NEXT_LEVEL:
+                break;
             case EventType.GAMEOVER:
                 // Update Player score if current game score is higher
                 int playerCurrentScore = ((GameScoreStruct) data).getTotalScore();

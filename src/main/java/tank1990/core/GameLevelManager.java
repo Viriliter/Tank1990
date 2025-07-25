@@ -22,10 +22,10 @@
 
 package tank1990.core;
 
-import tank1990.tank.AbstractTank;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import tank1990.tank.AbstractTank;
 
 public class GameLevelManager {
     private List<GameLevel> gameLevels; // List of game levels
@@ -49,6 +49,9 @@ public class GameLevelManager {
         return instance;
     }
 
+    /**
+     * Initializes the game level manager by adding predefined levels.
+     */
     public void addLevels() {
         // Add predefined game levels to the manager
         for (int i = 1; i <= Globals.GAME_LEVEL_COUNTS; i++) {
@@ -73,6 +76,13 @@ public class GameLevelManager {
         return loadLevel(++this.currentLevelIndex % this.gameLevels.size());
     }
 
+    /**
+     * Loads a game level by its index.
+     *
+     * @param levelIndex The index of the level to load.
+     * @return The loaded GameLevel instance.
+     * @throws IndexOutOfBoundsException if the levelIndex is invalid.
+     */
     private GameLevel loadLevel(int levelIndex) {
         if (levelIndex < 0 || levelIndex >= this.gameLevels.size()) {
             throw new IndexOutOfBoundsException("Invalid level index: " + levelIndex);
@@ -80,6 +90,11 @@ public class GameLevelManager {
         return this.gameLevels.get(levelIndex);
     }
 
+    /**
+     * Updates the game level and spawns enemy tanks if conditions are met.
+     *
+     * @return An instance of AbstractTank if an enemy tank is spawned, null otherwise.
+     */
     public AbstractTank update() {
         GameLevel gameLevel = getCurrentLevel();
         gameLevel.update();
@@ -88,7 +103,7 @@ public class GameLevelManager {
 
         if (gameLevel.getActiveEnemyTankCount()<4 && gameLevel.getEnemyTankCounts()>0) {
             if (this.spawnTick==null) {
-                this.spawnTick = new TimeTick(Globals.ENEMY_SPAWN_DELAY);
+                this.spawnTick = new TimeTick(Utils.Time2GameTick(Globals.ENEMY_TANK_SPAWN_DELAY_MS));
                 this.spawnTick.setRepeats(1);
                 return null;
             }
