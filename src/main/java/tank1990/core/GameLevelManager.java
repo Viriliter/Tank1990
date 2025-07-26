@@ -114,7 +114,7 @@ public class GameLevelManager {
         this.gameScore = new GameScoreStruct();
         this.gameScore.setReachedLevel(levelIndex);
         this.gameScore.setHiScore(ConfigHandler.getInstance().getBattleCityProperties().hiScore());
-        this.gameScore.setRemainingTankCount(levelIndex);
+        this.gameScore.setRemainingTankCount(0);
 
         if (this.spawnTick!=null) this.spawnTick.reset();
 
@@ -131,6 +131,8 @@ public class GameLevelManager {
         gameLevel.update();
 
         if (this.spawnTick!=null) this.spawnTick.updateTick();
+
+        this.gameScore.setRemainingTankCount(gameLevel.getEnemyTankCounts());
 
         if (gameLevel.getActiveEnemyTankCount()<4 && gameLevel.getEnemyTankCounts()>0) {
             if (this.spawnTick==null) {

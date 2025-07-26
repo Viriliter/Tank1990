@@ -43,6 +43,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     JPanel getReadyPanel = null;        // Store reference to get ready panel
     JPanel gamePanel = null;            // Store reference to game content panel
     GameAreaPanel gameplayArea = null;  // Store reference to gameplay area
+    GameInfoPanel gameInfoPanel = null; // Store reference to game info panel
     JPanel pausePanel = null;           // Store reference to pause overlay panel
     JPanel gameOverPanel = null;        // Store reference to game over overlay panel
     ScorePanel gameScorePanel = null;        // Store reference to game over overlay panel
@@ -152,20 +153,12 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         gameAreaDimension = this.gameplayArea.getPreferredSize();
 
         // Game Info Panel (1/4 of the width)
-        JPanel gameInfoPanel = new GameInfoPanel();
-        gameInfoPanel.setBackground(Globals.COLOR_GRAY);
-        gameInfoPanel.setPreferredSize(new Dimension(Globals.WINDOW_WIDTH / 4, gameplaySize));
-        gameInfoPanel.setBorder(BorderFactory.createTitledBorder("Game Info"));
-
-        // Add placeholder content to game info panel
-        gameInfoPanel.setLayout(new BoxLayout(gameInfoPanel, BoxLayout.Y_AXIS));
-        JLabel infoLabel = new JLabel("Game Information");
-        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        gameInfoPanel.add(infoLabel);
+        this.gameInfoPanel = new GameInfoPanel(this.frame, this);
+        this.gameInfoPanel.setPreferredSize(new Dimension(Globals.WINDOW_WIDTH / 4, gameplaySize));
 
         // Add components to game content panel
         this.gamePanel.add(this.gameplayArea, BorderLayout.CENTER);
-        this.gamePanel.add(gameInfoPanel, BorderLayout.EAST);
+        this.gamePanel.add(this.gameInfoPanel, BorderLayout.EAST);
 
         // Add game content panel to layered pane (background layer)
         this.rootPanel.add(this.gamePanel, JLayeredPane.DEFAULT_LAYER);

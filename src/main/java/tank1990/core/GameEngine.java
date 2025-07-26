@@ -336,13 +336,13 @@ public class GameEngine extends Subject {
                 p.spawnTank();
             }
 
-            if (p.getRemainingLife() < 0) {
+            if (p.getRemainingLives() < 0) {
                 // Player is dead, remove from the game
                 it.remove();
             }
 
             p.update(gameLevel);
-            GameLevelManager.getInstance().setPlayerLives(p.getRemainingLife());
+            GameLevelManager.getInstance().setPlayerLives(p.getRemainingLives());
         }
 
         // If there are no players left, game is over

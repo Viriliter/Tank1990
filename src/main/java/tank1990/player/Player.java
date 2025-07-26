@@ -22,10 +22,7 @@
 
 package tank1990.player;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 import tank1990.core.*;
 import tank1990.projectiles.Bullet;
@@ -50,13 +47,6 @@ public class Player {
     public void draw(Graphics g) {
         myTank.draw(g);
         //System.out.println("x:" + myTank.getX() + " y:" + myTank.getY() + " dir:" + myTank.getDir() + " speed:" + this.speed);
-
-        Graphics2D g2d = (Graphics2D) g;
-        AffineTransform oldTransform = g2d.getTransform();
-        g2d.setColor(Color.RED);
-        g2d.translate(myTank.getX(), myTank.getY());
-        g2d.fillRect(-5, -5, 5, 5);
-        g2d.setTransform(oldTransform);
     }
 
     public void update(GameLevel level) {
@@ -87,7 +77,7 @@ public class Player {
         remainingLife = --remainingLife;
     }
 
-    public int getRemainingLife() {
+    public int getRemainingLives() {
         return remainingLife;
     }
 

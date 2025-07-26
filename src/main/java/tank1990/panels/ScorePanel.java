@@ -296,6 +296,8 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
             if (this.gameScore.getBasicTankCount() == 0) {
                 labelCountBasicTank.setText(String.format("%d", 0));
                 labelScoreBasicTank.setText(String.format("%4d PTS", 0));
+
+                basicTankUpdated = true;
             } else if (basicTankCount < this.gameScore.getBasicTankCount()) {
                 int scorePerTank = this.gameScore.getBasicTankScore() / this.gameScore.getBasicTankCount();
                 String scoreText = labelScoreBasicTank.getText().trim();
@@ -314,9 +316,10 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
 
         if (!fastTankUpdated && basicTankUpdated) {
             if (this.gameScore.getFastTankCount() == 0) {
-
                 labelCountFastTank.setText(String.format("%d", 0));
                 labelScoreFastTank.setText(String.format("%4d PTS", 0));
+
+                fastTankUpdated = true;
             } else if (fastTankCount < this.gameScore.getFastTankCount()) {
                 int scorePerTank = this.gameScore.getFastTankScore() / this.gameScore.getFastTankCount();
                 String scoreText = labelScoreFastTank.getText().trim();
@@ -337,6 +340,8 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
             if (this.gameScore.getPowerTankCount() == 0) {
                 labelCountPowerTank.setText(String.format("%d", 0));
                 labelScorePowerTank.setText(String.format("%3d PTS", 0));
+
+                powerTankUpdated = true;
             } else if (powerTankCount < this.gameScore.getPowerTankCount()) {
                 int scorePerTank = this.gameScore.getPowerTankScore() / this.gameScore.getPowerTankCount();
                 String scoreText = labelScorePowerTank.getText().trim();
@@ -357,6 +362,13 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
             if (this.gameScore.getArmorTankCount() == 0) {
                 labelCountArmorTank.setText(String.format("%d", 0));
                 labelScoreArmorTank.setText(String.format("%4d PTS", 0));
+
+                armorTankUpdated = true;
+
+                // Animation finished, update total count and stop animation
+                updateTotalCount();
+                stopAnimation();
+
             } else if (armorTankCount < this.gameScore.getArmorTankCount()) {
                 int scorePerTank = this.gameScore.getArmorTankScore() / this.gameScore.getArmorTankCount();
                 String scoreText = labelScoreArmorTank.getText().trim();
@@ -371,22 +383,30 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
 
                 armorTankUpdated = true;
 
-                labelTotalCount.setText(String.format("%d",
-                        this.gameScore.getBasicTankCount() +
-                        this.gameScore.getFastTankCount() +
-                        this.gameScore.getPowerTankCount() +
-                        this.gameScore.getArmorTankCount()));
-
-                // Stop the animation timer
-                animationTimer.stop();
-                isAnimationFinished = true;
-
-                onAnimationFinished();
+                // Animation finished, update total count and stop animation
+                updateTotalCount();
+                stopAnimation();
             }
         }
 
         revalidate();
         repaint();
+    }
+
+    private void stopAnimation() {
+        if (this.animationTimer.isRunning()) {
+            this.animationTimer.stop();
+            isAnimationFinished = true;
+        }
+        onAnimationFinished();
+    }
+
+    private void updateTotalCount() {
+        int totalCount = this.gameScore.getBasicTankCount() +
+                         this.gameScore.getFastTankCount() +
+                         this.gameScore.getPowerTankCount() +
+                         this.gameScore.getArmorTankCount();
+        labelTotalCount.setText(String.format("%d", totalCount));
     }
 
     private void onAnimationFinished() {
