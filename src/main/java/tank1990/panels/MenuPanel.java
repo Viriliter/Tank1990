@@ -219,10 +219,10 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
-            selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length;
+            selectedIndex = selectedIndex>0 ? (selectedIndex - 1 + menuItems.length) % menuItems.length : 0;
             updateSelectorVisibility();
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            selectedIndex = (selectedIndex + 1) % menuItems.length;
+            selectedIndex = selectedIndex<menuItems.length-1 ? (selectedIndex + 1) % menuItems.length : menuItems.length-1;
             updateSelectorVisibility();
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             // If animation is not finished yet, finish it before proceeding
@@ -240,14 +240,24 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
                 SwingUtilities.invokeLater(() -> {
                     gamePanel.requestFocusInWindow();
                     gamePanel.show();
-                    revalidate(); // refresh layout
-                    repaint();    // redraw component
+                    revalidate();
+                    repaint();
                 });
 
             } else if (selectedIndex==1) {  // LOAD GAME
 
             } else if (selectedIndex==2) {  // ABOUT GAME
-                // TODO implement later
+                System.out.println("About Game Selected");
+                this.frame.getContentPane().removeAll();
+
+                AboutGamePanel aboutGamePanel = new AboutGamePanel(frame, this);
+                this.frame.add(aboutGamePanel);
+                SwingUtilities.invokeLater(() -> {
+                    aboutGamePanel.requestFocusInWindow();
+                    aboutGamePanel.setVisible(true);
+                    this.frame.revalidate();
+                    this.frame.repaint();
+                });
             } else {}
         }
     }

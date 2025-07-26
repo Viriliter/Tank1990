@@ -31,6 +31,10 @@ import java.awt.Color;
  * Stores game specific configuration parameters and file paths of the resources that can be used throughout the application life.
  */
 public interface Globals {
+
+    int MAJOR_VERSION = 1;
+    int MINOR_VERSION = 0;
+
     String CONFIGURATION_FILE = "config.ini";
 
     String GAME_TITLE = "TANK 1990 - NES";
