@@ -28,25 +28,39 @@ import java.util.Random;
 
 public class BasicTank extends AbstractTank implements Enemy {
 
+    TimeTick decisionTick;
+
     public BasicTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
         this.tankTextureFxStruct = Globals.TEXTURE_BASIC_TANK_STRUCT;
+        this.decisionTick = new TimeTick(Utils.Time2GameTick(500));
+        this.decisionTick.setRepeats(-1);
         createTextureFXs();
 
         setSpeedUnit(Globals.BASIC_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.BASIC_TANK_MOVEMENT_MAX_SPEED);
     }
 
+    public void update(GameLevel gameLevel) {
+        super.update(gameLevel);
+
+        this.decisionTick.updateTick();
+    }
+
     @Override
     public void move(GameLevel level) {
+        if (!this.decisionTick.isTimeOut()) {
+            return;
+        }
+
         Random random = new Random();
         int behavior = random.nextInt(1,11);
 
         if (behavior<=8) { // Move towards to target with %80 percentage
             moveToTarget(level);
         } else {  // Move randomly with %20 percentage
-            moveToRandom();
+            //moveToRandom();
         }
     }
 

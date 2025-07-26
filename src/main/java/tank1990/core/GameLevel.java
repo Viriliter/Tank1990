@@ -297,7 +297,7 @@ public class GameLevel {
         System.out.println("Spawning enemy tank: " + currentTankType + " at " + spawnLocationEntry.getKey() + " facing " + spawnDir + ". Remaining: " + enemyTankCounts.get(currentTankType) + " Active: " + activeEnemyTankCount);
         Location loc = Utils.gridLoc2Loc(spawnLocationEntry.getKey());
 
-        return TankFactory.createTank(currentTankType, loc.x(), loc.y(), spawnDir);
+        return TankFactory.createTank(currentTankType, loc.x(), loc.y(), Direction.DIRECTION_DOWNWARDS);
     }
 
     /**

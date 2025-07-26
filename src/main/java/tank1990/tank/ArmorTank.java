@@ -28,10 +28,15 @@ import java.util.Random;
 
 public class ArmorTank extends AbstractTank implements Enemy {
 
+    TimeTick decisionTick;
+
     public ArmorTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
         this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_STRUCT;
+        this.decisionTick = new TimeTick(Utils.Time2GameTick(500));
+        this.decisionTick.setRepeats(-1);
+
         createTextureFXs();
 
         setSpeedUnit(Globals.ARMOR_TANK_MOVEMENT_SPEED);
@@ -40,13 +45,17 @@ public class ArmorTank extends AbstractTank implements Enemy {
 
     @Override
     public void move(GameLevel level) {
+        if (!this.decisionTick.isTimeOut()) {
+            return;
+        }
+
         Random random = new Random();
         int behavior = random.nextInt(1,11);
 
         if (behavior<=5) { // Move towards to target with %50 percentage
             moveToTarget(level);
         } else {  // Move randomly with %50 percentage
-            moveToRandom();
+            //moveToRandom();
         }
     }
 

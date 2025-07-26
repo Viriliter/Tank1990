@@ -22,18 +22,21 @@
 
 package tank1990.tank;
 
-import tank1990.core.Direction;
-import tank1990.core.GameLevel;
-import tank1990.core.Globals;
+import tank1990.core.*;
 
 import java.util.Random;
 
 public class PowerTank extends AbstractTank implements Enemy {
 
+    TimeTick decisionTick;
+
     public PowerTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
         this.tankTextureFxStruct = Globals.TEXTURE_POWER_TANK_STRUCT;
+        this.decisionTick = new TimeTick(Utils.Time2GameTick(500));
+        this.decisionTick.setRepeats(-1);
+
         createTextureFXs();
 
         setSpeedUnit(Globals.POWER_TANK_MOVEMENT_SPEED);
@@ -42,13 +45,17 @@ public class PowerTank extends AbstractTank implements Enemy {
 
     @Override
     public void move(GameLevel level) {
+        if (!this.decisionTick.isTimeOut()) {
+            return;
+        }
+
         Random random = new Random();
         int behavior = random.nextInt(1,11);
 
         if (behavior<=8) { // Move towards to target with %80 percentage
             moveToTarget(level);
         } else {  // Move randomly with %20 percentage
-            moveToRandom();
+            //moveToRandom();
         }
     }
 }

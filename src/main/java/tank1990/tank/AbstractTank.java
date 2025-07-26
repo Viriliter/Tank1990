@@ -48,6 +48,11 @@ public abstract class AbstractTank extends DynamicGameObject {
     // Do not move tanks after each update call, but after a certain time interval.
     private TimeTick movementTick;
 
+    // Movement strategy state for consistent movement
+    private Direction currentMovementStrategy = Direction.DIRECTION_DOWNWARDS;
+    private int movementConsistencyCounter = 0;
+    private static final int MIN_MOVEMENT_CONSISTENCY = 5; // Minimum moves in same direction
+
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
 
@@ -246,72 +251,92 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     /**
-     * Moves the tank towards the target location based on the eagle and player distances.
-     * If both are reachable, it moves towards the closer one.
-     * If one is unreachable, it moves towards the reachable one.
-     * If both are unreachable, it does not move.
-     * If direct movement is blocked, tries lateral movement to find alternative path.
+     * Moves the tank towards the target location with consistent movement strategy:
+     * - Continues current movement direction for minimum consistency count
+     * - Primary strategy: Move downwards when possible
+     * - Secondary: Move horizontally towards target when downward blocked
+     * - Maintains direction until blocked to avoid jittery movement
      *
      * @param level The current game level containing eagle and player locations.
      */
     public void moveToTarget(GameLevel level) {
         GridLocation gLoc = Utils.Loc2GridLoc(new Location(x, y));
-
         GridLocation eagleLoc = level.getEagleLocation();
-        //GridLocation playerLoc = level.getPlayerLocation();
 
         int eagleDistance = level.getEagleDistance(gLoc);
-        //int playerDistance = level.getPlayerDistance(gLoc);
-        System.out.println("eagleDistance:" + eagleDistance /*+ " playerDistance:" + playerDistance*/);
-
-        //GridLocation targetLoc;
-        //if (eagleDistance == -1 && playerDistance == -1) {
-        //    System.err.println("Eagle and Player distance are null for grid location: " + gLoc);
-        //    return;
-        //} else if (eagleDistance == -1) {
-        //    targetLoc = playerLoc; // If eagle is not reachable, target player
-        //} else if (playerDistance == -1) {
-        //    targetLoc = eagleLoc; // If player is not reachable, target eagle
-        //} else {
-        //    targetLoc = (eagleDistance <= playerDistance) ? eagleLoc : playerLoc;
-        //}
+        System.out.println("eagleDistance:" + eagleDistance);
 
         GridLocation targetLoc = eagleLoc;
 
-        // Determine the direction to move towards the target
-        Direction targetDir = null;
-
-        // Calculate differences to determine priority direction
+        // Calculate target direction for horizontal movement
         int colDiff = targetLoc.colIndex() - gLoc.colIndex();
-        int rowDiff = targetLoc.rowIndex() - gLoc.rowIndex();
+        Direction horizontalTargetDir = null;
+        if (colDiff < 0) {
+            horizontalTargetDir = Direction.DIRECTION_LEFT;
+        } else if (colDiff > 0) {
+            horizontalTargetDir = Direction.DIRECTION_RIGHT;
+        }
 
-        // Choose the direction based on the largest difference (Manhattan distance approach)
-        if (Math.abs(colDiff) >= Math.abs(rowDiff)) {
-            // Horizontal movement has priority
-            if (colDiff < 0) {
-                targetDir = Direction.DIRECTION_LEFT;
-            } else if (colDiff > 0) {
-                targetDir = Direction.DIRECTION_RIGHT;
-            }
-        } else {
-            // Vertical movement has priority
-            if (rowDiff < 0) {
-                targetDir = Direction.DIRECTION_UPWARDS;
-            } else if (rowDiff > 0) {
-                targetDir = Direction.DIRECTION_DOWNWARDS;
+        // Try to continue current movement strategy if we haven't reached minimum consistency
+        if (movementConsistencyCounter < MIN_MOVEMENT_CONSISTENCY) {
+            if (tryMoveInDirection(currentMovementStrategy, level)) {
+                movementConsistencyCounter++;
+                return;
             }
         }
 
-        // If we're exactly at the target location, don't move
-        if (targetDir == null) {
+        // Reset counter and try new strategy
+        movementConsistencyCounter = 0;
+
+        // Strategy 1: Try downward movement first
+        if (tryMoveInDirection(Direction.DIRECTION_DOWNWARDS, level)) {
+            currentMovementStrategy = Direction.DIRECTION_DOWNWARDS;
+            movementConsistencyCounter = 1;
             return;
         }
 
-        // Calculate the intended new position based on the target direction
+        // Strategy 2: Try horizontal movement towards target
+        if (horizontalTargetDir != null && tryMoveInDirection(horizontalTargetDir, level)) {
+            currentMovementStrategy = horizontalTargetDir;
+            movementConsistencyCounter = 1;
+            return;
+        }
+
+        // Strategy 3: Try alternative horizontal directions
+        Direction[] alternativeDirections = {Direction.DIRECTION_LEFT, Direction.DIRECTION_RIGHT};
+        for (Direction altDir : alternativeDirections) {
+            if (altDir == horizontalTargetDir) continue; // Skip already tried direction
+
+            if (tryMoveInDirection(altDir, level)) {
+                currentMovementStrategy = altDir;
+                movementConsistencyCounter = 1;
+                return;
+            }
+        }
+
+        // Strategy 4: Try upward movement as last resort
+        if (tryMoveInDirection(Direction.DIRECTION_UPWARDS, level)) {
+            currentMovementStrategy = Direction.DIRECTION_UPWARDS;
+            movementConsistencyCounter = 1;
+            return;
+        }
+
+        // If all movements are blocked, rotate to change facing direction
+        rotateRight();
+        movementConsistencyCounter = 0;
+    }
+
+    /**
+     * Helper method to try moving in a specific direction
+     * @param direction The direction to try moving
+     * @param level The game level for collision checking
+     * @return true if movement was successful, false if blocked
+     */
+    private boolean tryMoveInDirection(Direction direction, GameLevel level) {
         int newX = x;
         int newY = y;
 
-        switch (targetDir) {
+        switch (direction) {
             case DIRECTION_UPWARDS:
                 newY -= speed;
                 break;
@@ -325,17 +350,19 @@ public abstract class AbstractTank extends DynamicGameObject {
                 newX += speed;
                 break;
             default:
-                break;
+                return false;
         }
 
-        // Check if the intended new position is movable
-        RectangleBound newTankBound = new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize().width, getSize().height);
-        boolean isMovable = level.checkMovable(newTankBound);
+        RectangleBound newBound = new RectangleBound(
+            newX - getSize().width/2,
+            newY - getSize().height/2,
+            getSize().width,
+            getSize().height
+        );
 
-        if (isMovable) {
-            // Set the direction and move in the target direction
-            setDir(targetDir);
-            switch (targetDir) {
+        if (level.checkMovable(newBound)) {
+            setDir(direction);
+            switch (direction) {
                 case DIRECTION_UPWARDS:
                     decrementDy();
                     break;
@@ -348,121 +375,10 @@ public abstract class AbstractTank extends DynamicGameObject {
                 case DIRECTION_RIGHT:
                     incrementDx();
                     break;
-                default:
-                    break;
             }
-        } else {
-            // If direct movement is blocked, try lateral movement
-            Direction[] lateralDirections = getLateralDirections(targetDir);
-
-            boolean movedLaterally = false;
-            for (Direction lateralDir : lateralDirections) {
-                int lateralX = x;
-                int lateralY = y;
-
-                switch (lateralDir) {
-                    case DIRECTION_UPWARDS:
-                        lateralY -= speed;
-                        break;
-                    case DIRECTION_DOWNWARDS:
-                        lateralY += speed;
-                        break;
-                    case DIRECTION_LEFT:
-                        lateralX -= speed;
-                        break;
-                    case DIRECTION_RIGHT:
-                        lateralX += speed;
-                        break;
-                    default:
-                        continue;
-                }
-
-                RectangleBound newTankBound_2 = new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize().width, getSize().height);
-                if (level.checkMovable(newTankBound_2)) {
-                    // Move laterally
-                    setDir(lateralDir);
-                    switch (lateralDir) {
-                        case DIRECTION_UPWARDS:
-                            decrementDy();
-                            break;
-                        case DIRECTION_DOWNWARDS:
-                            incrementDy();
-                            break;
-                        case DIRECTION_LEFT:
-                            decrementDx();
-                            break;
-                        case DIRECTION_RIGHT:
-                            incrementDx();
-                            break;
-                        default:
-                            break;
-                    }
-                    movedLaterally = true;
-                    break; // Exit loop after successful lateral movement
-                }
-            }
-
-            // If no lateral movement was possible, rotate as last resort
-            if (!movedLaterally) {
-                rotateRight();
-            }
+            return true;
         }
-    }
-
-    /**
-     * Returns the lateral directions (perpendicular to the target direction) for obstacle avoidance.
-     * This helps the tank move sideways when the direct path is blocked.
-     *
-     * @param targetDir The direction towards the target
-     * @return Array of lateral directions to try
-     */
-    private Direction[] getLateralDirections(Direction targetDir) {
-        switch (targetDir) {
-            case DIRECTION_UPWARDS:
-            case DIRECTION_DOWNWARDS:
-                // For vertical movement, try horizontal directions
-                return new Direction[]{Direction.DIRECTION_LEFT, Direction.DIRECTION_RIGHT};
-            case DIRECTION_LEFT:
-            case DIRECTION_RIGHT:
-                // For horizontal movement, try vertical directions
-                return new Direction[]{Direction.DIRECTION_UPWARDS, Direction.DIRECTION_DOWNWARDS};
-            default:
-                return new Direction[]{Direction.DIRECTION_LEFT, Direction.DIRECTION_RIGHT};
-        }
-    }
-
-    /**
-     * Moves the tank to a random direction.
-     * The tank will randomly choose one of the four directions (up, right, down, left)
-     * and move in that direction by updating its dx or dy accordingly.
-     */
-    public void moveToRandom() {
-        Random random = new Random();
-        int randomDirection = random.nextInt(0, 4);
-
-        switch (randomDirection) {
-            case 0 -> setDir(Direction.DIRECTION_UPWARDS);
-            case 1 -> setDir(Direction.DIRECTION_RIGHT);
-            case 2 -> setDir(Direction.DIRECTION_DOWNWARDS);
-            case 3 -> setDir(Direction.DIRECTION_LEFT);
-        }
-
-        switch (getDir()) {
-            case DIRECTION_UPWARDS:
-                decrementDy();
-                break;
-            case DIRECTION_DOWNWARDS:
-                incrementDy();
-                break;
-            case DIRECTION_LEFT:
-                decrementDx();
-                break;
-            case DIRECTION_RIGHT:
-                incrementDx();
-                break;
-            default:
-                break;
-        }
+        return false;
     }
 
     /**
