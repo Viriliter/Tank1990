@@ -40,7 +40,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
 
     private int selectedIndex = 0;
     private static final String[] menuItems = {
-            "1 PLAYER", "2 PLAYERS", "CONSTRUCTION"
+            "START GAME", "LOAD GAME", "ABOUT GAME"
     };
     private static final List<JLabel> selectorItems = new ArrayList<>();
 
@@ -166,7 +166,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         panelCopyRight.setBackground(Color.BLACK);
         basePanel.add(panelCopyRight, gbc);
 
-        JLabel labelCopyRight = new JLabel("© YS 1990");
+        JLabel labelCopyRight = new JLabel(Globals.COPYRIGHT_TEXT);
 
         labelCopyRight.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 24));
         labelCopyRight.setHorizontalAlignment(SwingConstants.CENTER);
@@ -228,8 +228,8 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             // If animation is not finished yet, finish it before proceeding
             if (!isAnimationFinished) {
                 finishAnimation();
+                return;
             }
-
 
             System.out.println("Selected: " + menuItems[selectedIndex]);
             if (selectedIndex==0) {
@@ -244,18 +244,9 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
                     repaint();    // redraw component
                 });
 
-            } else if (selectedIndex==1) {
-                this.frame.getContentPane().removeAll();
+            } else if (selectedIndex==1) {  // LOAD GAME
 
-                GamePanel gamePanel = new GamePanel(frame, this, GameMode.MODE_MULTI_PLAYER);
-                this.frame.add(gamePanel);
-                SwingUtilities.invokeLater(() -> {
-                    gamePanel.requestFocusInWindow();
-                    gamePanel.show();         
-                    revalidate(); // refresh layout
-                    repaint();    // redraw component
-                });
-            } else if (selectedIndex==2) {
+            } else if (selectedIndex==2) {  // ABOUT GAME
                 // TODO implement later
             } else {}
         }

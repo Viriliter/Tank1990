@@ -47,6 +47,8 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     JPanel gameOverPanel = null;        // Store reference to game over overlay panel
     ScorePanel gameScorePanel = null;        // Store reference to game over overlay panel
 
+    private boolean isGameOver = false;
+
     public GamePanel(JFrame frame, JPanel parentPanel, GameMode gameMode) {
         super(frame);
 
@@ -76,12 +78,24 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case EventType.STARTED:
                 hidePauseOverlay();
                 break;
-            case EventType.NEXT_LEVEL:
+            case EventType.NEXT_LEVEL: {
+                this.isGameOver = false;
+                this.gameEngine.reset();
+
+                // Add timer to show game score overlay after GAMEOVER_OVERLAY_DURATION milliseconds
+                Timer gameScoreTimer = new Timer(Globals.GAMEOVER_OVERLAY_DURATION, e -> {
+                    showGameScoreOverlay((GameScoreStruct) data);
+                });
+                gameScoreTimer.setRepeats(false); // Only execute once
+                gameScoreTimer.start();
+
                 break;
-            case EventType.GAMEOVER:
+            }
+            case EventType.GAMEOVER: {
+                this.isGameOver = true;
                 // Update Player score if current game score is higher
                 int playerCurrentScore = ((GameScoreStruct) data).getTotalScore();
-                Game.iPlayerScore = Math.max (Game.iPlayerScore, playerCurrentScore);
+                Game.iPlayerScore = Math.max(Game.iPlayerScore, playerCurrentScore);
 
                 // Update high score if current score is higher than the saved high score
                 if (playerCurrentScore > ConfigHandler.getInstance().getBattleCityProperties().hiScore()) {
@@ -89,13 +103,14 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 }
 
                 showGameOverOverlay();
-                // Add timer to show game score overlay after GAMEOVER_OVERLAY_DURATION seconds
+                // Add timer to show game score overlay after GAMEOVER_OVERLAY_DURATION milliseconds
                 Timer gameScoreTimer = new Timer(Globals.GAMEOVER_OVERLAY_DURATION, e -> {
                     showGameScoreOverlay((GameScoreStruct) data);
                 });
                 gameScoreTimer.setRepeats(false); // Only execute once
                 gameScoreTimer.start();
                 break;
+            }
             default:
                 break;
         }
@@ -411,16 +426,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case (Globals.KEY_PLAYER_1_MOVE_SHOOT):
                 System.out.println("Stopping fire for Player 1");
                 break;
-            /*
-             * TODO: implement Player 2 shooting later
-            case (KeyEvent.VK_CONTROL):
-                if (location == GlobalConstants.KEY_PLAYER_1_MOVE_SHOOT)
-                    gameEngine.stopFire(gameEngine.getPlayer1());
-                else if (location == GlobalConstants.KEY_PLAYER_2_MOVE_SHOOT)
-                    gameEngine.stopFire(gameEngine.getPlayer2());
-                else {}
-                break;
-            */
             case (KeyEvent.VK_ENTER):
                 switch (gameEngine.getCurrentLevel().getCurrentState()) {
                     case LevelState.GET_READY:
@@ -457,7 +462,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
     private void showGetReadyPanel() {
         int levelIndex = this.gameEngine.getCurrentLevelIndex();
-
         // Hide the main game panel
         if (this.gamePanel != null) {
             this.gamePanel.setVisible(false);
@@ -613,20 +617,28 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     }
 
     public void onScorePanelAnimationFinished() {
-        // Reset the game engine
-        this.gameEngine = null;
 
-        // Reset current panel
-        resetPanel();
+        if (this.isGameOver) {
+            // Reset the game engine
+            this.gameEngine = null;
+            GameLevelManager.getInstance().reset();
 
-        // Reset menu panel
-        SwingUtilities.invokeLater(() -> {
-            if (getParentPanel() != null) {
-                MenuPanel menuPanel = (MenuPanel) getParentPanel();
-                menuPanel.resetPanel();
-                this.frame.revalidate();
-                this.frame.repaint();
-            }
-        });
+            // Reset current panel
+            resetPanel();
+
+            // Reset menu panel
+            SwingUtilities.invokeLater(() -> {
+                if (getParentPanel() != null) {
+                    MenuPanel menuPanel = (MenuPanel) getParentPanel();
+                    menuPanel.resetPanel();
+                    this.frame.revalidate();
+                    this.frame.repaint();
+                }
+            });
+        } else {
+            System.out.println("Game Panel: Starting next level...");
+            showGetReadyPanel();
+            this.gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
+        }
     }
 }

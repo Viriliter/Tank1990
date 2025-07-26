@@ -34,6 +34,7 @@ public interface Globals {
     String CONFIGURATION_FILE = "config.ini";
 
     String GAME_TITLE = "TANK 1990 - NES";
+    String COPYRIGHT_TEXT = "Viriliter 2025";
 
     // Debugging Parameters
     Boolean SHOW_BOUNDING_BOX = false;  // Show bounding box of game objects

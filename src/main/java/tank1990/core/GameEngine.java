@@ -259,6 +259,27 @@ public class GameEngine extends Subject {
         if (this.gameTimer!=null) this.gameTimer.stop();
     }
 
+    public void reset() {
+        this.isStopped = false;
+        this.isPaused = false;
+
+        // Reset game objects
+        this.players.clear();
+        this.enemies.clear();
+        this.powerups.clear();
+        this.blastFXs.clear();
+        this.bullets.clear();
+
+        // Add first player by default
+        players.add(new Player(PlayerType.PLAYER_1));
+
+        // Add second player if game mode is multiplayer
+        if (this.gameMode==GameMode.MODE_MULTI_PLAYER) {
+            players.add(new Player(PlayerType.PLAYER_2));
+        }
+
+    }
+
     /**
      * Loads the next game level.
      * This method stops the current game level and loads the next one from the GameLevelManager.
@@ -340,7 +361,7 @@ public class GameEngine extends Subject {
 
         // If all tanks are destroyed, go to the next level
         if (gameLevel.getRemainingEnemyTanks()==0 && gameLevel.getActiveEnemyTankCount()==0) {
-            //goToNextLevel();
+            goToNextLevel();
             return;
         }
 
@@ -482,6 +503,7 @@ public class GameEngine extends Subject {
                                 // Remove enemy if destroyed
                                 if (enemyTank.isDestroyed()) {
                                     gameLevel.decreaseActiveEnemyTank();
+                                    updateEnemyTankScore(enemyTank);
                                     enemyIt.remove();
                                 }
 
@@ -580,36 +602,28 @@ public class GameEngine extends Subject {
         return false;  // Do not stop bullet if no collision occurred
     }
 
+    private void updateEnemyTankScore(AbstractTank enemyTank) {
+        if (enemyTank==null) return;
+
+        GameLevelManager.getInstance().addTankScore(enemyTank);
+    }
+
     private void goToNextLevel() {
+        stop();  // Stop the game engine
+
         // Add some delay before notifying observers
         Timer delayedTimer = new Timer(2000, e -> {
-            notify(EventType.NEXT_LEVEL, null);  // Notify observers that the next level is loaded
+            notify(EventType.NEXT_LEVEL, GameLevelManager.getInstance().getGameScore());  // Notify observers that the next level is loaded
         });
         delayedTimer.start();
     }
 
     private void endGame() {
         stop();  // Stop the game engine
-        GameScoreStruct gameScore = new GameScoreStruct();
-        gameScore.setTotalScore(GameLevelManager.getInstance().getPlayerScore());
-        gameScore.setReachedLevel(GameLevelManager.getInstance().getCurrentIndex());
-
-        // TODO: Add dummy score for now
-        gameScore.setHiScore(20000);
-        gameScore.setTotalScore(4900);
-        gameScore.setReachedLevel(2);
-        gameScore.setBasicTankCount(6);
-        gameScore.setBasicTankScore(600);
-        gameScore.setFastTankCount(5);
-        gameScore.setFastTankScore(1000);
-        gameScore.setPowerTankCount(3);
-        gameScore.setPowerTankScore(900);
-        gameScore.setArmorTankCount(6);
-        gameScore.setArmorTankScore(2400);
 
         // Add some delay before notifying observers
         Timer delayedTimer = new Timer(2000, e -> {
-            notify(EventType.GAMEOVER, gameScore);  // Notify observers that the game is over
+            notify(EventType.GAMEOVER, GameLevelManager.getInstance().getGameScore());  // Notify observers that the game is over
         });
         delayedTimer.start();
     }
