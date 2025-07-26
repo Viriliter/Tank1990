@@ -381,18 +381,22 @@ public class ScorePanel extends AbstractPanel implements KeyListener {
                 animationTimer.stop();
                 isAnimationFinished = true;
 
-                // Add a delay before calling onAnimationFinished
-                Timer delayTimer = new Timer(3000, e -> {
-                    GamePanel gamePanel = (GamePanel) getParentPanel();
-                    gamePanel.onScorePanelAnimationFinished();
-                });
-                delayTimer.setRepeats(false); // Only execute once
-                delayTimer.start();
+                onAnimationFinished();
             }
         }
 
         revalidate();
         repaint();
+    }
+
+    private void onAnimationFinished() {
+        // Add a delay before calling onAnimationFinished
+        Timer delayTimer = new Timer(3000, e -> {
+            GamePanel gamePanel = (GamePanel) getParentPanel();
+            gamePanel.onScorePanelAnimationFinished();
+        });
+        delayTimer.setRepeats(false); // Only execute once
+        delayTimer.start();
     }
 
     public void showPanel() {

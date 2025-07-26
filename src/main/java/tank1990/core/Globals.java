@@ -175,6 +175,10 @@ public interface Globals {
     String ICON_POWER_TANK_PATH = "textures/tank/tank-power-upwards.png";
     String ICON_ARMOR_TANK_PATH = "textures/tank/tank-armor-upwards.png";
 
+    String ICON_ENEMY_TANK_PATH = "textures/miscs/enemy-icon.png";
+    String ICON_PLAYER_LIFE_PATH = "textures/miscs/player-life.png";
+    String ICON_STAGE_PATH = "textures/miscs/stage-icon.png";
+
     TankTextureStruct TEXTURE_PLAYER1_TANK_STRUCT = new TankTextureStruct(
             new TextureFXStruct("textures/tank/tank-player-1-upwards.png",0,0,0),
             new TextureFXStruct("textures/tank/tank-player-1-right.png",0,0,0),

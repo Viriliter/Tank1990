@@ -25,6 +25,8 @@ package tank1990.core;
 public class GameScoreStruct {
     private int hiScore = 0;
     private int totalScore = 0;
+    private int playerRemainingLives = 0;
+    private int remainingTankCount = 0;
     private int reachedLevel = 0;
     private int basicTankCount = 0;
     private int fastTankCount = 0;
@@ -39,6 +41,8 @@ public class GameScoreStruct {
 
     public int getHiScore() {return this.hiScore; }
     public int getTotalScore() {return this.totalScore; }
+    public int getPlayerRemainingLives() {return this.playerRemainingLives; }
+    public int getRemainingTankCount() {return this.remainingTankCount; }
     public int getReachedLevel() {return this.reachedLevel; }
     public int getBasicTankCount() {return this.basicTankCount; }
     public int getFastTankCount() {return this.fastTankCount; }
@@ -51,6 +55,8 @@ public class GameScoreStruct {
 
     public void setHiScore(int hiScore) { this.hiScore = hiScore; }
     public void setTotalScore(int totalScore) { this.totalScore = totalScore; }
+    public void setPlayerRemainingLives(int playerRemainingLives) {this.playerRemainingLives = playerRemainingLives; }
+    public void setRemainingTankCount(int remainingTankCount) {this.remainingTankCount = remainingTankCount; }
     public void setReachedLevel(int reachedLevel) { this.reachedLevel = reachedLevel; }
     public void setBasicTankCount(int basicTankCount) { this.basicTankCount = basicTankCount; }
     public void setFastTankCount(int fastTankCount) { this.fastTankCount = fastTankCount; }

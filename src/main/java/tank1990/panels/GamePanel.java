@@ -74,11 +74,14 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             case EventType.PAUSED:
                 showPauseOverlay();
                 break;
-            case EventType.UPDATE:
+            case EventType.UPDATE_GAME_INFO:
+                this.gameInfoPanel.update((GameScoreStruct) data);
+                break;
             case EventType.STARTED:
                 hidePauseOverlay();
                 break;
             case EventType.NEXT_LEVEL: {
+                System.out.println("Game Panel: Next Level Event Triggered");
                 this.isGameOver = false;
                 this.gameEngine.reset();
 
@@ -92,6 +95,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 break;
             }
             case EventType.GAMEOVER: {
+                System.out.println("Game Panel: Game Over Event Triggered");
                 this.isGameOver = true;
                 // Update Player score if current game score is higher
                 int playerCurrentScore = ((GameScoreStruct) data).getTotalScore();
@@ -457,7 +461,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     public void show() {
         this.gameEngine.loadGameLevel();
         showGetReadyPanel();
-        this.gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
     }
 
     private void showGetReadyPanel() {
@@ -485,16 +488,25 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         
         this.rootPanel.revalidate();
         this.rootPanel.repaint();
+
+        this.gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
     }
 
     private void showGamePanel() {
-        // Hide the get ready panel
+        //  Clean up the get ready panel
         if (this.getReadyPanel != null) {
             this.getReadyPanel.setVisible(false);
             this.rootPanel.remove(getReadyPanel);
             this.getReadyPanel = null;
         }
-        
+
+        //  Clean up the score panel if it exists
+        if (this.gameScorePanel != null) {
+            this.gameScorePanel.setVisible(false);
+            this.rootPanel.remove(this.gameScorePanel);
+            this.gameScorePanel = null;
+        }
+
         // Show the main game panel
         if (this.gamePanel != null) {
             this.gamePanel.setVisible(true);
@@ -599,6 +611,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     }
 
     private void showGameScoreOverlay(GameScoreStruct gameScore) {
+        System.out.println("Game Panel: Showing game score overlay...");
         // Don't create multiple pause panels
         if (this.gameScorePanel != null) {
             return;
@@ -617,6 +630,12 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     }
 
     public void onScorePanelAnimationFinished() {
+        // Clean up the score panel first
+        if (this.gameScorePanel != null) {
+            this.gameScorePanel.setVisible(false);
+            this.rootPanel.remove(this.gameScorePanel);
+            this.gameScorePanel = null;
+        }
 
         if (this.isGameOver) {
             // Reset the game engine
@@ -637,8 +656,17 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
             });
         } else {
             System.out.println("Game Panel: Starting next level...");
-            showGetReadyPanel();
-            this.gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
+
+            // Ensure proper cleanup and revalidation before showing ready panel
+            this.rootPanel.revalidate();
+            this.rootPanel.repaint();
+
+            // Use SwingUtilities.invokeLater to ensure UI updates are processed
+            SwingUtilities.invokeLater(() -> {
+                this.gameEngine.loadGameLevel();
+                showGetReadyPanel();
+                requestFocus(); // Ensure the panel has focus for key events
+            });
         }
     }
 }

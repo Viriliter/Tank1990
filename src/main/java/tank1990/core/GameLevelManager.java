@@ -93,7 +93,8 @@ public class GameLevelManager {
     }
 
     public GameLevel nextLevel() {
-        return loadLevel(++this.currentLevelIndex % this.gameLevels.size());
+        currentLevelIndex = Math.max(1, ++this.currentLevelIndex % (this.gameLevels.size()+1));
+        return loadLevel(currentLevelIndex);
     }
 
     /**
@@ -104,7 +105,7 @@ public class GameLevelManager {
      * @throws IndexOutOfBoundsException if the levelIndex is invalid.
      */
     private GameLevel loadLevel(int levelIndex) {
-        System.out.println("Loading level: " + (levelIndex + 1));
+        System.out.println("Loading level: " + levelIndex);
 
         if (levelIndex < 0 || levelIndex >= this.gameLevels.size()) {
             throw new IndexOutOfBoundsException("Invalid level index: " + levelIndex);
@@ -113,6 +114,7 @@ public class GameLevelManager {
         this.gameScore = new GameScoreStruct();
         this.gameScore.setReachedLevel(levelIndex);
         this.gameScore.setHiScore(ConfigHandler.getInstance().getBattleCityProperties().hiScore());
+        this.gameScore.setRemainingTankCount(levelIndex);
 
         if (this.spawnTick!=null) this.spawnTick.reset();
 
@@ -178,5 +180,11 @@ public class GameLevelManager {
         addPlayerScore(tank.getPoints());
         this.totalPlayerScore = this.gameScore.getTotalScore();
 
+    }
+
+    public void setPlayerLives(int lives) {
+        if (this.gameScore != null) {
+            this.gameScore.setPlayerRemainingLives(lives);
+        }
     }
 }

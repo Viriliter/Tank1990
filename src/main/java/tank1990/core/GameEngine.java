@@ -342,6 +342,7 @@ public class GameEngine extends Subject {
             }
 
             p.update(gameLevel);
+            GameLevelManager.getInstance().setPlayerLives(p.getRemainingLife());
         }
 
         // If there are no players left, game is over
@@ -361,6 +362,7 @@ public class GameEngine extends Subject {
 
         // If all tanks are destroyed, go to the next level
         if (gameLevel.getRemainingEnemyTanks()==0 && gameLevel.getActiveEnemyTankCount()==0) {
+            System.out.println("All enemy tanks destroyed, going to next level...");
             goToNextLevel();
             return;
         }
@@ -560,7 +562,7 @@ public class GameEngine extends Subject {
      * This method can be expanded later to include more detailed game statistics.
      */
     private void updateGameInfo() {
-        // TODO implement later
+        notify(EventType.UPDATE_GAME_INFO, GameLevelManager.getInstance().getGameScore());  // Notify observers that the next level is loaded
     }
 
     /**
@@ -616,6 +618,7 @@ public class GameEngine extends Subject {
             notify(EventType.NEXT_LEVEL, GameLevelManager.getInstance().getGameScore());  // Notify observers that the next level is loaded
         });
         delayedTimer.start();
+        delayedTimer.setRepeats(false);
     }
 
     private void endGame() {
