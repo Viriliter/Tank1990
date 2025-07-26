@@ -26,6 +26,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
+import tank1990.powerup.AbstractPowerup;
+import tank1990.powerup.PowerupType;
+import tank1990.powerup.PowerupFactory;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
@@ -222,6 +225,23 @@ public class GameLevel {
      */
     public void setEnemyTankCount(Map<TankType, Integer> enemyTankCounts) {
         this.enemyTankCounts = enemyTankCounts;
+    }
+
+    public AbstractPowerup spawnPowerup() {
+        Random random = new Random();
+        PowerupType powerupType = PowerupType.valueOf(String.valueOf(random.nextInt(PowerupType.values().length)));
+
+        Dimension gameArea = getGameAreaSize();
+
+        // Ensure the powerup spawns within the game area, leaving space for its dimensions
+        int x = random.nextInt(gameArea.width - Globals.POWERUP_WIDTH);
+        int y = random.nextInt(gameArea.height - Globals.POWERUP_HEIGHT);
+
+        AbstractPowerup powerup = PowerupFactory.createPowerup(powerupType, x, y);
+        if (powerup != null) {
+            System.out.println("Spawning powerup: " + powerupType + " at (" + x + ", " + y + ")");
+        }
+        return powerup;
     }
 
     /**

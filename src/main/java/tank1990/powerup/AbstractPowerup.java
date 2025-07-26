@@ -25,23 +25,25 @@ package tank1990.powerup;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import tank1990.Game;
-import tank1990.core.DynamicGameObject;
-import tank1990.core.GameLevel;
-import tank1990.core.TextureFX;
+import tank1990.core.*;
 
 public abstract class AbstractPowerup extends DynamicGameObject {
     protected PowerupType powerupType;
-    protected int duration;
+    protected int lifeTimeMs;
     protected transient TextureFX textureFX;
     protected boolean isActive = true; // Flag to indicate if the powerup is active
 
-    AbstractPowerup(int x, int y, PowerupType powerupType, int duration) {
+    private TimeTick lifeTimeTick; // Tick for managing lifetime
+
+    AbstractPowerup(int x, int y, PowerupType powerupType, int lifeTimeMs) {
         setX(x);
         setY(y);
         setSize(new Dimension(16, 16)); // Assuming a default size for powerups
         this.powerupType = powerupType;
-        this.duration = duration;
+        this.lifeTimeMs = lifeTimeMs;
+
+        TimeTick lifeTimeTick = new TimeTick(Utils.Time2GameTick(this.lifeTimeMs)); // Tick for managing lifetime
+
     }
 
     public void draw(Graphics g) {
@@ -49,21 +51,19 @@ public abstract class AbstractPowerup extends DynamicGameObject {
     }
 
     public void update() {
-        // Update logic for the powerup, e.g., countdown timer
-        if (duration > 0) {
-            duration--;
-        } else {
-            // Logic to remove or deactivate the powerup
+        // Update lifetime of the powerup
+        lifeTimeTick.updateTick();
+        if (lifeTimeTick.isTimeOut()) {
             setActive(false);
         }
     }
 
-    public void setActive(boolean active) {
-        this.isActive = active;
+    public boolean isExpired() {
+        return !isActive || lifeTimeTick.isTimeOut();
     }
 
-    public boolean isActive() {
-        return this.isActive;
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 
     public PowerupType getPowerupType() {

@@ -67,7 +67,7 @@ public interface Globals {
     // Powerup Parameters
     int POWERUP_WIDTH = 16;
     int POWERUP_HEIGHT = 16;
-    int DEFAULT_POWERUP_DURATION = 10; // Default powerup duration in seconds 
+    int DEFAULT_POWERUP_LIFETIME_MS = 10000; // Default powerup duration in milliseconds
 
     // Map Dimensions
     int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;

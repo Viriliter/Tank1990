@@ -28,7 +28,7 @@ import tank1990.core.Utils;
 
 public class PowerupHelmet extends AbstractPowerup {
     public PowerupHelmet(int x, int y) {
-        super(x, y, PowerupType.POWERUP_HELMET, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_DURATION));
+        super(x, y, PowerupType.POWERUP_HELMET, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_LIFETIME_MS));
         this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_HELMET);
     }
 

@@ -27,7 +27,7 @@ import tank1990.core.Utils;
 
 public class PowerupGrenade extends AbstractPowerup {
     public PowerupGrenade(int x, int y) {
-        super(x, y, PowerupType.POWERUP_GRENADE, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_DURATION));
+        super(x, y, PowerupType.POWERUP_GRENADE, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_LIFETIME_MS));
     }
 
     @Override

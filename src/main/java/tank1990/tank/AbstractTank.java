@@ -43,6 +43,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     private int speed;
     private int maxSpeed; // Maximum speed of the player
 
+    private boolean isRedTank = false; // Flag to indicate if the tank is a red tank
+
     // Do not move tanks after each update call, but after a certain time interval.
     private TimeTick movementTick;
 
@@ -221,6 +223,14 @@ public abstract class AbstractTank extends DynamicGameObject {
     public boolean isDestroyed() {
         // If armor level is zero, tank is destroyed
         return this.armorLevel <= 0;
+    }
+
+    public void setAsRed() {
+        this.isRedTank = true;
+    }
+
+    public boolean isRedTank() {
+        return this.isRedTank;
     }
 
     public void getPowerup(AbstractPowerup powerup) {

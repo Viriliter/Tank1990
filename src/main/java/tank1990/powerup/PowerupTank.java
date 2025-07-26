@@ -28,7 +28,7 @@ import tank1990.core.Utils;
 
 public class PowerupTank extends AbstractPowerup {
     public PowerupTank(int x, int y) {
-        super(x, y, PowerupType.POWERUP_TANK, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_DURATION));
+        super(x, y, PowerupType.POWERUP_TANK, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_LIFETIME_MS));
         this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_TANK);
     }
 
