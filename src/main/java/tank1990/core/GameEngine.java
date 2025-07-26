@@ -120,11 +120,11 @@ public class GameEngine extends Subject {
             blastFX.draw(g);
         }
 
-        //// Draw powerups [Layer - 6]
-        //for (Powerup p : this.powerups) {
-        //    if (p == null) continue;
-        //    p.draw(g);
-        //}
+        // Draw powerups [Layer - 6]
+        for (AbstractPowerup p : this.powerups) {
+            if (p == null) continue;
+            p.draw(g);
+        }
 
     }
 
@@ -427,6 +427,9 @@ public class GameEngine extends Subject {
      * This method updates the position of each powerup and checks if they are collected by players.
      */
     private void updatePowerups(GameLevel gameLevel) {
+        // Remove expired powerup first
+        this.powerups.removeIf(AbstractPowerup::isExpired);
+
         for (AbstractPowerup p : this.powerups) {
              p.update();
         }
@@ -501,6 +504,15 @@ public class GameEngine extends Subject {
                             if (!bullet.isEnemyBullet()) {
                                 // Enemy tank hit by player bullet
                                 enemyTank.getDamage();
+
+                                // If enemy tank is red, spawn a powerup
+                                if (enemyTank.isRedTank()) {
+                                    AbstractPowerup powerup = gameLevel.spawnPowerup();
+                                    if (powerup != null) {
+                                        this.powerups.clear();  // Clear existing powerups to avoid duplicate powerups
+                                        this.powerups.add(powerup);
+                                    }
+                                }
 
                                 // Remove enemy if destroyed
                                 if (enemyTank.isDestroyed()) {

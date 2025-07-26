@@ -31,11 +31,22 @@ public class BasicTank extends AbstractTank implements Enemy {
     public BasicTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
-        this.tankTextureFxStruct = Globals.TEXTURE_BASIC_TANK_STRUCT;
-        createTextureFXs();
+        setDefaultTankTextureFXs();
 
         setSpeedUnit(Globals.BASIC_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.BASIC_TANK_MOVEMENT_MAX_SPEED);
+    }
+
+    @Override
+    protected void setDefaultTankTextureFXs() {
+        this.tankTextureFxStruct = Globals.TEXTURE_BASIC_TANK_STRUCT;
+        createTextureFXs();
+    }
+
+    @Override
+    protected void setRedTankTextureFXs() {
+        this.tankTextureFxStruct = Globals.TEXTURE_BASIC_TANK_RED_STRUCT;
+        createTextureFXs();
     }
 
     @Override

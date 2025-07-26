@@ -193,4 +193,11 @@ public interface Utils {
 
         return value * (gSize / tileCount) / tileSize;
     }
+
+    static boolean getRandomProbability(int percent) {
+        if (percent < 0 || percent > 100) {
+            throw new IllegalArgumentException("Probability must be between 0 and 100");
+        }
+        return Math.random() * 100 < percent;
+    }
 }

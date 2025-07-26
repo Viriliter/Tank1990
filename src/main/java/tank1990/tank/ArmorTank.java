@@ -28,14 +28,88 @@ import java.util.Random;
 
 public class ArmorTank extends AbstractTank implements Enemy {
 
+    int lastArmorLevel=0;
+
     public ArmorTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
-        this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_STRUCT;
-        createTextureFXs();
-
         setSpeedUnit(Globals.ARMOR_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.ARMOR_TANK_MOVEMENT_MAX_SPEED);
+
+        setArmorLevel(4);  // Start with level 4 armor
+        this.lastArmorLevel = getArmorLevel();
+
+        setDefaultTankTextureFXs();
+    }
+
+    @Override
+    public void update(GameLevel level) {
+        super.update(level);
+        int armorLevel = getArmorLevel();
+
+        if (armorLevel==4 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L4_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==3 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L3_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==2 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L2_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==1 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L1_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        }
+    }
+
+    @Override
+    protected void setDefaultTankTextureFXs() {
+        int armorLevel = getArmorLevel();
+
+        if (armorLevel==4) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L4_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==3) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L3_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==2) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L2_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==1) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L1_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        }
+    }
+
+    @Override
+    protected void setRedTankTextureFXs() {
+        int armorLevel = getArmorLevel();
+
+        if (armorLevel==4 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==3 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==2 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        } else if (armorLevel==1 && this.lastArmorLevel!=armorLevel) {
+            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
+            createTextureFXs();
+            this.lastArmorLevel = armorLevel;
+        }
     }
 
     @Override

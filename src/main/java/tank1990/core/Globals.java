@@ -68,6 +68,7 @@ public interface Globals {
     int POWERUP_WIDTH = 16;
     int POWERUP_HEIGHT = 16;
     int DEFAULT_POWERUP_LIFETIME_MS = 10000; // Default powerup duration in milliseconds
+    int POWERUP_BLINK_INTERVAL_MS = 500;
 
     // Map Dimensions
     int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
@@ -121,6 +122,8 @@ public interface Globals {
 
     int ARMOR_TANK_MOVEMENT_SPEED = 2;
     int ARMOR_TANK_MOVEMENT_MAX_SPEED = 2;
+
+    int RED_TANK_BLINK_ANIMATION_PERIOD_MS = 500;
 
     /**
      * COLOR PALLETTE
@@ -177,7 +180,7 @@ public interface Globals {
     String ICON_BASIC_TANK_PATH = "textures/tank/tank-basic-upwards.png";
     String ICON_FAST_TANK_PATH = "textures/tank/tank-fast-upwards.png";
     String ICON_POWER_TANK_PATH = "textures/tank/tank-power-upwards.png";
-    String ICON_ARMOR_TANK_PATH = "textures/tank/tank-armor-upwards.png";
+    String ICON_ARMOR_TANK_PATH = "textures/tank/tank-armor-l1-upwards.png";
 
     String ICON_ENEMY_TANK_PATH = "textures/miscs/enemy-icon.png";
     String ICON_PLAYER_LIFE_PATH = "textures/miscs/player-life.png";
@@ -202,11 +205,23 @@ public interface Globals {
             new TextureFXStruct("textures/tank/tank-basic-downwards.png",0,0,0),
             new TextureFXStruct("textures/tank/tank-basic-left.png",0,0,0)
     );
+    TankTextureStruct TEXTURE_BASIC_TANK_RED_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-basic-red-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-basic-red-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-basic-red-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-basic-red-left.png",0,0,0)
+    );
     TankTextureStruct TEXTURE_FAST_TANK_STRUCT = new TankTextureStruct(
             new TextureFXStruct("textures/tank/tank-fast-upwards.png",0,0,0),
             new TextureFXStruct("textures/tank/tank-fast-right.png",0,0,0),
             new TextureFXStruct("textures/tank/tank-fast-downwards.png",0,0,0),
             new TextureFXStruct("textures/tank/tank-fast-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_FAST_TANK_RED_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-fast-red-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-fast-red-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-fast-red-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-fast-red-left.png",0,0,0)
     );
     TankTextureStruct TEXTURE_POWER_TANK_STRUCT = new TankTextureStruct(
             new TextureFXStruct("textures/tank/tank-power-upwards.png",0,0,0),
@@ -214,11 +229,41 @@ public interface Globals {
             new TextureFXStruct("textures/tank/tank-power-downwards.png",0,0,0),
             new TextureFXStruct("textures/tank/tank-power-left.png",0,0,0)
     );
-    TankTextureStruct TEXTURE_ARMOR_TANK_STRUCT = new TankTextureStruct(
-            new TextureFXStruct("textures/tank/tank-armor-upwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/tank-armor-right.png",0,0,0),
-            new TextureFXStruct("textures/tank/tank-armor-downwards.png",0,0,0),
-            new TextureFXStruct("textures/tank/tank-armor-left.png",0,0,0)
+    TankTextureStruct TEXTURE_POWER_TANK_RED_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-power-red-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-power-red-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-power-red-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-power-red-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_ARMOR_TANK_L4_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-armor-l4-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l4-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l4-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l4-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_ARMOR_TANK_L3_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-armor-l3-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l3-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l3-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l3-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_ARMOR_TANK_L2_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-armor-l2-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l2-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l2-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l2-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_ARMOR_TANK_L1_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-armor-l1-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l1-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l1-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-l1-left.png",0,0,0)
+    );
+    TankTextureStruct TEXTURE_ARMOR_TANK_RED_STRUCT = new TankTextureStruct(
+            new TextureFXStruct("textures/tank/tank-armor-red-upwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-red-right.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-red-downwards.png",0,0,0),
+            new TextureFXStruct("textures/tank/tank-armor-red-left.png",0,0,0)
     );
 
     /**

@@ -33,11 +33,22 @@ public class PowerTank extends AbstractTank implements Enemy {
     public PowerTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
-        this.tankTextureFxStruct = Globals.TEXTURE_POWER_TANK_STRUCT;
-        createTextureFXs();
+        setDefaultTankTextureFXs();
 
         setSpeedUnit(Globals.POWER_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.POWER_TANK_MOVEMENT_MAX_SPEED);
+    }
+
+    @Override
+    protected void setDefaultTankTextureFXs() {
+        this.tankTextureFxStruct = Globals.TEXTURE_POWER_TANK_STRUCT;
+        createTextureFXs();
+    }
+
+    @Override
+    protected void setRedTankTextureFXs() {
+        this.tankTextureFxStruct = Globals.TEXTURE_POWER_TANK_RED_STRUCT;
+        createTextureFXs();
     }
 
     @Override

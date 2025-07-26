@@ -45,6 +45,9 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     private boolean isRedTank = false; // Flag to indicate if the tank is a red tank
 
+    private TimeTick redTankTick = null; // Tick for red tank blink animation
+    private boolean isColorRed = false;
+
     // Do not move tanks after each update call, but after a certain time interval.
     private TimeTick movementTick;
 
@@ -67,12 +70,19 @@ public abstract class AbstractTank extends DynamicGameObject {
         // From experimental results, updating tank movement in every 60 milliseconds is a good value.
         movementTick = new TimeTick(Utils.Time2GameTick(60));
         movementTick.setRepeats(-1);  // Repeat indefinitely
+
+        redTankTick = new TimeTick(Utils.Time2GameTick(Globals.RED_TANK_BLINK_ANIMATION_PERIOD_MS));
+        redTankTick.setRepeats(-1);  // Repeat indefinitely
     }
 
     public void createTextureFXs() {
         if (this.tankTextureFxStruct==null) return;
 
-        this.textureFXs = new HashMap<>();
+        if (this.textureFXs==null) {
+            this.textureFXs = new HashMap<>();
+        } else {
+            this.textureFXs.clear();
+        }
 
         this.textureFXs.put(Direction.DIRECTION_UPWARDS, new TextureFX(this.tankTextureFxStruct.upwardsTexturePath));
         this.textureFXs.put(Direction.DIRECTION_RIGHT, new TextureFX(this.tankTextureFxStruct.rightTexturePath));
@@ -82,9 +92,24 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     @Override
     public void draw(Graphics g) {
-        // Draw tank animations
-        java.awt.Rectangle clipBounds = g.getClipBounds();
+        // Update the tank texture if it is red tank
+        if (isRedTank) {
+            redTankTick.updateTick();
 
+            if (redTankTick.isTimeOut()) {
+                isColorRed = !isColorRed;  // Toggle the color state
+
+                if (isColorRed) {
+                    setRedTankTextureFXs();
+                } else {
+                    setDefaultTankTextureFXs();
+                }
+
+                redTankTick.reset();
+            }
+        }
+
+        // Draw tank animations
         Dimension tankSize = Utils.normalizeDimension(g, Globals.TANK_WIDTH, Globals.TANK_HEIGHT);
 
         // Set the tank size for collision detection - make it smaller to allow movement
@@ -233,6 +258,10 @@ public abstract class AbstractTank extends DynamicGameObject {
         return this.isRedTank;
     }
 
+    protected abstract void setDefaultTankTextureFXs();
+
+    protected abstract void setRedTankTextureFXs();
+
     public void getPowerup(AbstractPowerup powerup) {
 
     }
@@ -262,7 +291,7 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         int eagleDistance = level.getEagleDistance(gLoc);
         //int playerDistance = level.getPlayerDistance(gLoc);
-        System.out.println("eagleDistance:" + eagleDistance /*+ " playerDistance:" + playerDistance*/);
+        //System.out.println("eagleDistance:" + eagleDistance /*+ " playerDistance:" + playerDistance*/);
 
         //GridLocation targetLoc;
         //if (eagleDistance == -1 && playerDistance == -1) {

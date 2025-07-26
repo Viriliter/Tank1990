@@ -28,7 +28,7 @@ import tank1990.core.Utils;
 
 public class PowerupShovel extends AbstractPowerup {
     public PowerupShovel(int x, int y) {
-        super(x, y, PowerupType.POWERUP_SHOVEL, Utils.Time2GameTick(Globals.DEFAULT_POWERUP_LIFETIME_MS));
+        super(x, y, PowerupType.POWERUP_SHOVEL, Globals.DEFAULT_POWERUP_LIFETIME_MS);
         this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_SHOVEL);
     }
 

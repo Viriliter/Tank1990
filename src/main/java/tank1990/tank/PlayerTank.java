@@ -39,6 +39,12 @@ public class PlayerTank extends AbstractTank {
         setMaxSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_MAX_SPEED);
     }
 
+    @Override
+    protected void setDefaultTankTextureFXs() { }
+
+    @Override
+    protected void setRedTankTextureFXs() { }
+
     public void setPlayerType(PlayerType playerType) {
         if (playerType == PlayerType.PLAYER_1) {
             this.tankTextureFxStruct = Globals.TEXTURE_PLAYER1_TANK_STRUCT;

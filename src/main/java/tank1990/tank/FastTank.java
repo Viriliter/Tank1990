@@ -33,11 +33,22 @@ public class FastTank extends AbstractTank implements Enemy {
     public FastTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
-        this.tankTextureFxStruct = Globals.TEXTURE_FAST_TANK_STRUCT;
-        createTextureFXs();
+        setDefaultTankTextureFXs();
 
         setSpeedUnit(Globals.FAST_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.FAST_TANK_MOVEMENT_MAX_SPEED);
+    }
+
+    @Override
+    protected void setDefaultTankTextureFXs() {
+        this.tankTextureFxStruct = Globals.TEXTURE_FAST_TANK_STRUCT;
+        createTextureFXs();
+    }
+
+    @Override
+    protected void setRedTankTextureFXs() {
+        this.tankTextureFxStruct = Globals.TEXTURE_FAST_TANK_RED_STRUCT;
+        createTextureFXs();
     }
 
     @Override

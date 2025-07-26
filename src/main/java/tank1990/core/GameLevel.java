@@ -54,6 +54,10 @@ public class GameLevel {
 
     private GridLocation eagleLocation = null;
     private GridLocation playerLocation = null;
+
+    private final int totalEnemyTankCount; // Total number of enemy tanks in the level
+
+    private final List<Integer> MAGIC_NUMBERS = List.of(4, 11, 18); // Magic numbers used to determine which enemy tanks are spawned as red tanks in the level
     
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
@@ -66,6 +70,7 @@ public class GameLevel {
 
         Map<TankType, Integer> enemyTankCount = this.levelInfo.enemyTankCount;
         this.setEnemyTankCount(enemyTankCount);
+        this.totalEnemyTankCount = enemyTankCount.values().stream().mapToInt(Integer::intValue).sum();
 
         this.eagleLocation = findEagleLocation();
 
@@ -229,7 +234,7 @@ public class GameLevel {
 
     public AbstractPowerup spawnPowerup() {
         Random random = new Random();
-        PowerupType powerupType = PowerupType.valueOf(String.valueOf(random.nextInt(PowerupType.values().length)));
+        PowerupType powerupType = PowerupType.valueOf(random.nextInt(PowerupType.values().length));
 
         Dimension gameArea = getGameAreaSize();
 
@@ -297,7 +302,19 @@ public class GameLevel {
         System.out.println("Spawning enemy tank: " + currentTankType + " at " + spawnLocationEntry.getKey() + " facing " + spawnDir + ". Remaining: " + enemyTankCounts.get(currentTankType) + " Active: " + activeEnemyTankCount);
         Location loc = Utils.gridLoc2Loc(spawnLocationEntry.getKey());
 
-        return TankFactory.createTank(currentTankType, loc.x(), loc.y(), spawnDir);
+        AbstractTank enemyTank = TankFactory.createTank(currentTankType, loc.x(), loc.y(), spawnDir);
+
+        int nThTank = this.totalEnemyTankCount - getRemainingEnemyTanks() + 1;
+        if (MAGIC_NUMBERS.contains(nThTank)) {
+            assert enemyTank != null;
+            enemyTank.setAsRed();
+        } else {
+            assert enemyTank != null;
+            // There is a 30% chance to spawn a red tank
+            if (Utils.getRandomProbability(30)) enemyTank.setAsRed();
+        }
+
+        return enemyTank;
     }
 
     /**

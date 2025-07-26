@@ -35,6 +35,10 @@ public abstract class AbstractPowerup extends DynamicGameObject {
 
     private TimeTick lifeTimeTick; // Tick for managing lifetime
 
+    private TimeTick blinkTick; // Tick for blinking effect
+
+    private boolean isVisible = true;
+
     AbstractPowerup(int x, int y, PowerupType powerupType, int lifeTimeMs) {
         setX(x);
         setY(y);
@@ -42,20 +46,36 @@ public abstract class AbstractPowerup extends DynamicGameObject {
         this.powerupType = powerupType;
         this.lifeTimeMs = lifeTimeMs;
 
-        TimeTick lifeTimeTick = new TimeTick(Utils.Time2GameTick(this.lifeTimeMs)); // Tick for managing lifetime
-
+        lifeTimeTick = new TimeTick(Utils.Time2GameTick(this.lifeTimeMs)); // Tick for managing lifetime
+        lifeTimeTick.setRepeats(1); // Repeat only once
+        blinkTick = new TimeTick(Utils.Time2GameTick(Globals.POWERUP_BLINK_INTERVAL_MS));
+        blinkTick.setRepeats(-1); // Repeat indefinitely
     }
 
     public void draw(Graphics g) {
-        this.textureFX.draw(g, getX(), getY(), 0);
+        if (blinkTick.isTimeOut()) {
+            isVisible = !isVisible;  // Toggle visibility
+            blinkTick.reset();
+        }
+
+        if (!isVisible) {
+            this.textureFX.draw(g, getX(), getY(), 0);
+        } else {
+        }
+
     }
 
     public void update() {
         // Update lifetime of the powerup
         lifeTimeTick.updateTick();
+        blinkTick.updateTick();
+
         if (lifeTimeTick.isTimeOut()) {
+            System.out.println("Powerup expired: " + powerupType);
             setActive(false);
         }
+
+
     }
 
     public boolean isExpired() {
