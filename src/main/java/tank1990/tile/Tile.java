@@ -36,10 +36,20 @@ public abstract class Tile extends StaticGameObject {
 
     protected AbstractTank includedTankInst = null;
 
-    GridLocation gloc = null;
+    private GridLocation gloc = null;
+
+    private boolean isCoordinatesUpdated = false;
 
     protected Boolean[][] subpieces = null;
 
+    /**
+     * Constructor for Tile.
+     * Initializes the tile with the specified indices, type, and default block configuration.
+     *
+     * @param x    The column index of the tile in the map.
+     * @param y    The row index of the tile in the map.
+     * @param type The type of the tile.
+     */
     public Tile(int x, int y, TileType type) {
         setX(x);
         setY(y);
@@ -51,13 +61,23 @@ public abstract class Tile extends StaticGameObject {
         setSubPieceVisibility(this.blockConf);
     }
 
+    /**
+     * Constructor for Tile.
+     * Initializes the tile with the specified indices, type, and block configuration.
+     *
+     * @param x         The column index of the tile in the map.
+     * @param y         The row index of the tile in the map.
+     * @param type      The type of the tile.
+     * @param blockConf The block configuration of the tile.
+     */
     public Tile(int x, int y, TileType type, BlockConfiguration blockConf) {
-        setX(x);
-        setY(y);
+        setX(x);  // By default set as index, then it will be updated in draw method for actual X-Y coordinate
+        setY(y);  // By default set as index, then it will be updated in draw method for actual X-Y coordinate
         setDir(Direction.DIRECTION_INVALID);
 
         this.type = type;
         this.blockConf = blockConf;
+        this.gloc = new GridLocation(y, x); // Initialize grid location based on row (y) and column (x) indices
         this.subpieces = new Boolean[Globals.TILE_SUBDIVISION][Globals.TILE_SUBDIVISION];
         setSubPieceVisibility(this.blockConf);
     }
@@ -65,6 +85,10 @@ public abstract class Tile extends StaticGameObject {
     public TileType getType() { return this.type; }
 
     public BlockConfiguration getBlockConf() { return this.blockConf; }
+
+    public GridLocation getGridLocation() {
+        return this.gloc;
+    }
 
     public void update() { }
     
@@ -76,12 +100,15 @@ public abstract class Tile extends StaticGameObject {
 
         setSize(Utils.normalizeDimension(g, Globals.TILE_WIDTH, Globals.TILE_HEIGHT));
 
-        if (this.gloc==null) {
-            this.gloc = new GridLocation(y, x);
-            Location loc = Utils.gridLoc2Loc(this.gloc);
+        // Dynamically update the grid location based on the current x and y coordinates
+        if (!isCoordinatesUpdated) {
+            GridLocation gloc = new GridLocation(this.y, this.x);
+            Location loc = Utils.gridLoc2Loc(gloc);
 
             setX(loc.x());
             setY(loc.y());
+
+            isCoordinatesUpdated = true;
         }
 
         // Get the clip bounds of the graphics context
@@ -134,7 +161,6 @@ public abstract class Tile extends StaticGameObject {
     }
 
     public void setAsDestroyed() {
-        System.out.println("setAsDestroyed called for tile: " + this.type);
         this.isDestroyed = true;
     }
 

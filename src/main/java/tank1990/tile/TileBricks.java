@@ -33,69 +33,6 @@ public class TileBricks extends Tile {
         this.textureFX = new TextureFX(Globals.TEXTURE_TILE_BRICKS);
     }
 
-    private int findSubTile(int subX, int subY, Bullet b) {
-        int diffX = subX - b.getX();
-        int diffY = subY - b.getY();
-
-        if (diffX > 0 && diffY > 0) {
-            return 0;  // Top-left
-        } else if (diffX < 0 && diffY > 0) {
-            return 1;  // Top-right
-        } else if (diffX > 0 && diffY < 0) {
-            return 2;  // Bottom-left
-        } else if (diffX < 0 && diffY < 0) {
-            return 3;  // Bottom-right
-        } else {
-            return 0;  // Center: Top-left
-        }
-    }
-
-    private int findHitLocation(Bullet b) {
-        int diffX = getX() - b.getX();
-        int diffY = getY() - b.getY();
-
-        int subWidth = (int) getSize().getWidth() / Globals.TILE_SUBDIVISION;
-        int subHeight = (int) getSize().getHeight() / Globals.TILE_SUBDIVISION;
-
-        /*
-            (X:diffX, Y:diffY)
-
-            +---+---+---+---+
-            | 0 | 1 |   |   |
-            +-(+,+)-+-(-,+)-+
-            | 2 | 3 |   |   |
-            +---+---+---+---+
-            |   |   |   |   |
-            +-(+,-)-+-(-,-)-+
-            |   |   |   |   |
-            +---+---+---+---+
-
-         */
-
-        int subpiece;
-        int region;
-
-        if (diffX > 0 && diffY > 0) {  // Top-left
-            subpiece = 0;  // Top-left
-            region = findSubTile(getX()-subWidth,getY()-subHeight,b);
-        } else if (diffX < 0 && diffY > 0) {  // Top-right
-            subpiece = 1;  // Top-right
-            region = findSubTile(getX()+subWidth,getY()-subHeight,b);
-        } else if (diffX > 0 && diffY < 0) {  // Bottom-left
-            subpiece = 2;  // Bottom-left
-            region = findSubTile(getX()-subWidth,getY()+subHeight,b);
-        } else if (diffX < 0 && diffY < 0) {  // Bottom-right
-            subpiece = 3;  // Bottom-right
-            region = findSubTile(getX()+subWidth,getY()+subHeight,b);
-        } else {
-            subpiece = 0;  // Top-left
-            region = findSubTile(getX()-subWidth,getY()-subHeight,b);
-        }
-
-        System.out.println("subpiece: " + subpiece + ", region: " + region);
-        return 0;
-    }
-
     public boolean destroy(Bullet b) {
         hit(b.getDir());
 

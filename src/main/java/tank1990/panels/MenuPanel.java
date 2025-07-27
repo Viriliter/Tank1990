@@ -50,6 +50,12 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
 
     @Override
     protected void initPanel() {
+        // Remove all existing key listeners to avoid duplicates
+        KeyListener[] listeners = getKeyListeners();
+        for (KeyListener listener : listeners) {
+            removeKeyListener(listener);
+        }
+
         setFocusable(true);
         requestFocusInWindow();
         addKeyListener(this);
@@ -218,6 +224,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.println("Key Pressed: " + e.getKeyCode() + " this:" + System.identityHashCode(this));
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             selectedIndex = selectedIndex>0 ? (selectedIndex - 1 + menuItems.length) % menuItems.length : 0;
             updateSelectorVisibility();

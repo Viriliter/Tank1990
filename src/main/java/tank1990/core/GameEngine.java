@@ -58,9 +58,6 @@ public class GameEngine extends Subject {
     private GameMode gameMode = GameMode.MODE_SINGLE_PLAYER;
     private GameLevel currentGameLevel = null;
 
-    private boolean isPlayerTanksFreezed = false;
-    private boolean isEnemyTanksFreezed = false;
-
     public GameEngine(GameMode gameMode) {
         this.gameMode = gameMode;
 
@@ -72,6 +69,11 @@ public class GameEngine extends Subject {
         // Add second player if game mode is multiplayer
         if (this.gameMode==GameMode.MODE_MULTI_PLAYER) {
             players.add(new Player(PlayerType.PLAYER_2));
+        }
+
+        // Game level manager stores the players lives even if game engine is created again.
+        for (Player player : players) {
+            player.setRemainingLives(GameLevelManager.getInstance().getPlayerLives(player));
         }
 
         // Initialize other game objects
@@ -346,14 +348,13 @@ public class GameEngine extends Subject {
             }
 
             p.update(gameLevel);
-            GameLevelManager.getInstance().setPlayerLives(p.getRemainingLives());
+            GameLevelManager.getInstance().setPlayerLives(p, p.getRemainingLives());
         }
 
         // If there are no players left, game is over
         if (this.players.isEmpty()) {
-            // No players left, stop the game
-            this.stop();
-            notify(EventType.GAMEOVER, null);  // Notify observers that the game is over
+            // No players left, end the game
+            endGame();
             return;
         }
     }
@@ -701,7 +702,7 @@ public class GameEngine extends Subject {
             }
             case POWERUP_SHOVEL -> {
                 // Shovel around the eagle tile
-                GameLevelManager.getInstance().getCurrentLevel().shovelAroundEagle();
+                GameLevelManager.getInstance().getCurrentLevel().activateShovelPowerup();
             }
             case POWERUP_STAR -> {
                 // No specific action for tank powerup
@@ -711,7 +712,12 @@ public class GameEngine extends Subject {
             }
             case POWERUP_TIMER -> {
                 // Freezes all enemy tanks for a short duration
-
+                for (Enemy enemy : this.enemies) {
+                    AbstractTank enemyTank = (AbstractTank) enemy;
+                    if (!enemyTank.isDestroyed()) {
+                        enemyTank.setFrozen(true);
+                    }
+                }
             }
             default -> {
                 System.err.println("Unknown powerup type: " + powerup.getPowerupType());
@@ -737,7 +743,7 @@ public class GameEngine extends Subject {
             }
             case POWERUP_SHOVEL -> {
                 // Remove the protection around the eagle tile
-                GameLevelManager.getInstance().getCurrentLevel().removeEagleProtection();
+                GameLevelManager.getInstance().getCurrentLevel().activateAntiShovelPowerup();
             }
             case POWERUP_STAR -> {
                 // No specific action for tank powerup
@@ -746,7 +752,11 @@ public class GameEngine extends Subject {
                 // No specific action for tank powerup
             }
             case POWERUP_TIMER -> {
-                // No specific action for tank powerup
+                for (Player player : this.players) {
+                    if (!player.isTankDestroyed()) {
+                        player.setFrozen(true);
+                    }
+                }
             }
             default -> {
                 System.err.println("Unknown powerup type: " + powerup.getPowerupType());
@@ -786,6 +796,7 @@ public class GameEngine extends Subject {
         Timer delayedTimer = new Timer(2000, e -> {
             notify(EventType.GAMEOVER, GameLevelManager.getInstance().getGameScore());  // Notify observers that the game is over
         });
+        delayedTimer.setRepeats(false);
         delayedTimer.start();
     }
 

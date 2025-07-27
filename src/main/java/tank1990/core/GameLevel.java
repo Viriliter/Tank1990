@@ -59,7 +59,14 @@ public class GameLevel {
 
     private final List<Integer> MAGIC_NUMBERS = List.of(4, 11, 18); // Magic numbers used to determine which enemy tanks are spawned as red tanks in the level
 
-    private List<Tile> tilesAroundEagle = new ArrayList<>();
+    private final HashMap<GridLocation, BlockConfiguration> originalTilesAroundEagle;
+    private final HashMap<GridLocation, BlockConfiguration> currentTilesAroundEagle;
+
+    boolean isShovelActive = false;
+    boolean isAntiShovelActive = false;
+
+    private final TimeTick shovelTick;
+    private final TimeTick antiShovelTick;
 
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
@@ -74,12 +81,24 @@ public class GameLevel {
         this.setEnemyTankCount(enemyTankCount);
         this.totalEnemyTankCount = enemyTankCount.values().stream().mapToInt(Integer::intValue).sum();
 
+        // Default timestamp for spawn locations is -1 which means invalid
+        this.spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
+        this.spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
+        this.spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
+
         this.eagleLocation = findEagleLocation();
 
-        // Default timestamp for spawn locations is -1 which means invalid
-        spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
-        spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
-        spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
+        this.originalTilesAroundEagle = new HashMap<>();
+        this.currentTilesAroundEagle = new HashMap<>();
+
+        // Store the original state of tiles around the eagle for later use
+        setSurroundingEagleTiles(this.originalTilesAroundEagle);
+
+        // Initialize the shovel and anti-shovel ticks
+        this.shovelTick = new TimeTick(Utils.Time2GameTick(Globals.SHOVEL_COOLDOWN_MS));
+        this.shovelTick.setRepeats(-1);  // Repeat indefinitely
+        this.antiShovelTick = new TimeTick(Utils.Time2GameTick(Globals.ANTI_SHOVEL_COOLDOWN_MS));
+        this.antiShovelTick.setRepeats(-1);  // Repeat indefinitely
     }
 
     /**
@@ -152,6 +171,24 @@ public class GameLevel {
                 } else {
                     tile.update();
                 }
+            }
+        }
+
+        if (this.isShovelActive) {
+            this.shovelTick.updateTick();
+
+            if (this.shovelTick.isTimeOut()) {
+                deactivateShovelPowerup();
+                this.shovelTick.reset();
+            }
+        }
+
+        if (this.isAntiShovelActive) {
+            this.antiShovelTick.updateTick();
+
+            if (this.antiShovelTick.isTimeOut()) {
+                deactivateAntiShovelPowerup();
+                this.antiShovelTick.reset();
             }
         }
     }
@@ -451,32 +488,98 @@ public class GameLevel {
         return true;
     }
 
-    public void shovelAroundEagle() {
+    private void setSurroundingEagleTiles(HashMap<GridLocation, BlockConfiguration> surroundingTiles) {
         if (this.eagleLocation == null) return;
 
-        //int row = this.eagleLocation.rowIndex();
-        //int col = this.eagleLocation.colIndex();
-//
-        //// Check bounds and convert tiles around the eagle to steel
-        //for (int i = -1; i <= 1; i++) {
-        //    for (int j = -1; j <= 1; j++) {
-        //        int newRow = row + i;
-        //        int newCol = col + j;
-//
-        //        if (newRow >= 0 && newRow < Globals.ROW_TILE_COUNT && newCol >= 0 && newCol < Globals.COL_TILE_COUNT) {
-        //            // Convert any tile (including null) to steel tiles
-        //            Location tileLocation = Utils.gridLoc2Loc(new GridLocation(newRow, newCol));
-        //            this.levelInfo.levelGrid[newRow][newCol] = TileFactory.createTile(TileType.TILE_STEEL, tileLocation.x(), tileLocation.y(), BlockConfiguration.BLOCK_CONF_FULL);
-        //        }
-        //    }
-        //}
+        int row = this.eagleLocation.rowIndex();
+        int col = this.eagleLocation.colIndex();
+
+        // Clear previous tiles
+        surroundingTiles.clear();
+
+        // Check bounds and add tiles around the eagle to the list
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int newRow = row + i;
+                int newCol = col + j;
+
+                // Do not include the eagle tile itself
+                if (newRow == row && newCol == col) continue;
+
+                if (newRow >= 0 && newRow < Globals.ROW_TILE_COUNT && newCol >= 0 && newCol < Globals.COL_TILE_COUNT) {
+                    Tile tile = this.levelInfo.levelGrid[newRow][newCol];
+                    if (tile != null) {
+                        surroundingTiles.put(tile.getGridLocation(), tile.getBlockConf());
+                    }
+                }
+            }
+        }
     }
 
-    public void removeShovelAroundEagle() {
+    public void activateShovelPowerup() {
+        System.out.println("Activating shovel powerup...");
+        if (this.originalTilesAroundEagle.isEmpty()) return;
+
+        setSurroundingEagleTiles(this.currentTilesAroundEagle);  // Store the current state which will be needed to restore later
+
+        for (Map.Entry<GridLocation, BlockConfiguration> entry : this.originalTilesAroundEagle.entrySet()) {
+            GridLocation gloc = entry.getKey();
+            BlockConfiguration blockConf = entry.getValue();
+
+            // Convert the tile to steel
+            this.levelInfo.levelGrid[gloc.rowIndex()][gloc.colIndex()] = null;
+            this.levelInfo.levelGrid[gloc.rowIndex()][gloc.colIndex()] = TileFactory.createTile(TileType.TILE_STEEL, gloc.colIndex(), gloc.rowIndex(), blockConf);
+        }
+
+        isShovelActive = true;
+        isAntiShovelActive = false;  // Activating shovel powerup deactivates the anti-shovel powerup
     }
 
-    public void removeEagleProtection() {}
+    public void deactivateShovelPowerup() {
+        System.out.println("Deactivating shovel powerup...");
+        if (this.currentTilesAroundEagle.isEmpty()) return;
 
-    public void enableEagleProtection() {}
+        for (Map.Entry<GridLocation, BlockConfiguration> entry : this.currentTilesAroundEagle.entrySet()) {
+            GridLocation gloc = entry.getKey();
+            BlockConfiguration blockConf = entry.getValue();
 
+            // Restore according to last tile configuration
+            this.levelInfo.levelGrid[gloc.rowIndex()][gloc.colIndex()] = TileFactory.createTile(TileType.TILE_BRICKS, gloc.colIndex(), gloc.rowIndex(), blockConf);
+        }
+
+        isShovelActive = false;
+    }
+
+
+    public void activateAntiShovelPowerup() {
+        System.out.println("Activating anti-shovel powerup...");
+        if (this.originalTilesAroundEagle.isEmpty()) return;
+
+        setSurroundingEagleTiles(this.currentTilesAroundEagle);  // Store the current state which will be needed to restore later
+
+        for (Map.Entry<GridLocation, BlockConfiguration> entry : this.originalTilesAroundEagle.entrySet()) {
+            GridLocation gloc = entry.getKey();
+            BlockConfiguration blockConf = entry.getValue();
+
+            this.levelInfo.levelGrid[gloc.rowIndex()][gloc.colIndex()] = null; // Remove the tile around the eagle
+        }
+
+        isShovelActive = false;  // Activating anti-shovel powerup deactivates the shovel powerup
+        isAntiShovelActive = false;
+    }
+
+    public void deactivateAntiShovelPowerup() {
+        System.out.println("Deactivating anti-shovel powerup...");
+        if (this.currentTilesAroundEagle.isEmpty()) return;
+
+        for (Map.Entry<GridLocation, BlockConfiguration> entry : this.currentTilesAroundEagle.entrySet()) {
+            GridLocation gloc = entry.getKey();
+            BlockConfiguration blockConf = entry.getValue();
+
+            // Restore according to last tile configuration
+            this.levelInfo.levelGrid[gloc.rowIndex()][gloc.colIndex()] = TileFactory.createTile(TileType.TILE_BRICKS, gloc.colIndex(), gloc.rowIndex(), blockConf);
+        }
+
+        isAntiShovelActive = false;
+    }
 }

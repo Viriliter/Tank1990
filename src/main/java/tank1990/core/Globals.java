@@ -70,6 +70,10 @@ public interface Globals {
     int DEFAULT_POWERUP_LIFETIME_MS = 10000; // Default powerup duration in milliseconds
     int POWERUP_BLINK_INTERVAL_MS = 500;
 
+    int SHOVEL_COOLDOWN_MS = 10000;  // Cooldown for shovel powerup in milliseconds ((Shovel is a powerup activates when player tank collects shovel powerup))
+    int ANTI_SHOVEL_COOLDOWN_MS = 10000;  // Cooldown for anti-shovel powerup in milliseconds (Anti-shovel is a powerup activates when enemy tank collects shovel powerup)
+    int FROZEN_COOLDOWN_MS = 5000;  // Cooldown for frozen powerup in milliseconds (Frozen is a powerup activates when either player or enemy tank collects frozen powerup)
+
     // Map Dimensions
     int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
     int ROW_TILE_COUNT = 13;// * TILE_SUBDIVISION;

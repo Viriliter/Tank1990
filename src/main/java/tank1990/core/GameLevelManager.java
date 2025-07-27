@@ -23,8 +23,10 @@
 package tank1990.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import tank1990.player.Player;
 import tank1990.tank.*;
 
 public class GameLevelManager {
@@ -38,10 +40,14 @@ public class GameLevelManager {
 
     private GameScoreStruct gameScore = null;
 
+    private HashMap<Player, Integer> playersRemainingLives;
+
     private GameLevelManager() {
         this.gameLevels = new ArrayList<>();
         this.currentLevelIndex = 0;
         this.totalPlayerScore = 0;
+
+        this.playersRemainingLives = new HashMap<>();
     }
 
     public static GameLevelManager getInstance() {
@@ -84,12 +90,13 @@ public class GameLevelManager {
         this.totalPlayerScore = 0;
         this.gameScore = new GameScoreStruct();
         this.spawnTick = null;
+        this.playersRemainingLives.clear();
 
         // Reset all game levels
         this.gameLevels.clear();
 
-        // Load the first level
-        loadLevel(this.currentLevelIndex);
+        // Add levels again
+        addLevels();
     }
 
     public GameLevel nextLevel() {
@@ -184,9 +191,15 @@ public class GameLevelManager {
 
     }
 
-    public void setPlayerLives(int lives) {
+    public void setPlayerLives(Player player, int lives) {
         if (this.gameScore != null) {
             this.gameScore.setPlayerRemainingLives(lives);
         }
+
+        this.playersRemainingLives.putIfAbsent(player, lives);
+    }
+
+    public int getPlayerLives(Player player) {
+        return this.playersRemainingLives.getOrDefault(player, Globals.INITAL_PLAYER_HEALTH-1);  // Player tanks should be already spawned so decrease by 1 for the first time
     }
 }

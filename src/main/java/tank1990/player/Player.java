@@ -125,12 +125,23 @@ public class Player {
 
         // Add powerup's points to the player's score
         GameLevelManager.getInstance().addPlayerScore(powerup.getPoints());
-
     }
 
     public boolean isTankDestroyed() { return myTank.isDestroyed(); }
 
     public PlayerType getPlayerType() {return this.playerType;}
+
+    public void isFrozen() {
+        myTank.isFrozen();
+    }
+
+    public void setFrozen(boolean frozen) {
+        myTank.setFrozen(frozen);
+    }
+
+    public void setRemainingLives(int lives) {
+        this.remainingLife = lives;
+    }
 
     public RectangleBound getBoundingBox() { return myTank.getBoundingBox(); }
 

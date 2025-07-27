@@ -349,7 +349,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 if(player!=null) player.decrementDx();
                 break;
             case (Globals.KEY_PLAYER_1_MOVE_SHOOT):
-                System.out.println("Fire for Player 1");
+                //System.out.println("Fire for Player 1");
                 player = gameEngine.getPlayer1();
                 if (player!=null) gameEngine.triggerPlayerShooting(player);
                 break;
@@ -421,7 +421,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 if (player!=null) player.resetDx();
                 break;
             case (Globals.KEY_PLAYER_1_MOVE_SHOOT):
-                System.out.println("Stopping fire for Player 1");
+                //System.out.println("Stopping fire for Player 1");
                 break;
             case (KeyEvent.VK_ENTER):
                 switch (gameEngine.getCurrentLevel().getCurrentState()) {

@@ -52,11 +52,14 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     // Do not move tanks after each update call, but after a certain time interval.
     private TimeTick movementTick;
+    private TimeTick frozenTick; // Tick for blinking effect
+
 
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
 
     protected boolean hasHelmet = false; // Flag to indicate if the tank has a helmet powerup
+    protected boolean isFrozen = false;  // Flag to indicate if the tank is frozen and cannot move but can still shoot and rotate
 
     protected TankTier currentTier = TankTier.TIER_DEFAULT; // Default tank tier
 
@@ -76,6 +79,9 @@ public abstract class AbstractTank extends DynamicGameObject {
         // From experimental results, updating tank movement in every 60 milliseconds is a good value.
         movementTick = new TimeTick(Utils.Time2GameTick(60));
         movementTick.setRepeats(-1);  // Repeat indefinitely
+
+        frozenTick = new TimeTick(Utils.Time2GameTick(Globals.FROZEN_COOLDOWN_MS));
+        frozenTick.setRepeats(-1);  // Repeat indefinitely
 
         redTankTick = new TimeTick(Utils.Time2GameTick(Globals.RED_TANK_BLINK_ANIMATION_PERIOD_MS));
         redTankTick.setRepeats(-1);  // Repeat indefinitely
@@ -138,6 +144,17 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     public void update(GameLevel level) {
+        // If tank is frozen, do not update its position or direction.
+        if (this.isFrozen) {
+            this.frozenTick.updateTick();
+            if (this.frozenTick.isTimeOut()) {
+                this.isFrozen = false;  // Unfreeze the tank after cooldown
+                this.frozenTick.reset();
+            } else {
+                return;
+            }
+        }
+
         movementTick.updateTick();
 
         // Do not update tank position if movement tick is not timed out.
@@ -171,7 +188,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         int newX = Math.max(halfWidth, Math.min(getX() + this.dx, (int) gameAreaSize.getWidth() - halfWidth));
         int newY = Math.max(halfHeight, Math.min(getY() + this.dy, (int) gameAreaSize.getHeight() - halfHeight));
         //System.out.println("newX:" + newX + " newY:" + newY);
-        RectangleBound newTankBound = new RectangleBound(newX-halfWidth, newY-halfHeight, tankWidth, tankHeight);
+        RectangleBound newTankBound = new RectangleBound(newX - halfWidth, newY - halfHeight, tankWidth, tankHeight);
 
         // Check map constraints by checking neighbor tiles of the player tank
         boolean isMovable = level.checkMovable(newTankBound);
@@ -199,6 +216,8 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     public int getMaxSpeedUnit() {return this.maxSpeedUnit;}
 
+    public boolean isFrozen() {return this.isFrozen;}
+
     public void setPoints(int points) {this.points = points;}
 
     public void setArmorLevel(int armorLevel) {this.armorLevel = armorLevel;}
@@ -206,6 +225,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     public void setSpeedUnit(int speedUnit) {this.speedUnit = speedUnit;}
 
     public void setMaxSpeedUnit(int maxSpeedUnit) {this.maxSpeedUnit = maxSpeedUnit;}
+
+    public void setFrozen(boolean isFrozen) {this.isFrozen = isFrozen;}
 
     /* * Movement methods for the tank
      * These methods update the dx and dy values based on the speed and direction of the tank.
@@ -237,6 +258,11 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     public Bullet shoot() {
+        // Frozen enemy tanks cannot shoot as well.
+        if (this instanceof Enemy && this.isFrozen) {
+            return null;
+        }
+
         // Do not shoot if bullet has not been destroyed yet
         if (!this.isBulletDestroyed) return null;
 
