@@ -87,6 +87,10 @@ public abstract class AbstractTank extends DynamicGameObject {
         redTankTick.setRepeats(-1);  // Repeat indefinitely
     }
 
+    /**
+     * Creates texture effects for the tank based on its texture structure.
+     * This method initializes the textureFXs map with textures for each direction.
+     */
     public void createTextureFXs() {
         if (this.tankTextureFxStruct==null) return;
 
@@ -143,6 +147,12 @@ public abstract class AbstractTank extends DynamicGameObject {
         }
     }
 
+    /**
+     * Updates the tank's position and direction based on its movement speed and direction.
+     * This method also handles the frozen state of the tank, preventing movement if it is frozen.
+     *
+     * @param level The current game level where the tank is located.
+     */
     public void update(GameLevel level) {
         // If tank is frozen, do not update its position or direction.
         if (this.isFrozen) {
@@ -206,41 +216,115 @@ public abstract class AbstractTank extends DynamicGameObject {
      */
     public int getPoints() {return this.points;}
 
+    /**
+     * Returns the current armor level of the tank.
+     * Armor level determines how many hits the tank can take before being destroyed.
+     *
+     * @return The current armor level of the tank.
+     */
     public int getArmorLevel() {return this.armorLevel;}
 
+    /**
+     * Returns the current speed unit of the tank.
+     * Speed unit is used to determine the movement speed of the tank.
+     *
+     * @return The current speed unit of the tank.
+     */
     public int getSpeedUnit() {return this.speedUnit;}
 
+    /**
+     * Returns the maximum speed unit of the tank.
+     * Maximum speed unit is used to limit the tank's movement speed.
+     *
+     * @return The maximum speed unit of the tank.
+     */
     public int getMaxSpeedUnit() {return this.maxSpeedUnit;}
 
+    /**
+     * Returns tank has been frozen.
+     * Tanks can be frozen by freeze powerups.
+     *
+     * @return true if the tank is frozen, false otherwise.
+     */
     public boolean isFrozen() {return this.isFrozen;}
 
+    /**
+     * Sets point of the tank.
+     *
+     * @param points The points to set for the tank.
+     */
     public void setPoints(int points) {this.points = points;}
 
+    /**
+     * Sets the armor level of the tank.
+     * Armor level determines how many hits the tank can take before being destroyed.
+     *
+     * @param armorLevel The armor level to set for the tank.
+     */
     public void setArmorLevel(int armorLevel) {this.armorLevel = armorLevel;}
 
+    /**
+     * Sets the speed unit of the tank.
+     * Speed unit is used to determine the movement speed of the tank.
+     *
+     * @param speedUnit The speed unit to set for the tank.
+     */
     public void setSpeedUnit(int speedUnit) {this.speedUnit = speedUnit;}
 
+    /**
+     * Sets the maximum speed unit of the tank.
+     * This method is used to limit the tank's movement speed.
+     *
+     * @param maxSpeedUnit The maximum speed unit to set for the tank.
+     */
     public void setMaxSpeedUnit(int maxSpeedUnit) {this.maxSpeedUnit = maxSpeedUnit;}
 
+    /**
+     * Freezes the tank.
+     * Frozen tank cannot move.
+     * @param isFrozen true if the tank should be frozen, false otherwise.
+     */
     public void setFrozen(boolean isFrozen) {this.isFrozen = isFrozen;}
 
-    /* * Movement methods for the tank
-     * These methods update the dx and dy values based on the speed and direction of the tank.
+    /**
+     * Decrements delta speed of tank in x direction.
      * They also reset the other movement direction to ensure only one direction is active at a time.
      */
     public void decrementDx() { resetDy(); this.dx = Math.max(this.dx - this.speed, -this.maxSpeed); this.dir = Direction.DIRECTION_LEFT;}
 
+    /**
+     * Increments delta speed of tank in x direction.
+     * They also reset the other movement direction to ensure only one direction is active at a time.
+     */
     public void incrementDx() { resetDy(); this.dx = Math.min(this.dx + this.speed, this.maxSpeed); this.dir = Direction.DIRECTION_RIGHT;}
 
+    /**
+     * Decrements delta speed of tank in y direction.
+     * They also reset the other movement direction to ensure only one direction is active at a time.
+     */
     public void decrementDy() { resetDx(); this.dy = Math.max(this.dy - this.speed, -this.maxSpeed); this.dir = Direction.DIRECTION_UPWARDS; }
 
+    /**
+     * Increments delta speed of tank in y direction.
+     * They also reset the other movement direction to ensure only one direction is active at a time.
+     */
     public void incrementDy() { resetDx(); this.dy = Math.min(this.dy + this.speed, this.maxSpeed); this.dir = Direction.DIRECTION_DOWNWARDS;}
 
+    /**
+     * Resets delta speed of the tank in x direction.
+     */
     public void resetDx() { this.dx=0; }
 
+    /**
+     * Resets delta speed of the tank in y direction.
+     */
     public void resetDy() { this.dy=0; }
 
-    public void rotateRight() {
+    /**
+     * Rotates the tank in clockwise.
+     * This method also resets the movement speed.
+     */
+    public void rotateClockwise() {
         switch (this.dir) {
             case DIRECTION_UPWARDS -> this.dir = Direction.DIRECTION_RIGHT;
             case DIRECTION_RIGHT -> this.dir = Direction.DIRECTION_DOWNWARDS;
@@ -253,6 +337,10 @@ public abstract class AbstractTank extends DynamicGameObject {
         resetDy();
     }
 
+    /**
+     * Shoots the bullet by returning bullet object.
+     * @return Bullet object if shoot is successful, null otherwise.
+     */
     public Bullet shoot() {
         // Frozen enemy tanks cannot shoot as well.
         if (this instanceof Enemy && this.isFrozen) {
@@ -286,6 +374,13 @@ public abstract class AbstractTank extends DynamicGameObject {
         return  bullet;
     }
 
+    /**
+     * Handles damage to the tank.
+     * If the tank has a helmet, it will not take damage and the helmet will be consumed.
+     * Otherwise, it decrements the armor level by one.
+     *
+     * @return true if the tank is damaged, false if it was protected by a helmet.
+     */
     public boolean getDamage() {
         // If tank has helmet, it will not take damage
         if (this.hasHelmet) {
@@ -298,28 +393,64 @@ public abstract class AbstractTank extends DynamicGameObject {
         return true;  // Tank is damaged
     }
 
+    /**
+     * Destroys the tank and returns a blast object.
+     * This method sets the armor level to -1 to indicate destruction and returns a new Blast object.
+     *
+     * @return A new Blast object representing the explosion of the destroyed tank.
+     */
     public Blast destroy() {
         armorLevel = -1;
         return new Blast(getX(), getY());
     }
 
+    /**
+     * Checks if the tank is destroyed.
+     * A tank is considered destroyed if its armor level is zero or less.
+     *
+     * @return true if the tank is destroyed, false otherwise.
+     */
     public boolean isDestroyed() {
         // If armor level is zero, tank is destroyed
         return this.armorLevel <= 0;
     }
 
+    /**
+     * Sets the tank as a red tank.
+     * Red tanks are special tanks that can cause to spawn a new powerup in the game upon getting hit.
+     */
     public void setAsRed() {
         this.isRedTank = true;
     }
 
+    /**
+     * Returns whether the tank is a red tank.
+     * Red tanks are special tanks that can cause to spawn a new powerup in the game upon getting hit.
+     *
+     * @return true if the tank is a red tank, false otherwise.
+     */
     public boolean isRedTank() {
         return this.isRedTank;
     }
 
+    /**
+     * Sets the texture effects for a default tank.
+     * This method should be implemented by subclasses to define specific default tank textures.
+     */
     protected abstract void setDefaultTankTextureFXs();
 
+    /**
+     * Sets the texture effects for a red tank.
+     * This method should be implemented by subclasses to define specific red tank textures.
+     */
     protected abstract void setRedTankTextureFXs();
 
+    /**
+     * Collects a powerup and applies its effects to the tank.
+     * This method handles different types of powerups and updates the tank's state accordingly.
+     *
+     * @param powerup The powerup to be collected.
+     */
     public void collectPowerup(AbstractPowerup powerup) {
         if (powerup == null) return;
 
@@ -347,6 +478,12 @@ public abstract class AbstractTank extends DynamicGameObject {
         }
     }
 
+    /**
+     * Returns the current bullet status.
+     * This indicates whether the bullet fired from the tank is destroyed or not.
+     *
+     * @param isBulletDestroyed true if the bullet is destroyed, false otherwise.
+     */
     public void setBulletStatus(boolean isBulletDestroyed) {
         this.isBulletDestroyed = isBulletDestroyed;
     }
@@ -510,7 +647,7 @@ public abstract class AbstractTank extends DynamicGameObject {
 
             // If no lateral movement was possible, rotate as last resort
             if (!movedLaterally) {
-                rotateRight();
+                rotateClockwise();
             }
         }
     }

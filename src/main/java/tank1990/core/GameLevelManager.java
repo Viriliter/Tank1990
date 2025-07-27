@@ -50,6 +50,12 @@ public class GameLevelManager implements Serializable {
         this.playersRemainingLives = new HashMap<>();
     }
 
+    /**
+     * Returns the singleton instance of GameLevelManager.
+     * If the instance is null, it creates a new instance.
+     *
+     * @return The singleton instance of GameLevelManager.
+     */
     public static GameLevelManager getInstance() {
         if (instance == null) {
             instance = new GameLevelManager();
@@ -57,6 +63,12 @@ public class GameLevelManager implements Serializable {
         return instance;
     }
 
+    /**
+     * Sets the instance of GameLevelManager.
+     * This method is used to set a particular instance. It is useful to initialize upon saved data.
+     *
+     * @param sourceInstance The GameLevelManager instance to set.
+     */
     public static void setInstance(GameLevelManager sourceInstance) {
         instance = sourceInstance;
     }
@@ -74,20 +86,44 @@ public class GameLevelManager implements Serializable {
         }
     }
 
+    /**
+     * Returns the current game level index.
+     *
+     * @return The index of the current game level.
+     */
     public int getCurrentIndex() { return this.currentLevelIndex; }
 
+    /**
+     * Returns the current game level.
+     *
+     * @return The current GameLevel instance.
+     */
     public GameLevel getCurrentLevel() {
         return this.gameLevels.get(this.currentLevelIndex);
     }
 
+    /**
+     * Returns the total player score.
+     *
+     * @return The total player score.
+     */
     public int getPlayerScore() {
         return (this.gameScore==null)? 0: this.gameScore.getTotalScore();
     }
 
+    /**
+     * Returns the total player score.
+     *
+     * @return The total player score.
+     */
     public GameScoreStruct getGameScore() {
         return this.gameScore;
     }
 
+    /**
+     * Resets the game level manager to its initial state.
+     * This method clears the current levels, resets the score, and re-adds the levels.
+     */
     public void reset() {
         System.out.println("Resetting game level manager...");
         this.currentLevelIndex = 0;
@@ -103,6 +139,12 @@ public class GameLevelManager implements Serializable {
         addLevels();
     }
 
+    /**
+     * Returns the next game level in the sequence.
+     * If the current level is the last one, it wraps around to the first level.
+     *
+     * @return The next GameLevel instance.
+     */
     public GameLevel nextLevel() {
         currentLevelIndex = Math.max(1, ++this.currentLevelIndex % (this.gameLevels.size()+1));
         return loadLevel(currentLevelIndex);
@@ -158,6 +200,11 @@ public class GameLevelManager implements Serializable {
         return null;
     }
 
+    /**
+     * Adds points to player's score.
+     *
+     * @param point The points to be added to the player's score.
+     */
     public void addPlayerScore(int point) {
         if (this.gameScore != null) {
             this.gameScore.setTotalScore(this.gameScore.getTotalScore() + point);
@@ -195,6 +242,12 @@ public class GameLevelManager implements Serializable {
 
     }
 
+    /**
+     * Sets the player's remaining lives.
+     *
+     * @param player The player whose lives are to be set.
+     * @param lives The number of lives to set for the player.
+     */
     public void setPlayerLives(Player player, int lives) {
         if (this.gameScore != null) {
             this.gameScore.setPlayerRemainingLives(lives);
@@ -203,6 +256,12 @@ public class GameLevelManager implements Serializable {
         this.playersRemainingLives.putIfAbsent(player, lives);
     }
 
+    /**
+     * Gets the number of lives remaining for a player.
+     *
+     * @param player The player whose lives are to be retrieved.
+     * @return The number of lives remaining for the player.
+     */
     public int getPlayerLives(Player player) {
         return this.playersRemainingLives.getOrDefault(player, Globals.INITAL_PLAYER_HEALTH-1);  // Player tanks should be already spawned so decrease by 1 for the first time
     }

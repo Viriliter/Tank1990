@@ -234,6 +234,9 @@ public class GameEngine extends Subject {
         return this.isPaused;
     }
 
+    /**
+     * Saves game objects and saves to default save location.
+     */
     public void saveGame() {
         SwingUtilities.invokeLater(() -> {
             // Create saves directory if it doesn't exist
@@ -265,6 +268,12 @@ public class GameEngine extends Subject {
         });
     }
 
+    /**
+     * Serializes the game objects to the specified output stream.
+     *
+     * @param os The output stream to write the serialized game objects to.
+     * @throws IOException If an I/O error occurs while writing to the output stream.
+     */
     private void serializeGameObjects(ObjectOutputStream os) throws IOException{
         // Serialize game level manager
         os.writeObject(GameLevelManager.getInstance());
@@ -287,16 +296,23 @@ public class GameEngine extends Subject {
         os.write(this.gameMode.ordinal());
     }
 
+    /**
+     * Creates game objects from the stream of saved file.
+     * The order of the objects in the stream must match the order in which they were serialized.
+     * @param inputStream The input stream containing the serialized game state.
+     * @throws ClassNotFoundException If a class definition cannot be found during deserialization.
+     * @throws IOException If an I/O error occurs while reading from the input stream.
+     */
     @SuppressWarnings("unchecked")
-    private void createGameObjects(ObjectInputStream os) throws IOException, ClassNotFoundException{
+    private void createGameObjects(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
         try {
-            GameLevelManager.setInstance((GameLevelManager) os.readObject());
+            GameLevelManager.setInstance((GameLevelManager) inputStream.readObject());
 
-            this.players = (ArrayList<Player>) os.readObject();
-            this.enemies = (ArrayList<Enemy>) os.readObject();
-            this.bullets = (ArrayList<Bullet>) os.readObject();
-            this.powerups = (ArrayList<AbstractPowerup>) os.readObject();
-            this.blastFXs = (ArrayList<Blast>) os.readObject();
+            this.players = (ArrayList<Player>) inputStream.readObject();
+            this.enemies = (ArrayList<Enemy>) inputStream.readObject();
+            this.bullets = (ArrayList<Bullet>) inputStream.readObject();
+            this.powerups = (ArrayList<AbstractPowerup>) inputStream.readObject();
+            this.blastFXs = (ArrayList<Blast>) inputStream.readObject();
 
             this.currentGameLevel = GameLevelManager.getInstance().getCurrentLevel();
         } catch (EOFException e) {
@@ -304,6 +320,14 @@ public class GameEngine extends Subject {
         }
     }
 
+    /**
+     * Loads a saved game from the specified input stream.
+     * This method reads the game objects from the input stream and initializes the game objects according to saved data.
+     *
+     * @param inputStream The input stream to read the saved game data from.
+     * @throws IOException If an I/O error occurs while reading the input stream.
+     * @throws ClassNotFoundException If a class cannot be found during deserialization.
+     */
     public void loadGame(FileInputStream inputStream) throws IOException, ClassNotFoundException{
         if (inputStream==null) return;
 
@@ -350,6 +374,10 @@ public class GameEngine extends Subject {
         if (this.gameTimer!=null) this.gameTimer.stop();
     }
 
+    /**
+     * Resets the game engine by clearing all game objects and resetting the game state.
+     * This method stops the game timer, resets the game objects, and notifies observers that the game has ended.
+     */
     public void reset() {
         this.isStopped = false;
         this.isPaused = false;
@@ -532,10 +560,11 @@ public class GameEngine extends Subject {
     }
 
     /**
-         * Checks for collisions between bullets and other game objects (tiles, tanks, etc.).
-         * This method iterates through all bullets and checks for collisions with tiles, player tanks, enemy tanks, and other bullets.
-         * If a collision occurs, the bullet is destroyed and the appropriate effects are applied.
-         */
+     * Checks for collisions between bullets and other game objects (tiles, tanks, etc.).
+     * This method iterates through all bullets and checks for collisions with tiles, player tanks, enemy tanks, and other bullets.
+     * If a collision occurs, the bullet is destroyed and the appropriate effects are applied.
+     * @param gameLevel The current game level to check for collisions
+     */
     private void checkProjectileCollisions(GameLevel gameLevel) {
         // Collect bullets to be removed to avoid ConcurrentModificationException
         ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
@@ -705,6 +734,10 @@ public class GameEngine extends Subject {
         return false;  // Do not stop bullet if no collision occurred
     }
 
+    /**
+     * Checks powerup collisions with tanks.
+     * @param gameLevel The current game level to check for collisions
+     */
     private void checkPowerupCollisions(GameLevel gameLevel) {
         Iterator<AbstractPowerup> it = this.powerups.iterator();
 
@@ -763,6 +796,14 @@ public class GameEngine extends Subject {
 
     }
 
+    /**
+     * Applies the effects of a powerup on the player.
+     * This method handles the specific effects of each powerup type.
+     *
+     * @param gameLevel The current game level
+     * @param powerup The powerup to apply
+     * @param player The player who collected the powerup
+     */
     private void applyPowerupEffects(GameLevel gameLevel, AbstractPowerup powerup, Player player) {
         switch (powerup.getPowerupType()) {
             case POWERUP_GRENADE -> {
@@ -810,6 +851,14 @@ public class GameEngine extends Subject {
         }
     }
 
+    /**
+     * Applies the effects of a powerup on the enemy tank.
+     * This method handles the specific effects of each powerup type.
+     *
+     * @param gameLevel The current game level
+     * @param powerup The powerup to apply
+     * @param enemyTank The enemy tank that collected the powerup
+     */
     private void applyPowerupEffects(GameLevel gameLevel, AbstractPowerup powerup, AbstractTank enemyTank) {
         switch (powerup.getPowerupType()) {
             case POWERUP_GRENADE -> {
@@ -857,12 +906,23 @@ public class GameEngine extends Subject {
         notify(EventType.UPDATE_GAME_INFO, GameLevelManager.getInstance().getGameScore());  // Notify observers that the next level is loaded
     }
 
+    /**
+     * Updates the score of the enemy tank.
+     * This method is called when an enemy tank is destroyed.
+     * It updates the game score based on the type of enemy tank destroyed.
+     *
+     * @param enemyTank The enemy tank that was destroyed
+     */
     private void updateEnemyTankScore(AbstractTank enemyTank) {
         if (enemyTank==null) return;
 
         GameLevelManager.getInstance().addTankScore(enemyTank);
     }
 
+    /**
+     * Notifies observers about game is ready to switch next level.
+     *
+     */
     private void goToNextLevel() {
         stop();  // Stop the game engine
 
@@ -874,6 +934,10 @@ public class GameEngine extends Subject {
         delayedTimer.setRepeats(false);
     }
 
+    /**
+     * Ends the game and notifies observers that the game is over.
+     * This method stops the game engine and notifies observers about the game over event.
+     */
     private void endGame() {
         stop();  // Stop the game engine
 
@@ -885,6 +949,13 @@ public class GameEngine extends Subject {
         delayedTimer.start();
     }
 
+    /**
+     * Destroys the eagle tile and ends the game.
+     * This method is called when the eagle tile is destroyed by a bullet.
+     *
+     * @param tile The eagle tile that was destroyed
+     * @return true if the bullet should be stopped, false otherwise
+     */
     private boolean destroyEagleTile(Tile tile) {
         tile.destroy(null);
 

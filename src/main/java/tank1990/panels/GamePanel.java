@@ -443,15 +443,27 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
     @Override
     public void actionPerformed(ActionEvent e) { }
 
+    /**
+     * Shows the game panel and starts the game level.
+     * This method is called when the game is started or resumed.
+     */
     public void show() {
         this.gameEngine.loadGameLevel();
         showGetReadyPanel();
     }
 
+    /**
+     * Shows the loaded game state by displaying the "Get Ready" panel.
+     * This method is called when a game is loaded from a file.
+     */
     public void showLoadedGame() {
         showGetReadyPanel();
     }
 
+    /**
+     * Shows the "Get Ready" panel before starting the game level.
+     * This panel displays the current level index and prompts the player to get ready.
+     */
     private void showGetReadyPanel() {
         int levelIndex = this.gameEngine.getCurrentLevelIndex();
         // Hide the main game panel
@@ -481,6 +493,10 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         this.gameEngine.getCurrentLevel().setCurrentState(LevelState.GET_READY);
     }
 
+    /**
+     * Shows the main game panel and starts the game level.
+     * This method is called when the player is ready to start the game.
+     */
     private void showGamePanel() {
         //  Clean up the get ready panel
         if (this.getReadyPanel != null) {
@@ -562,6 +578,10 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         }
     }
 
+    /**
+     * Shows the game over overlay on top of the game area.
+     * Displays "GAME OVER" text centered over the gameplay area.
+     */
     private void showGameOverOverlay() {
         // Don't create multiple pause panels
         if (this.gameOverPanel != null) {
@@ -599,6 +619,11 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
     }
 
+    /**
+     * Shows the game score overlay with the provided game score.
+     *
+     * @param gameScore The GameScoreStruct containing the game score to display.
+     */
     private void showGameScoreOverlay(GameScoreStruct gameScore) {
         System.out.println("Game Panel: Showing game score overlay...");
         // Don't create multiple pause panels
@@ -618,6 +643,11 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         this.rootPanel.repaint();
     }
 
+    /**
+     * Shows a temporary overlay indicating that the game has been saved.
+     *
+     * @param filePath The path where the game was saved.
+     */
     private void showGameSavedStatusOverlay(String filePath) {
         // Don't create if pause panel is not exist
         if (this.pausePanel == null) return;
@@ -634,6 +664,10 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         this.rootPanel.repaint();
     }
 
+    /**
+     * Hides the game saved status overlay.
+     * This method removes the saved status label from the pause panel.
+     */
     private void hideGameSavedStatusOverlay() {
         if (this.pausePanel == null) return;
 
@@ -645,10 +679,22 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         }
     }
 
+    /**
+     * Loads a game from the provided input stream.
+     *
+     * @param inputStream The input stream containing the serialized game state.
+     * @throws ClassNotFoundException If a class definition cannot be found during deserialization.
+     * @throws IOException If an I/O error occurs while reading from the input stream.
+     */
     public void loadGame(FileInputStream inputStream) throws ClassNotFoundException, IOException {
         this.gameEngine.loadGame(inputStream);
     }
 
+    /**
+     * Resets the game panel to its initial state.
+     * This method is called when the score panel animation finishes.
+     * It clears the game engine and resets the UI components.
+     */
     public void onScorePanelAnimationFinished() {
         // Clean up the score panel first
         if (this.gameScorePanel != null) {

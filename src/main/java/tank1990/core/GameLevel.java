@@ -269,6 +269,13 @@ public class GameLevel implements Serializable {
         this.enemyTankCounts = enemyTankCounts;
     }
 
+    /**
+     * Spawns a powerup in the game level.
+     * This method randomly selects a powerup type and spawns it at a random location
+     * within the game area.
+     *
+     * @return An instance of AbstractPowerup representing the spawned powerup, or null if no powerup is created.
+     */
     public AbstractPowerup spawnPowerup() {
         Random random = new Random();
         PowerupType powerupType = PowerupType.valueOf(random.nextInt(PowerupType.values().length));
@@ -468,6 +475,14 @@ public class GameLevel implements Serializable {
         return this.eagleLocation != null && this.levelInfo.levelGrid[this.eagleLocation.rowIndex()][this.eagleLocation.colIndex()] != null;
     }
 
+    /**
+     * Checks if a tank with a specified bounding rectangle can eligible to move.
+     * This method checks the neighboring tiles of the tank's current location
+     * to determine if the tank can move without colliding with other tanks or obstacles.
+     *
+     * @param tankBound The bounding rectangle of the tank.
+     * @return true if the tank can move, false otherwise.
+     */
     public boolean checkMovable(RectangleBound tankBound) {
         GridLocation tankGLoc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX() ,tankBound.getOriginY()));
         Tile[] neighbors = getNeighbors(tankGLoc);
@@ -483,9 +498,18 @@ public class GameLevel implements Serializable {
             boolean isCollided = RectangleBound.isCollided(tileBound, tankBound);
             if (isCollided) return false;
         }
+
+        //
+
         return true;
     }
 
+    /**
+     * Sets the map with the tiles surrounding the eagle location.
+     * excluding the eagle tile itself. It checks bounds to ensure it does not go out of the grid.
+     *
+     * @param surroundingTiles The map to store the surrounding tiles.
+     */
     private void setSurroundingEagleTiles(HashMap<GridLocation, BlockConfiguration> surroundingTiles) {
         if (this.eagleLocation == null) return;
 
@@ -514,6 +538,10 @@ public class GameLevel implements Serializable {
         }
     }
 
+    /**
+     * Activates the shovel powerup, which converts surrounding tiles around the eagle to steel.
+     * It stores the original state of the tiles before conversion for later restoration.
+     */
     public void activateShovelPowerup() {
         System.out.println("Activating shovel powerup...");
         if (this.originalTilesAroundEagle.isEmpty()) return;
@@ -533,6 +561,10 @@ public class GameLevel implements Serializable {
         isAntiShovelActive = false;  // Activating shovel powerup deactivates the anti-shovel powerup
     }
 
+    /**
+     * Deactivates the shovel powerup, restoring the original tiles around the eagle.
+     * It uses the stored state from when the powerup was activated to restore the tiles.
+     */
     public void deactivateShovelPowerup() {
         System.out.println("Deactivating shovel powerup...");
         if (this.currentTilesAroundEagle.isEmpty()) return;
@@ -548,7 +580,11 @@ public class GameLevel implements Serializable {
         isShovelActive = false;
     }
 
-
+    /**
+     * Activates the anti-shovel powerup, which removes surrounding tiles around the eagle.
+     * Normally there is no such an powerup type in the game, but it is the effect when enemy tanks use the shovel powerup.
+     * It stores the original state of the tiles before removal for later restoration.
+     */
     public void activateAntiShovelPowerup() {
         System.out.println("Activating anti-shovel powerup...");
         if (this.originalTilesAroundEagle.isEmpty()) return;
@@ -566,6 +602,10 @@ public class GameLevel implements Serializable {
         isAntiShovelActive = false;
     }
 
+    /**
+     * Deactivates the anti-shovel powerup, restoring the original tiles around the eagle.
+     * It uses the stored state from when the powerup was activated to restore the tiles.
+     */
     public void deactivateAntiShovelPowerup() {
         System.out.println("Deactivating anti-shovel powerup...");
         if (this.currentTilesAroundEagle.isEmpty()) return;
