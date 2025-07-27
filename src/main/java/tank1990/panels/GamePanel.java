@@ -116,6 +116,19 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 gameScoreTimer.start();
                 break;
             }
+            case EventType.GAME_LOADED: {
+                // No implementation
+            }
+            case EventType.GAME_SAVED: {
+                String path = (String) data;
+                System.out.printf("Game Saved: %s\n", path);
+
+                showGameSavedStatusOverlay(path);
+                Timer popupTimer = new Timer(Globals.POPUP_OVERLAY_DURATION_MS, e -> { hideGameSavedStatusOverlay(); });
+                popupTimer.setRepeats(false);
+                popupTimer.start();
+                break;
+            }
             default:
                 break;
         }
@@ -218,28 +231,6 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
         } catch (EOFException e) {
             // Reached to end of file
         }
-    }
-
-    /**
-     * Loads a saved game from a file.
-     *
-     * @param inputStream The input stream from which the saved game data is loaded.
-     * @throws IOException If an I/O error occurs during loading.
-     * @throws ClassNotFoundException If the class definitions for the saved game objects are not found.
-     */
-    public void loadGame(FileInputStream inputStream) throws IOException, ClassNotFoundException{
-        if (inputStream==null) return;
-
-        ObjectInputStream os = new ObjectInputStream(inputStream);
-
-        //resetGame();
-
-        createGameObjects(os);
-
-        //this.backgroundSoundFX = new SoundFX(Globals.BACKGROUND_SOUND_FX_PATH);
-        //this.backgroundSoundFX.play(true);
-
-        os.close();
     }
 
     /**
@@ -359,6 +350,7 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                     gameEngine.start();
                 } else {
                     gameEngine.pause();
+                    gameEngine.saveGame();
                 }
                 break;
             /*
@@ -453,6 +445,10 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
     public void show() {
         this.gameEngine.loadGameLevel();
+        showGetReadyPanel();
+    }
+
+    public void showLoadedGame() {
         showGetReadyPanel();
     }
 
@@ -620,6 +616,37 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
 
         this.rootPanel.revalidate();
         this.rootPanel.repaint();
+    }
+
+    private void showGameSavedStatusOverlay(String filePath) {
+        // Don't create if pause panel is not exist
+        if (this.pausePanel == null) return;
+
+        // Create the PAUSE label
+        JLabel labelSavedStatus = new JLabel(String.format("Game Saved: %s", filePath), SwingConstants.CENTER);
+        labelSavedStatus.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 10));
+        labelSavedStatus.setForeground(Color.WHITE);
+
+        // Add label to panel
+        this.pausePanel.add(labelSavedStatus, BorderLayout.SOUTH);
+
+        this.rootPanel.revalidate();
+        this.rootPanel.repaint();
+    }
+
+    private void hideGameSavedStatusOverlay() {
+        if (this.pausePanel == null) return;
+
+        Component southComponent = ((BorderLayout) this.pausePanel.getLayout()).getLayoutComponent(BorderLayout.SOUTH);
+        if (southComponent != null) {
+            this.pausePanel.remove(southComponent);
+            this.rootPanel.revalidate();
+            this.rootPanel.repaint();
+        }
+    }
+
+    public void loadGame(FileInputStream inputStream) throws ClassNotFoundException, IOException {
+        this.gameEngine.loadGame(inputStream);
     }
 
     public void onScorePanelAnimationFinished() {

@@ -23,8 +23,8 @@
 package tank1990.tank;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import tank1990.core.*;
@@ -55,7 +55,7 @@ public abstract class AbstractTank extends DynamicGameObject {
     private TimeTick frozenTick; // Tick for blinking effect
 
 
-    private transient Map<Direction, TextureFX> textureFXs = null;
+    private transient HashMap<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
 
     protected boolean hasHelmet = false; // Flag to indicate if the tank has a helmet powerup
@@ -578,4 +578,10 @@ public abstract class AbstractTank extends DynamicGameObject {
      * @param level The current game level where the tank is located.
      */
     public abstract void move(GameLevel level);
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+
+        createTextureFXs();
+    }
 }

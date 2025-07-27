@@ -37,6 +37,8 @@ public interface Globals {
 
     String CONFIGURATION_FILE = "config.ini";
 
+    String DEFAULT_SAVE_LOCATION = "saves/";
+
     String GAME_TITLE = "TANK 1990 - NES";
     String COPYRIGHT_TEXT = "Viriliter 2025";
 
@@ -48,6 +50,7 @@ public interface Globals {
     int WINDOW_HEIGHT = 780;
 
     int GAMEOVER_OVERLAY_DURATION = 3000;
+    int POPUP_OVERLAY_DURATION_MS = 3000;
 
     // Tile Parameters
     int TILE_WIDTH = 16;

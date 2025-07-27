@@ -22,6 +22,10 @@
 
 package tank1990.panels;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -174,7 +178,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
 
         JLabel labelCopyRight = new JLabel(Globals.COPYRIGHT_TEXT);
 
-        labelCopyRight.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 24));
+        labelCopyRight.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 16));
         labelCopyRight.setHorizontalAlignment(SwingConstants.CENTER);
         labelCopyRight.setForeground(Color.WHITE);
         panelCopyRight.setLayout(new BorderLayout());
@@ -222,9 +226,80 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         });
     }
 
+    private void loadGame() {
+        JFileChooser fileChooser = new JFileChooser(Globals.DEFAULT_SAVE_LOCATION);
+        fileChooser.setDialogTitle("Open File");
+
+        int userSelection = fileChooser.showOpenDialog(null); // Open "Open File" dialog
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToOpen = fileChooser.getSelectedFile();
+
+            // Read content from the selected file
+            boolean isExceptionOccured = true;
+            GamePanel gamePanel = new GamePanel(frame, this, GameMode.MODE_SINGLE_PLAYER);
+            try {
+                FileInputStream inputStream = new FileInputStream(fileToOpen);
+
+                this.frame.getContentPane().removeAll();
+
+                gamePanel.loadGame(inputStream);
+                this.frame.add(gamePanel);
+                SwingUtilities.invokeLater(() -> {
+                    gamePanel.requestFocusInWindow();
+                    gamePanel.showLoadedGame();
+                    revalidate();
+                    repaint();
+                });
+
+                isExceptionOccured = false;
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "No file given!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Corrupted file!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                e.printStackTrace();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Cannot read file!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                e.printStackTrace();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Undefined error occured reading the file!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                e.printStackTrace();
+            } finally {
+                // In case of exception, return to menu window
+                if (isExceptionOccured) {
+                    gamePanel.onScorePanelAnimationFinished();
+                }
+            }
+        }
+    }
+
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("Key Pressed: " + e.getKeyCode() + " this:" + System.identityHashCode(this));
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             selectedIndex = selectedIndex>0 ? (selectedIndex - 1 + menuItems.length) % menuItems.length : 0;
             updateSelectorVisibility();
@@ -252,7 +327,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
                 });
 
             } else if (selectedIndex==1) {  // LOAD GAME
-
+                loadGame();
             } else if (selectedIndex==2) {  // ABOUT GAME
                 System.out.println("About Game Selected");
                 this.frame.getContentPane().removeAll();

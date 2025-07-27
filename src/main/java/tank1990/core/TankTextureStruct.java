@@ -22,7 +22,9 @@
 
 package tank1990.core;
 
-public class TankTextureStruct {
+import java.io.Serializable;
+
+public class TankTextureStruct implements Serializable {
     public TextureFXStruct upwardsTexturePath;
     public TextureFXStruct rightTexturePath;
     public TextureFXStruct downwardsTexturePath;

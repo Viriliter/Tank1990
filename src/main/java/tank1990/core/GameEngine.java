@@ -25,6 +25,9 @@ package tank1990.core;
 import javax.swing.*;
 import java.awt.*;
 
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -229,6 +232,88 @@ public class GameEngine extends Subject {
      */
     public boolean isPaused() {
         return this.isPaused;
+    }
+
+    public void saveGame() {
+        SwingUtilities.invokeLater(() -> {
+            // Create saves directory if it doesn't exist
+            File savesDir = new File(Globals.DEFAULT_SAVE_LOCATION);
+            if (!savesDir.exists()) {
+                savesDir.mkdirs();
+            }
+
+            // Generate filename with timestamp
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+            String formattedDatetime = LocalDateTime.now().format(formatter);
+            String defaultFilename = formattedDatetime + ".dat";
+
+            File fileToSave = new File(savesDir, defaultFilename);
+
+            // Save content to the file
+            try (FileOutputStream savedFile = new FileOutputStream(fileToSave);
+                 ObjectOutputStream os = new ObjectOutputStream(savedFile)) {
+
+                serializeGameObjects(os);
+
+                notify(EventType.GAME_SAVED, fileToSave.getAbsolutePath());  // Notify observers to repaint event
+                System.out.println("Game saved to: " + fileToSave.getAbsolutePath());
+
+            } catch (IOException e) {
+                System.err.println("Failed to save game: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void serializeGameObjects(ObjectOutputStream os) throws IOException{
+        // Serialize game level manager
+        os.writeObject(GameLevelManager.getInstance());
+
+        // Serialize player object
+        os.writeObject(this.players);
+
+        // Serialize enemies
+        os.writeObject(this.enemies);
+
+        // Serialize projectiles
+        os.writeObject(this.bullets);
+
+        // Serialize powerups
+        os.writeObject(this.powerups);
+
+        // Serialize blast effects
+        os.writeObject(this.blastFXs);
+
+        os.write(this.gameMode.ordinal());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void createGameObjects(ObjectInputStream os) throws IOException, ClassNotFoundException{
+        try {
+            GameLevelManager.setInstance((GameLevelManager) os.readObject());
+
+            this.players = (ArrayList<Player>) os.readObject();
+            this.enemies = (ArrayList<Enemy>) os.readObject();
+            this.bullets = (ArrayList<Bullet>) os.readObject();
+            this.powerups = (ArrayList<AbstractPowerup>) os.readObject();
+            this.blastFXs = (ArrayList<Blast>) os.readObject();
+
+            this.currentGameLevel = GameLevelManager.getInstance().getCurrentLevel();
+        } catch (EOFException e) {
+            // Reached to end of file
+        }
+    }
+
+    public void loadGame(FileInputStream inputStream) throws IOException, ClassNotFoundException{
+        if (inputStream==null) return;
+
+        ObjectInputStream os = new ObjectInputStream(inputStream);
+
+        reset();
+
+        createGameObjects(os);
+
+        os.close();
     }
 
     /**

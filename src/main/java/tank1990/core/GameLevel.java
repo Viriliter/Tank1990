@@ -24,6 +24,7 @@
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.io.Serializable;
 import java.util.*;
 
 import tank1990.powerup.AbstractPowerup;
@@ -34,15 +35,11 @@ import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 import tank1990.tile.*;
 
-public class GameLevel {
-    // Create a min-heap for spawn location which spawn location anbd timestamp of last enemy tank created.
-    PriorityQueue<Map.Entry<GridLocation, Long>> spawnLocations = new PriorityQueue<>(Comparator.comparingLong(Map.Entry::getValue));
+public class GameLevel implements Serializable {
+    // Create a min-heap for spawn location which spawn location and timestamp of last enemy tank created.
+    private static final PriorityQueue<Map.Entry<GridLocation, Long>> SPAWN_LOCATIONS = new PriorityQueue<>(Comparator.comparingLong(Map.Entry::getValue));
 
-    GridLocation[] SPAWN_LOCATIONS = new GridLocation[] {
-        new GridLocation(0, 0), new GridLocation(0, 6), new GridLocation(0, 12)
-    };
-
-    private Map<TankType, Integer> enemyTankCounts; // Map of tank types to their counts in the level
+    private HashMap<TankType, Integer> enemyTankCounts; // Map of tank types to their counts in the level
 
     private LevelState currentState;
 
@@ -55,18 +52,18 @@ public class GameLevel {
     private GridLocation eagleLocation = null;
     private GridLocation playerLocation = null;
 
-    private final int totalEnemyTankCount; // Total number of enemy tanks in the level
+    private int totalEnemyTankCount; // Total number of enemy tanks in the level
 
-    private final List<Integer> MAGIC_NUMBERS = List.of(4, 11, 18); // Magic numbers used to determine which enemy tanks are spawned as red tanks in the level
+    private static final List<Integer> MAGIC_NUMBERS = List.of(4, 11, 18); // Magic numbers used to determine which enemy tanks are spawned as red tanks in the level
 
-    private final HashMap<GridLocation, BlockConfiguration> originalTilesAroundEagle;
-    private final HashMap<GridLocation, BlockConfiguration> currentTilesAroundEagle;
+    private HashMap<GridLocation, BlockConfiguration> originalTilesAroundEagle;
+    private HashMap<GridLocation, BlockConfiguration> currentTilesAroundEagle;
 
-    boolean isShovelActive = false;
-    boolean isAntiShovelActive = false;
+    private boolean isShovelActive = false;
+    private boolean isAntiShovelActive = false;
 
-    private final TimeTick shovelTick;
-    private final TimeTick antiShovelTick;
+    private TimeTick shovelTick;
+    private TimeTick antiShovelTick;
 
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
@@ -77,14 +74,15 @@ public class GameLevel {
         // Set default size values for now, it will be updated on draw method
         this.gameAreaSize = new Dimension(Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
 
-        Map<TankType, Integer> enemyTankCount = this.levelInfo.enemyTankCount;
+        HashMap<TankType, Integer> enemyTankCount = this.levelInfo.enemyTankCount;
         this.setEnemyTankCount(enemyTankCount);
         this.totalEnemyTankCount = enemyTankCount.values().stream().mapToInt(Integer::intValue).sum();
 
         // Default timestamp for spawn locations is -1 which means invalid
-        this.spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
-        this.spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
-        this.spawnLocations.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
+        SPAWN_LOCATIONS.clear();
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
 
         this.eagleLocation = findEagleLocation();
 
@@ -150,7 +148,7 @@ public class GameLevel {
 
     public void update() {
         // Check timestamp of spawn time. Set the timestamp to invalid if it is too old
-        Map.Entry<GridLocation, Long> oldestSpawnLocationEntry = this.spawnLocations.poll();
+        Map.Entry<GridLocation, Long> oldestSpawnLocationEntry = this.SPAWN_LOCATIONS.poll();
 
         if (oldestSpawnLocationEntry!=null) {
             if (System.currentTimeMillis() - oldestSpawnLocationEntry.getValue() > Globals.ENEMY_TANK_SPAWN_DELAY_MS) {
@@ -158,7 +156,7 @@ public class GameLevel {
                 oldestSpawnLocationEntry.setValue(-1L);
             }
             // Update the list
-            this.spawnLocations.add(oldestSpawnLocationEntry);
+            this.SPAWN_LOCATIONS.add(oldestSpawnLocationEntry);
         }
 
         for (int row = 0; row < this.levelInfo.levelGrid.length; row++) {
@@ -267,7 +265,7 @@ public class GameLevel {
      *
      * @param enemyTankCounts A map where keys are TankType and values are the counts of each type.
      */
-    public void setEnemyTankCount(Map<TankType, Integer> enemyTankCounts) {
+    public void setEnemyTankCount(HashMap<TankType, Integer> enemyTankCounts) {
         this.enemyTankCounts = enemyTankCounts;
     }
 
@@ -316,14 +314,14 @@ public class GameLevel {
             return null;
         }
 
-        Map.Entry<GridLocation, Long> spawnLocationEntry = this.spawnLocations.poll();
+        Map.Entry<GridLocation, Long> spawnLocationEntry = this.SPAWN_LOCATIONS.poll();
 
         if (spawnLocationEntry==null) return null;
 
         //If spawn time is not old enough, do not spawn any tank
         if (spawnLocationEntry.getValue()>0) {
             //Update the list
-            this.spawnLocations.add(spawnLocationEntry);
+            this.SPAWN_LOCATIONS.add(spawnLocationEntry);
             return null;
         }
 
@@ -331,7 +329,7 @@ public class GameLevel {
         spawnLocationEntry.setValue(System.currentTimeMillis());
 
         // Update the list
-        this.spawnLocations.add(spawnLocationEntry);
+        this.SPAWN_LOCATIONS.add(spawnLocationEntry);
 
         Direction[] directions = Direction.values();
         Direction spawnDir = directions[random.nextInt(1,directions.length)];

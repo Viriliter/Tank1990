@@ -22,15 +22,15 @@
 
 package tank1990.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import tank1990.player.Player;
 import tank1990.tank.*;
 
-public class GameLevelManager {
-    private List<GameLevel> gameLevels; // List of game levels
+public class GameLevelManager implements Serializable {
+    private ArrayList<GameLevel> gameLevels; // List of game levels
     private int currentLevelIndex; // Index of the current game level
     private int totalPlayerScore; // Total score of the player
 
@@ -55,6 +55,10 @@ public class GameLevelManager {
             instance = new GameLevelManager();
         }
         return instance;
+    }
+
+    public static void setInstance(GameLevelManager sourceInstance) {
+        instance = sourceInstance;
     }
 
     /**

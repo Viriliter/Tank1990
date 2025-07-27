@@ -23,6 +23,7 @@
 package tank1990.player;
 
 import java.awt.Graphics;
+import java.io.Serializable;
 
 import tank1990.core.*;
 import tank1990.powerup.AbstractPowerup;
@@ -33,13 +34,14 @@ import tank1990.tank.PlayerTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 
-public class Player {
+public class Player implements Serializable {
     private int remainingLife;
 
     private PlayerTank myTank = null;
-    private final PlayerType playerType = PlayerType.PLAYER_1;
+    private PlayerType playerType;
 
     public Player(PlayerType playerType) {
+        this.playerType = playerType;
         this.remainingLife = Globals.INITAL_PLAYER_HEALTH;
 
         // While creating a player, we spawn the tank

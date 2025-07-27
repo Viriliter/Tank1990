@@ -9,5 +9,7 @@ public enum EventType {
     STARTED,
     UPDATE_GAME_INFO,
     NEXT_LEVEL,
-    GAMEOVER
+    GAMEOVER,
+    GAME_LOADED,
+    GAME_SAVED
 }

@@ -22,7 +22,9 @@
 
 package tank1990.core;
 
-public class GameScoreStruct {
+import java.io.Serializable;
+
+public class GameScoreStruct implements Serializable {
     private int hiScore = 0;
     private int totalScore = 0;
     private int playerRemainingLives = 0;
