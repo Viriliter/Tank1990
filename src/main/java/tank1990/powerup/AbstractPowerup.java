@@ -39,6 +39,8 @@ public abstract class AbstractPowerup extends DynamicGameObject {
 
     private boolean isVisible = true;
 
+    protected int points = 500;
+
     AbstractPowerup(int x, int y, PowerupType powerupType, int lifeTimeMs) {
         setX(x);
         setY(y);
@@ -58,11 +60,11 @@ public abstract class AbstractPowerup extends DynamicGameObject {
             blinkTick.reset();
         }
 
+        setSize(Utils.normalizeDimension(g, Globals.POWERUP_WIDTH, Globals.POWERUP_HEIGHT));
+
         if (!isVisible) {
             this.textureFX.draw(g, getX(), getY(), 0);
-        } else {
         }
-
     }
 
     public void update() {
@@ -88,5 +90,13 @@ public abstract class AbstractPowerup extends DynamicGameObject {
 
     public PowerupType getPowerupType() {
         return this.powerupType;
+    }
+
+    public int getPoints() {
+        return this.points;
+    }
+
+    protected void setPoints(int points) {
+        this.points = points;
     }
 }

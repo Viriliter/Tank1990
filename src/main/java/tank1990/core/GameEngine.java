@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import tank1990.panels.GameAreaPanel;
@@ -56,6 +57,9 @@ public class GameEngine extends Subject {
 
     private GameMode gameMode = GameMode.MODE_SINGLE_PLAYER;
     private GameLevel currentGameLevel = null;
+
+    private boolean isPlayerTanksFreezed = false;
+    private boolean isEnemyTanksFreezed = false;
 
     public GameEngine(GameMode gameMode) {
         this.gameMode = gameMode;
@@ -435,12 +439,18 @@ public class GameEngine extends Subject {
         }
     }
 
-    /**
-     * Checks for collisions between bullets and other game objects (tiles, tanks, etc.).
-     * This method iterates through all bullets and checks for collisions with tiles, player tanks, enemy tanks, and other bullets.
-     * If a collision occurs, the bullet is destroyed and the appropriate effects are applied.
-     */
     private void checkCollisions(GameLevel gameLevel) {
+        checkProjectileCollisions(gameLevel);
+
+        checkPowerupCollisions(gameLevel);
+    }
+
+    /**
+         * Checks for collisions between bullets and other game objects (tiles, tanks, etc.).
+         * This method iterates through all bullets and checks for collisions with tiles, player tanks, enemy tanks, and other bullets.
+         * If a collision occurs, the bullet is destroyed and the appropriate effects are applied.
+         */
+    private void checkProjectileCollisions(GameLevel gameLevel) {
         // Collect bullets to be removed to avoid ConcurrentModificationException
         ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
 
@@ -503,7 +513,8 @@ public class GameEngine extends Subject {
                             // Check if bullet belongs to player (don't let enemies shoot themselves)
                             if (!bullet.isEnemyBullet()) {
                                 // Enemy tank hit by player bullet
-                                enemyTank.getDamage();
+                                boolean isDamaged = enemyTank.getDamage();
+                                if (!isDamaged) continue;
 
                                 // If enemy tank is red, spawn a powerup
                                 if (enemyTank.isRedTank()) {
@@ -570,14 +581,6 @@ public class GameEngine extends Subject {
     }
 
     /**
-     * Updates the game information such as score, lives, etc.
-     * This method can be expanded later to include more detailed game statistics.
-     */
-    private void updateGameInfo() {
-        notify(EventType.UPDATE_GAME_INFO, GameLevelManager.getInstance().getGameScore());  // Notify observers that the next level is loaded
-    }
-
-    /**
      * Checks if a bullet collides with any destroyable tiles.
      * @param bullet The bullet to check
      * @param gameLevel The current game level
@@ -614,6 +617,149 @@ public class GameEngine extends Subject {
         }
 
         return false;  // Do not stop bullet if no collision occurred
+    }
+
+    private void checkPowerupCollisions(GameLevel gameLevel) {
+        Iterator<AbstractPowerup> it = this.powerups.iterator();
+
+        HashMap<AbstractPowerup, Player> collectedPowerupsByPlayer = new HashMap<>();
+        HashMap<AbstractPowerup, AbstractTank> collectedPowerupsByEnemy = new HashMap<>();
+
+        while (it.hasNext()) {
+            AbstractPowerup powerup = it.next();
+            RectangleBound powerupBounds = powerup.getBoundingBox();
+
+            // Check collision with player tanks
+            for (Player player : this.players) {
+                if (!player.isTankDestroyed()) {
+                    RectangleBound tankBounds = player.getBoundingBox();
+                    if (tankBounds==null) continue;
+
+                    // Check if powerup intersects with player tank
+                    if (RectangleBound.isCollided(powerupBounds, tankBounds)) {
+                        // Player collected the powerup
+                        player.collectPowerup(powerup);
+                        collectedPowerupsByPlayer.put(powerup, player);
+                        break;  // No need to check other players
+                    }
+                }
+            }
+
+            // Check collision with enemy tanks
+            for (Enemy enemy : this.enemies) {
+                AbstractTank enemyTank = (AbstractTank) enemy;
+                if (!enemyTank.isDestroyed()) {
+                    RectangleBound tankBounds = enemyTank.getBoundingBox();
+                    if (tankBounds==null) continue;
+
+                    // Check if powerup intersects with enemy tank
+                    if (RectangleBound.isCollided(powerupBounds, tankBounds)) {
+                        // Enemy collected the powerup
+                        enemyTank.collectPowerup(powerup);
+                        collectedPowerupsByEnemy.put(powerup, enemyTank);
+                        break;  // No need to check other enemies
+                    }
+                }
+            }
+        }
+
+        for (AbstractPowerup powerup : collectedPowerupsByPlayer.keySet()) {
+            applyPowerupEffects(gameLevel, powerup, collectedPowerupsByPlayer.get(powerup));
+            // Remove collected powerups from the game
+            this.powerups.remove(powerup);
+        }
+
+        for (AbstractPowerup powerup : collectedPowerupsByEnemy.keySet()) {
+            applyPowerupEffects(gameLevel, powerup, collectedPowerupsByEnemy.get(powerup));
+            // Remove collected powerups from the game
+            this.powerups.remove(powerup);
+        }
+
+    }
+
+    private void applyPowerupEffects(GameLevel gameLevel, AbstractPowerup powerup, Player player) {
+        switch (powerup.getPowerupType()) {
+            case POWERUP_GRENADE -> {
+                // Destroy all enemy tanks
+                Iterator<Enemy> enemyIt = this.enemies.iterator();
+
+                while (enemyIt.hasNext()) {
+                    Enemy enemy = enemyIt.next();
+                    AbstractTank enemyTank = (AbstractTank) enemy;
+                    if (!enemyTank.isDestroyed()) {
+                        Blast b = enemyTank.destroy();  // Destroy call directly destructs the tank
+                        updateEnemyTankScore(enemyTank);
+                        gameLevel.decreaseActiveEnemyTank();
+
+                        this.blastFXs.add(b);
+                        enemyIt.remove();
+                    }
+                }
+            }
+            case POWERUP_HELMET -> {
+                // No specific action for tank powerup
+            }
+            case POWERUP_SHOVEL -> {
+                // Shovel around the eagle tile
+                GameLevelManager.getInstance().getCurrentLevel().shovelAroundEagle();
+            }
+            case POWERUP_STAR -> {
+                // No specific action for tank powerup
+            }
+            case POWERUP_TANK -> {
+                // No specific action for tank powerup
+            }
+            case POWERUP_TIMER -> {
+                // Freezes all enemy tanks for a short duration
+
+            }
+            default -> {
+                System.err.println("Unknown powerup type: " + powerup.getPowerupType());
+            }
+        }
+    }
+
+    private void applyPowerupEffects(GameLevel gameLevel, AbstractPowerup powerup, AbstractTank enemyTank) {
+        switch (powerup.getPowerupType()) {
+            case POWERUP_GRENADE -> {
+                // Destroy all enemy tanks
+                Iterator<Player> playerIt = this.players.iterator();
+
+                while (playerIt.hasNext()) {
+                    Player player = playerIt.next();
+                    // TODO uncomment this line to enable player damage
+                    //Blast b = player.destroy();  // Destroy call directly destructs player's tank
+                    //this.blastFXs.add(b);
+                }
+            }
+            case POWERUP_HELMET -> {
+                // No specific action for tank powerup
+            }
+            case POWERUP_SHOVEL -> {
+                // Remove the protection around the eagle tile
+                GameLevelManager.getInstance().getCurrentLevel().removeEagleProtection();
+            }
+            case POWERUP_STAR -> {
+                // No specific action for tank powerup
+            }
+            case POWERUP_TANK -> {
+                // No specific action for tank powerup
+            }
+            case POWERUP_TIMER -> {
+                // No specific action for tank powerup
+            }
+            default -> {
+                System.err.println("Unknown powerup type: " + powerup.getPowerupType());
+            }
+        }
+    }
+
+    /**
+     * Updates the game information such as score, lives, etc.
+     * This method can be expanded later to include more detailed game statistics.
+     */
+    private void updateGameInfo() {
+        notify(EventType.UPDATE_GAME_INFO, GameLevelManager.getInstance().getGameScore());  // Notify observers that the next level is loaded
     }
 
     private void updateEnemyTankScore(AbstractTank enemyTank) {

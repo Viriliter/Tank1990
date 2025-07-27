@@ -29,7 +29,9 @@ import java.util.Random;
 
 import tank1990.core.*;
 import tank1990.powerup.AbstractPowerup;
+import tank1990.projectiles.Blast;
 import tank1990.projectiles.Bullet;
+import tank1990.projectiles.BulletType;
 
 public abstract class AbstractTank extends DynamicGameObject {
     private boolean isBulletDestroyed = true;  // Flag to indicate if the bullet fired from the tank is destroyed or not
@@ -53,6 +55,10 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     private transient Map<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
+
+    protected boolean hasHelmet = false; // Flag to indicate if the tank has a helmet powerup
+
+    protected TankTier currentTier = TankTier.TIER_DEFAULT; // Default tank tier
 
     RectangleBound mBoundingBoxInfo = null;
 
@@ -119,6 +125,11 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         this.speed = Utils.normalize(g, this.speedUnit);
         this.maxSpeed = Utils.normalize(g, this.maxSpeedUnit);
+
+        if (this.hasHelmet) {
+            g.setColor(Color.YELLOW);
+            g.drawRoundRect((int) getBoundingBox().getX(), (int) getBoundingBox().getY(), (int) getBoundingBox().getWidth(), (int) getBoundingBox().getHeight(), 5, 5);
+        }
 
         if (Globals.SHOW_BOUNDING_BOX) {
             g.setColor(Color.CYAN);
@@ -237,12 +248,37 @@ public abstract class AbstractTank extends DynamicGameObject {
         // This offset is defined in the textureFXs map.
         Dimension offset = this.textureFXs.get(dir).getOffsets();
 
-        return new Bullet(this, getX() + (int) offset.getWidth(), getY() + (int) offset.getHeight(), getDir(), Globals.BULLET_SPEED_PER_TICK);
+        Bullet bullet = new Bullet(this, getX() + (int) offset.getWidth(), getY() + (int) offset.getHeight(), getDir(), Globals.BULLET_SPEED_PER_TICK);
+
+        // Configure bullet properties based on tank tier
+        if (currentTier == TankTier.TIER_2) {
+            bullet.setMoveSpeed(Globals.BULLET_SPEED_PER_TICK * 2); // Double the speed for tier 2
+        }
+        if (currentTier == TankTier.TIER_3) {
+            // TODO No implementation for tier 3, but can be added later
+        }
+        if (currentTier == TankTier.TIER_4) {
+            bullet.setType(BulletType.UPGRADED);
+        }
+
+        return  bullet;
     }
 
-    public void getDamage() {
+    public boolean getDamage() {
+        // If tank has helmet, it will not take damage
+        if (this.hasHelmet) {
+            this.hasHelmet = false;  // Helmet is consumed after one hit
+            return false;
+        }
+
         // After each damage decrement armor level by one.
         armorLevel = armorLevel>0 ? --armorLevel: 0;
+        return true;  // Tank is damaged
+    }
+
+    public Blast destroy() {
+        armorLevel = -1;
+        return new Blast(getX(), getY());
     }
 
     public boolean isDestroyed() {
@@ -262,16 +298,35 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     protected abstract void setRedTankTextureFXs();
 
-    public void getPowerup(AbstractPowerup powerup) {
+    public void collectPowerup(AbstractPowerup powerup) {
+        if (powerup == null) return;
 
+        // Collect the powerup and apply its effects
+        switch (powerup.getPowerupType()) {
+            case POWERUP_GRENADE -> {
+                // No specific action for timer powerup in tanks
+            }
+            case POWERUP_HELMET -> {
+                this.hasHelmet = true;
+            }
+            case POWERUP_SHOVEL -> {
+                // No specific action for timer powerup in tanks
+            }
+            case POWERUP_STAR -> {
+                // No specific action for timer powerup in tanks
+            }
+            case POWERUP_TANK -> {
+                // No specific action for timer powerup in tanks
+            }
+            case POWERUP_TIMER -> {
+                // No specific action for timer powerup in tanks
+            }
+            default -> System.err.println("Unknown powerup type: " + powerup.getPowerupType());
+        }
     }
 
     public void setBulletStatus(boolean isBulletDestroyed) {
         this.isBulletDestroyed = isBulletDestroyed;
-    }
-
-    public boolean checkCollision() {
-        return false;
     }
 
     /**

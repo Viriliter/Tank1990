@@ -24,7 +24,6 @@ package tank1990.powerup;
 
 import tank1990.core.Globals;
 import tank1990.core.TextureFX;
-import tank1990.core.Utils;
 
 public class PowerupTank extends AbstractPowerup {
     public PowerupTank(int x, int y) {
@@ -32,9 +31,4 @@ public class PowerupTank extends AbstractPowerup {
         this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_TANK);
     }
 
-    @Override
-    public boolean checkCollision() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkCollision'");
-    }
 }

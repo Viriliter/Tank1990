@@ -147,7 +147,7 @@ public class GameLevelManager {
         return null;
     }
 
-    private void addPlayerScore(int point) {
+    public void addPlayerScore(int point) {
         if (this.gameScore != null) {
             this.gameScore.setTotalScore(this.gameScore.getTotalScore() + point);
         }

@@ -58,7 +58,9 @@ public class GameLevel {
     private final int totalEnemyTankCount; // Total number of enemy tanks in the level
 
     private final List<Integer> MAGIC_NUMBERS = List.of(4, 11, 18); // Magic numbers used to determine which enemy tanks are spawned as red tanks in the level
-    
+
+    private List<Tile> tilesAroundEagle = new ArrayList<>();
+
     public GameLevel(String levelPath) {
         this.currentState = LevelState.NOT_LOADED;
         this.levelInfo = MapGenerator.readLevelInfo(levelPath);
@@ -448,4 +450,33 @@ public class GameLevel {
         }
         return true;
     }
+
+    public void shovelAroundEagle() {
+        if (this.eagleLocation == null) return;
+
+        //int row = this.eagleLocation.rowIndex();
+        //int col = this.eagleLocation.colIndex();
+//
+        //// Check bounds and convert tiles around the eagle to steel
+        //for (int i = -1; i <= 1; i++) {
+        //    for (int j = -1; j <= 1; j++) {
+        //        int newRow = row + i;
+        //        int newCol = col + j;
+//
+        //        if (newRow >= 0 && newRow < Globals.ROW_TILE_COUNT && newCol >= 0 && newCol < Globals.COL_TILE_COUNT) {
+        //            // Convert any tile (including null) to steel tiles
+        //            Location tileLocation = Utils.gridLoc2Loc(new GridLocation(newRow, newCol));
+        //            this.levelInfo.levelGrid[newRow][newCol] = TileFactory.createTile(TileType.TILE_STEEL, tileLocation.x(), tileLocation.y(), BlockConfiguration.BLOCK_CONF_FULL);
+        //        }
+        //    }
+        //}
+    }
+
+    public void removeShovelAroundEagle() {
+    }
+
+    public void removeEagleProtection() {}
+
+    public void enableEagleProtection() {}
+
 }

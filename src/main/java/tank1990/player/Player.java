@@ -25,6 +25,8 @@ package tank1990.player;
 import java.awt.Graphics;
 
 import tank1990.core.*;
+import tank1990.powerup.AbstractPowerup;
+import tank1990.projectiles.Blast;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.PlayerTank;
@@ -73,15 +75,58 @@ public class Player {
         return myTank.shoot();
     }
 
-    public void getDamage() {
-        remainingLife = --remainingLife;
+    public boolean getDamage() {
+        boolean isDamaged = myTank.getDamage();
+        if (isDamaged) {
+            --remainingLife;
+        }
+
+        return isDamaged;
+    }
+
+    public Blast destroy() {
+        --remainingLife;
+        return myTank.destroy();
     }
 
     public int getRemainingLives() {
         return remainingLife;
     }
 
-    public AbstractTank getMyTank() { return myTank; }
+    public void collectPowerup(AbstractPowerup powerup) {
+        if (powerup == null) return;
+
+        myTank.collectPowerup(powerup);
+
+        // Collect the powerup and apply its effects
+        switch (powerup.getPowerupType()) {
+            case POWERUP_GRENADE -> {
+                // No specific action for timer powerup in players
+            }
+            case POWERUP_HELMET -> {
+                // No specific action for timer powerup in players
+            }
+            case POWERUP_SHOVEL -> {
+                // No specific action for timer powerup in players
+            }
+            case POWERUP_STAR -> {
+                // No specific action for timer powerup in players
+            }
+            case POWERUP_TANK -> {
+                remainingLife++; // Increase the player's life by one
+            }
+            case POWERUP_TIMER -> {
+                // No specific action for timer powerup in players
+            }
+            default -> {
+                System.err.println("Unknown powerup type: " + powerup.getPowerupType());
+            }
+        }
+
+        // Add powerup's points to the player's score
+        GameLevelManager.getInstance().addPlayerScore(powerup.getPoints());
+
+    }
 
     public boolean isTankDestroyed() { return myTank.isDestroyed(); }
 

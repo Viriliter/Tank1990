@@ -20,15 +20,12 @@
  * SOFTWARE.
  */
 
-package tank1990.powerup;
+package tank1990.tank;
 
-import tank1990.core.Globals;
-import tank1990.core.TextureFX;
-
-public class PowerupGrenade extends AbstractPowerup {
-    public PowerupGrenade(int x, int y) {
-        super(x, y, PowerupType.POWERUP_GRENADE, Globals.DEFAULT_POWERUP_LIFETIME_MS);
-        this.textureFX = new TextureFX(Globals.TEXTURE_POWERUP_GRENADE);
-    }
-
+public enum TankTier {
+    TIER_DEFAULT,
+    TIER_2,
+    TIER_3,
+    TIER_4,
+    TIER_5;
 }

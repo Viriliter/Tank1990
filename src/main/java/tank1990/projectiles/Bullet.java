@@ -48,6 +48,7 @@ public class Bullet extends DynamicGameObject {
 
     private AbstractTank tankInst = null;
     private int speed;
+    private int baseSpeed;
     private BulletType type;
 
     public Bullet(AbstractTank tankInst, int x, int y, Direction dir, int speed) {
@@ -56,7 +57,8 @@ public class Bullet extends DynamicGameObject {
         setY(y);
         setDir(dir);
         setSize(new Dimension(Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT));
-        this.speed = speed;
+        this.baseSpeed = speed;
+        this.speed = baseSpeed;
         this.type = BulletType.NORMAL;
     }
 
@@ -66,14 +68,15 @@ public class Bullet extends DynamicGameObject {
         setY(y);
         setDir(dir);
         setSize(new Dimension(Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT));
-        this.speed = speed;
+        this.baseSpeed = speed;
+        this.speed = baseSpeed;
         this.type = type;
     }
 
     @Override
     public void draw(Graphics g) {
         Dimension dim = Utils.normalizeDimension(g, Globals.BULLET_WIDTH, Globals.BULLET_HEIGHT);
-        this.speed = Utils.normalize(g, Globals.BULLET_SPEED_PER_TICK);
+        this.speed = Utils.normalize(g, this.baseSpeed);
         setSize(dim);
 
         Graphics2D g2d = (Graphics2D) g;
@@ -103,13 +106,16 @@ public class Bullet extends DynamicGameObject {
         }
     }
 
-
     public BulletType getType() {
         return this.type;
     }
 
     public void setType(BulletType type) {
         this.type = type;
+    }
+
+    public void setMoveSpeed(int speed) {
+        this.baseSpeed = speed;
     }
 
     public Blast destroy() {
@@ -134,14 +140,6 @@ public class Bullet extends DynamicGameObject {
         return this.tankInst instanceof Enemy;
     }
 
-    // Implementation of abstract method from DynamicGameObject
-    @Override
-    public boolean checkCollision() {
-        // This method is required by the parent class but we need GameLevel context
-        // Return false as we'll use the overloaded method with GameLevel parameter
-        return false;
-    }
-    
     public boolean checkCollision(GameLevel gameLevel) {
         if (gameLevel == null || gameLevel.getMap() == null) {
             return false;

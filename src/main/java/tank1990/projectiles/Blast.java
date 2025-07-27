@@ -53,7 +53,4 @@ public class Blast extends DynamicGameObject {
         this.spriteAnimation.draw(g, x - nDim.width/2, y - nDim.height/2, 0);
     }
 
-    @Override
-    public boolean checkCollision() { return false; }
-
 }
