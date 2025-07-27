@@ -45,24 +45,15 @@ public class ArmorTank extends AbstractTank implements Enemy {
     @Override
     public void update(GameLevel level) {
         super.update(level);
-        int armorLevel = getArmorLevel();
 
-        if (armorLevel==4 && this.lastArmorLevel!=armorLevel) {
-            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L4_STRUCT;
-            createTextureFXs();
-            this.lastArmorLevel = armorLevel;
-        } else if (armorLevel==3 && this.lastArmorLevel!=armorLevel) {
-            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L3_STRUCT;
-            createTextureFXs();
-            this.lastArmorLevel = armorLevel;
-        } else if (armorLevel==2 && this.lastArmorLevel!=armorLevel) {
-            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L2_STRUCT;
-            createTextureFXs();
-            this.lastArmorLevel = armorLevel;
-        } else if (armorLevel==1 && this.lastArmorLevel!=armorLevel) {
-            this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_L1_STRUCT;
-            createTextureFXs();
-            this.lastArmorLevel = armorLevel;
+        // Update the tank texture based on the armor level only if it is not a red tank.
+        // Since red tank texture animation will be taken care of in super class.
+        if (!isRedTank()) {
+            int armorLevel = getArmorLevel();
+
+            if (this.lastArmorLevel!=armorLevel) {
+                setDefaultTankTextureFXs();
+            }
         }
     }
 
@@ -93,19 +84,19 @@ public class ArmorTank extends AbstractTank implements Enemy {
     protected void setRedTankTextureFXs() {
         int armorLevel = getArmorLevel();
 
-        if (armorLevel==4 && this.lastArmorLevel!=armorLevel) {
+        if (armorLevel==4) {
             this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
             createTextureFXs();
             this.lastArmorLevel = armorLevel;
-        } else if (armorLevel==3 && this.lastArmorLevel!=armorLevel) {
+        } else if (armorLevel==3) {
             this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
             createTextureFXs();
             this.lastArmorLevel = armorLevel;
-        } else if (armorLevel==2 && this.lastArmorLevel!=armorLevel) {
+        } else if (armorLevel==2) {
             this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
             createTextureFXs();
             this.lastArmorLevel = armorLevel;
-        } else if (armorLevel==1 && this.lastArmorLevel!=armorLevel) {
+        } else if (armorLevel==1) {
             this.tankTextureFxStruct = Globals.TEXTURE_ARMOR_TANK_RED_STRUCT;
             createTextureFXs();
             this.lastArmorLevel = armorLevel;

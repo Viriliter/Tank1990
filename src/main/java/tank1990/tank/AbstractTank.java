@@ -196,10 +196,6 @@ public abstract class AbstractTank extends DynamicGameObject {
             // Update tank position and direction
             setX(newX);
             setY(newY);
-
-            //GridLocation gLoc = Utils.Loc2GridLoc(new Location(x, y));
-            //GridLocation newGLoc = Utils.Loc2GridLoc(new Location(newX, newY));
-
         } else {}
 
         setDir(dir);

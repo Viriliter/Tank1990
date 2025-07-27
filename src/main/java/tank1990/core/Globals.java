@@ -58,7 +58,7 @@ public interface Globals {
     int TANK_HEIGHT = 16;
     
     // Bullet Parameters
-    int BULLET_WIDTH = 1;
+    int BULLET_WIDTH = 2;
     int BULLET_HEIGHT = 3;
     int BULLET_SPEED_PER_TICK = 3;         // It defines movementSpeed speed of bulletSpeed in pixels for each GameTick
     int BLAST_WIDTH = 8;
