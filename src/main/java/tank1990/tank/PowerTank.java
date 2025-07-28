@@ -30,6 +30,15 @@ import java.util.Random;
 
 public class PowerTank extends AbstractTank implements Enemy {
 
+    public PowerTank(int x, int y) {
+        super(x, y);
+
+        setDefaultTankTextureFXs();
+
+        setSpeedUnit(Globals.POWER_TANK_MOVEMENT_SPEED);
+        setMaxSpeedUnit(Globals.POWER_TANK_MOVEMENT_MAX_SPEED);
+    }
+
     public PowerTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
@@ -51,15 +60,4 @@ public class PowerTank extends AbstractTank implements Enemy {
         createTextureFXs();
     }
 
-    @Override
-    public void move(GameLevel level) {
-        Random random = new Random();
-        int behavior = random.nextInt(1,11);
-
-        if (behavior<=8) { // Move towards to target with %80 percentage
-            moveToTarget(level);
-        } else {  // Move randomly with %20 percentage
-            moveToRandom();
-        }
-    }
 }

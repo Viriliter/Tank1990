@@ -23,4 +23,11 @@ public class GridLocation implements Serializable {
     public String toString() {
         return String.format("GL(r:%d, c:%d)", rowIndex, colIndex);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (! (obj instanceof GridLocation other)) return false;
+
+        return this.rowIndex == other.rowIndex && this.colIndex == other.colIndex;
+    }
 }

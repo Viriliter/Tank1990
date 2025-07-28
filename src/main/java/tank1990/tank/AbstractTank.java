@@ -63,12 +63,28 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     protected TankTier currentTier = TankTier.TIER_DEFAULT; // Default tank tier
 
-    RectangleBound mBoundingBoxInfo = null;
+    protected TankState tankState = TankState.UNDEFINED;
+    protected Direction lastRandomDirection = Direction.DIRECTION_INVALID;
+
+    protected enum TankState {
+        UNDEFINED,
+        SPAWNING,
+        SEEKING_GOAL,
+        MOVING_FORWARD,
+        RANDOM_ROTATION,
+        DIRECTIONAL_JITTER,
+        BACKTRACK,
+        PATROLLING
+    }
+
+    public AbstractTank(int x, int y) {
+        this(x, y, Direction.DIRECTION_DOWNWARDS);
+    }
 
     public AbstractTank(int x, int y, Direction dir) {
         setX(x);
         setY(y);
-        setDir(dir);
+        setDir(dir);  // Default direction is downwards
         dx = 0;
         dy = 0;
         speedUnit = 0;
@@ -85,6 +101,8 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         redTankTick = new TimeTick(Utils.Time2GameTick(Globals.RED_TANK_BLINK_ANIMATION_PERIOD_MS));
         redTankTick.setRepeats(-1);  // Repeat indefinitely
+
+        tankState = TankState.SPAWNING;
     }
 
     /**
@@ -484,232 +502,122 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     /**
-     * Moves the tank towards the target location based on the eagle and player distances.
-     * If both are reachable, it moves towards the closer one.
-     * If one is unreachable, it moves towards the reachable one.
-     * If both are unreachable, it does not move.
-     * If direct movement is blocked, tries lateral movement to find alternative path.
-     *
-     * @param level The current game level containing eagle and player locations.
+     * Returns the new location of the tank if it moves forward in the current direction.
+     * Notice that this function does not update tank's position only gives hint about the new position.
+     * It should be called after setting the direction of the tank.
      */
-    public void moveToTarget(GameLevel level) {
-        GridLocation gLoc = Utils.Loc2GridLoc(new Location(x, y));
-
-        GridLocation eagleLoc = level.getEagleLocation();
-        //GridLocation playerLoc = level.getPlayerLocation();
-
-        int eagleDistance = level.getEagleDistance(gLoc);
-        //int playerDistance = level.getPlayerDistance(gLoc);
-        //System.out.println("eagleDistance:" + eagleDistance /*+ " playerDistance:" + playerDistance*/);
-
-        //GridLocation targetLoc;
-        //if (eagleDistance == -1 && playerDistance == -1) {
-        //    System.err.println("Eagle and Player distance are null for grid location: " + gLoc);
-        //    return;
-        //} else if (eagleDistance == -1) {
-        //    targetLoc = playerLoc; // If eagle is not reachable, target player
-        //} else if (playerDistance == -1) {
-        //    targetLoc = eagleLoc; // If player is not reachable, target eagle
-        //} else {
-        //    targetLoc = (eagleDistance <= playerDistance) ? eagleLoc : playerLoc;
-        //}
-
-        GridLocation targetLoc = eagleLoc;
-
-        // Determine the direction to move towards the target
-        Direction targetDir = null;
-
-        // Calculate differences to determine priority direction
-        int colDiff = targetLoc.colIndex() - gLoc.colIndex();
-        int rowDiff = targetLoc.rowIndex() - gLoc.rowIndex();
-
-        // Choose the direction based on the largest difference (Manhattan distance approach)
-        if (Math.abs(colDiff) >= Math.abs(rowDiff)) {
-            // Horizontal movement has priority
-            if (colDiff < 0) {
-                targetDir = Direction.DIRECTION_LEFT;
-            } else if (colDiff > 0) {
-                targetDir = Direction.DIRECTION_RIGHT;
-            }
-        } else {
-            // Vertical movement has priority
-            if (rowDiff < 0) {
-                targetDir = Direction.DIRECTION_UPWARDS;
-            } else if (rowDiff > 0) {
-                targetDir = Direction.DIRECTION_DOWNWARDS;
-            }
-        }
-
-        // If we're exactly at the target location, don't move
-        if (targetDir == null) {
-            return;
-        }
-
-        // Calculate the intended new position based on the target direction
-        int newX = x;
-        int newY = y;
-
-        switch (targetDir) {
-            case DIRECTION_UPWARDS:
-                newY -= speed;
-                break;
-            case DIRECTION_DOWNWARDS:
-                newY += speed;
-                break;
-            case DIRECTION_LEFT:
-                newX -= speed;
-                break;
-            case DIRECTION_RIGHT:
-                newX += speed;
-                break;
-            default:
-                break;
-        }
-
-        // Check if the intended new position is movable
-        RectangleBound newTankBound = new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize().width, getSize().height);
-        boolean isMovable = level.checkMovable(newTankBound);
-
-        if (isMovable) {
-            // Set the direction and move in the target direction
-            setDir(targetDir);
-            switch (targetDir) {
-                case DIRECTION_UPWARDS:
-                    decrementDy();
-                    break;
-                case DIRECTION_DOWNWARDS:
-                    incrementDy();
-                    break;
-                case DIRECTION_LEFT:
-                    decrementDx();
-                    break;
-                case DIRECTION_RIGHT:
-                    incrementDx();
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            // If direct movement is blocked, try lateral movement
-            Direction[] lateralDirections = getLateralDirections(targetDir);
-
-            boolean movedLaterally = false;
-            for (Direction lateralDir : lateralDirections) {
-                int lateralX = x;
-                int lateralY = y;
-
-                switch (lateralDir) {
-                    case DIRECTION_UPWARDS:
-                        lateralY -= speed;
-                        break;
-                    case DIRECTION_DOWNWARDS:
-                        lateralY += speed;
-                        break;
-                    case DIRECTION_LEFT:
-                        lateralX -= speed;
-                        break;
-                    case DIRECTION_RIGHT:
-                        lateralX += speed;
-                        break;
-                    default:
-                        continue;
-                }
-
-                RectangleBound newTankBound_2 = new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize().width, getSize().height);
-                if (level.checkMovable(newTankBound_2)) {
-                    // Move laterally
-                    setDir(lateralDir);
-                    switch (lateralDir) {
-                        case DIRECTION_UPWARDS:
-                            decrementDy();
-                            break;
-                        case DIRECTION_DOWNWARDS:
-                            incrementDy();
-                            break;
-                        case DIRECTION_LEFT:
-                            decrementDx();
-                            break;
-                        case DIRECTION_RIGHT:
-                            incrementDx();
-                            break;
-                        default:
-                            break;
-                    }
-                    movedLaterally = true;
-                    break; // Exit loop after successful lateral movement
-                }
-            }
-
-            // If no lateral movement was possible, rotate as last resort
-            if (!movedLaterally) {
-                rotateClockwise();
-            }
-        }
-    }
-
-    /**
-     * Returns the lateral directions (perpendicular to the target direction) for obstacle avoidance.
-     * This helps the tank move sideways when the direct path is blocked.
-     *
-     * @param targetDir The direction towards the target
-     * @return Array of lateral directions to try
-     */
-    private Direction[] getLateralDirections(Direction targetDir) {
-        switch (targetDir) {
-            case DIRECTION_UPWARDS:
-            case DIRECTION_DOWNWARDS:
-                // For vertical movement, try horizontal directions
-                return new Direction[]{Direction.DIRECTION_LEFT, Direction.DIRECTION_RIGHT};
-            case DIRECTION_LEFT:
-            case DIRECTION_RIGHT:
-                // For horizontal movement, try vertical directions
-                return new Direction[]{Direction.DIRECTION_UPWARDS, Direction.DIRECTION_DOWNWARDS};
-            default:
-                return new Direction[]{Direction.DIRECTION_LEFT, Direction.DIRECTION_RIGHT};
-        }
-    }
-
-    /**
-     * Moves the tank to a random direction.
-     * The tank will randomly choose one of the four directions (up, right, down, left)
-     * and move in that direction by updating its dx or dy accordingly.
-     */
-    public void moveToRandom() {
-        Random random = new Random();
-        int randomDirection = random.nextInt(0, 4);
-
-        switch (randomDirection) {
-            case 0 -> setDir(Direction.DIRECTION_UPWARDS);
-            case 1 -> setDir(Direction.DIRECTION_RIGHT);
-            case 2 -> setDir(Direction.DIRECTION_DOWNWARDS);
-            case 3 -> setDir(Direction.DIRECTION_LEFT);
-        }
+    public Location moveForwardHint() {
+        int newX = getX();
+        int newY = getY();
 
         switch (getDir()) {
-            case DIRECTION_UPWARDS:
-                decrementDy();
-                break;
-            case DIRECTION_DOWNWARDS:
-                incrementDy();
-                break;
-            case DIRECTION_LEFT:
-                decrementDx();
-                break;
-            case DIRECTION_RIGHT:
-                incrementDx();
-                break;
-            default:
-                break;
+            case DIRECTION_UPWARDS -> newY = newY - this.speed;
+            case DIRECTION_RIGHT -> newX = newX + this.speed;
+            case DIRECTION_DOWNWARDS -> newY = newY + this.speed;
+            case DIRECTION_LEFT -> newX = newX - this.speed;
+            default -> throw new IllegalStateException("Invalid direction: " + getDir());
+        }
+
+        return new Location(newX, newY);
+    }
+
+    /**
+     * Moves the tank forward in the current direction.
+     * This method updates the tank's position based on its current direction and speed.
+     * It should be called after setting the direction of the tank.
+     */
+    public void moveForward() {
+        switch (getDir()) {
+            case DIRECTION_UPWARDS -> decrementDy();
+            case DIRECTION_RIGHT -> incrementDx();
+            case DIRECTION_DOWNWARDS -> incrementDy();
+            case DIRECTION_LEFT -> decrementDx();
+            default -> throw new IllegalStateException("Invalid direction: " + getDir());
         }
     }
 
     /**
-     * Moves the tank in the current direction.
-     * This method should be implemented by subclasses to define specific movement behavior.
-     *
-     * @param level The current game level where the tank is located.
-     */
-    public abstract void move(GameLevel level);
+         * Moves the tank in the current direction.
+         * This method should be implemented by subclasses to define specific movement behavior.
+         *
+         * @param level The current game level where the tank is located.
+         */
+    public void move(GameLevel level) {
+        //if (currentTimeMillis - stateTimer < 150) return;
+
+        System.out.printf("%d - (%d) %s\n", System.currentTimeMillis(), System.identityHashCode(this), tankState);
+
+        switch (this.tankState) {
+            case SPAWNING -> {
+                setDir(Direction.DIRECTION_DOWNWARDS);
+                if (level.seeTarget(getBoundingBox(), getDir())) {
+                    tankState = TankState.SEEKING_GOAL;
+                } else {
+                    tankState = TankState.MOVING_FORWARD;
+                }
+            }
+            case SEEKING_GOAL -> {
+                Direction goalDir = level.getTargetDirection(getBoundingBox());
+                if (goalDir != null || goalDir != Direction.DIRECTION_INVALID) {
+                    setDir(goalDir);
+                } else {
+                    tankState = TankState.MOVING_FORWARD;
+                }
+            }
+            case MOVING_FORWARD -> {
+                Location newLocation = moveForwardHint();
+                Location oldLocation = new Location(x, y);
+
+
+                GridLocation oldGloc = Utils.Loc2GridLoc(new Location(x, y));
+                GridLocation newGloc = Utils.Loc2GridLoc(newLocation);
+
+                System.out.println("Old location: " + oldLocation  + " New location: " + newLocation);
+
+                if (level.checkMovable(this, new RectangleBound(newLocation.x(), newLocation.y(), getSize()))) {
+                    System.out.println("Movable for new location: " + Utils.Loc2GridLoc(newLocation));
+                    moveForward();
+                } else if (level.seeTarget(getBoundingBox(), getDir())) {
+                    System.out.println("Target seen, random rotation");
+                    tankState = TankState.RANDOM_ROTATION;
+                    moveForward();
+                } else {
+                    System.out.println("Cannot move forward, random rotation");
+                    tankState = TankState.RANDOM_ROTATION;
+                    moveForward();
+                }
+
+                if (Utils.getRandomProbability(5)) {
+                    tankState = TankState.DIRECTIONAL_JITTER;
+                }
+            }
+            case DIRECTIONAL_JITTER -> {
+                setDir(Utils.getRandomProbability(50) ? Direction.DIRECTION_UPWARDS : Direction.DIRECTION_DOWNWARDS);
+                tankState = TankState.MOVING_FORWARD;
+            }
+            case RANDOM_ROTATION -> {
+                lastRandomDirection = Utils.getRandomProbability(50) ? getDir().rotateCW() : getDir().rotateCCW();
+                setDir(lastRandomDirection);
+                tankState = TankState.MOVING_FORWARD;
+            }
+            case BACKTRACK -> {
+                setDir(getDir().opposite());
+                tankState = TankState.MOVING_FORWARD;
+            }
+            case PATROLLING -> {
+                setDir(getWeightedRandomDirection());
+                tankState = TankState.MOVING_FORWARD;
+            }
+        }
+    }
+
+    private Direction getWeightedRandomDirection() {
+        Random random = new Random();
+        double r = random.nextDouble();
+        if (r < 0.4) return Direction.DIRECTION_LEFT;
+        else if (r < 0.7) return Direction.DIRECTION_RIGHT;
+        else return Direction.DIRECTION_UPWARDS;
+    }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();

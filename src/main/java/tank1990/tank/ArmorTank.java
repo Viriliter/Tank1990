@@ -30,6 +30,18 @@ public class ArmorTank extends AbstractTank implements Enemy {
 
     int lastArmorLevel=0;
 
+    public ArmorTank(int x, int y) {
+        super(x, y);
+
+        setSpeedUnit(Globals.ARMOR_TANK_MOVEMENT_SPEED);
+        setMaxSpeedUnit(Globals.ARMOR_TANK_MOVEMENT_MAX_SPEED);
+
+        setArmorLevel(4);  // Start with level 4 armor
+        this.lastArmorLevel = getArmorLevel();
+
+        setDefaultTankTextureFXs();
+    }
+
     public ArmorTank(int x, int y, Direction dir) {
         super(x, y, dir);
 
@@ -102,17 +114,4 @@ public class ArmorTank extends AbstractTank implements Enemy {
             this.lastArmorLevel = armorLevel;
         }
     }
-
-    @Override
-    public void move(GameLevel level) {
-        Random random = new Random();
-        int behavior = random.nextInt(1,11);
-
-        if (behavior<=5) { // Move towards to target with %50 percentage
-            moveToTarget(level);
-        } else {  // Move randomly with %50 percentage
-            moveToRandom();
-        }
-    }
-
 }

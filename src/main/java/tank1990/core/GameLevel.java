@@ -346,7 +346,7 @@ public class GameLevel implements Serializable {
         System.out.println("Spawning enemy tank: " + currentTankType + " at " + spawnLocationEntry.getKey() + " facing " + spawnDir + ". Remaining: " + enemyTankCounts.get(currentTankType) + " Active: " + activeEnemyTankCount);
         Location loc = Utils.gridLoc2Loc(spawnLocationEntry.getKey());
 
-        AbstractTank enemyTank = TankFactory.createTank(currentTankType, loc.x(), loc.y(), spawnDir);
+        AbstractTank enemyTank = TankFactory.createTank(currentTankType, loc.x(), loc.y());
 
         int nThTank = this.totalEnemyTankCount - getRemainingEnemyTanks() + 1;
         if (MAGIC_NUMBERS.contains(nThTank)) {

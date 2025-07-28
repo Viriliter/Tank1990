@@ -29,6 +29,16 @@ import tank1990.player.PlayerType;
 
 public class PlayerTank extends AbstractTank {
 
+    public PlayerTank(int x, int y) {
+        super(x, y);
+
+        this.tankTextureFxStruct = Globals.TEXTURE_PLAYER1_TANK_STRUCT;
+        createTextureFXs();
+
+        setSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_SPEED);
+        setMaxSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_MAX_SPEED);
+    }
+
     public PlayerTank(int x, int y, Direction dir) {
         super(x, y, dir);
 

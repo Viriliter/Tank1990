@@ -65,4 +65,26 @@ public class TankFactory {
                 return null;
         }
     }
+
+    public static AbstractTank createTank(TankType type, int x, int y) {
+        if (type == null) {
+            throw new IllegalArgumentException("Tank type cannot be null!");
+        }
+
+        switch (type) {
+            case BASIC_TANK:
+                return new BasicTank(x, y);
+            case FAST_TANK:
+                return new FastTank(x, y);
+            case POWER_TANK:
+                return new PowerTank(x, y);
+            case ARMOR_TANK:
+                return new ArmorTank(x, y);
+            case PLAYER_TANK:
+                return new PlayerTank(x, y);
+            default:
+                return null;
+        }
+    }
+
 }
