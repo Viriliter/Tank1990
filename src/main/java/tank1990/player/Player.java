@@ -133,6 +133,8 @@ public class Player implements Serializable {
 
     public PlayerType getPlayerType() {return this.playerType;}
 
+    public AbstractTank getTank() { return myTank; }
+
     public void isFrozen() {
         myTank.isFrozen();
     }

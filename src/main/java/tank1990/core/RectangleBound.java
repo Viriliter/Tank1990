@@ -22,12 +22,7 @@
 
 package tank1990.core;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -44,23 +39,28 @@ public class RectangleBound extends Rectangle {
     private double rRad = 0.0;  /**< Rotation angle in radians */
 
     /**
-     * @brief Constructs a RectangleBound with given position and size.
+     * Constructs a RectangleBound with given position and size.
+     * @param x X-coordinate of the rectangle.
+     * @param y Y-coordinate of the rectangle.
+     * @param size Size of the rectangle.
+     */
+    public RectangleBound(int x, int y, Dimension size) {
+        this(x, y, size.width, size.height);
+    }
+
+    /**
+     * Constructs a RectangleBound with given position and size.
      * @param x X-coordinate of the rectangle.
      * @param y Y-coordinate of the rectangle.
      * @param width Width of the rectangle.
      * @param height Height of the rectangle.
      */
     public RectangleBound(int x, int y, int width, int height) {
-        super(x, y, width, height);
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-
+        this(x, y, width, height, 0.0);
     }
 
     /**
-     * @brief Constructs a RectangleBound with position, size, and rotation.
+     * Constructs a RectangleBound with position, size, and rotation.
      * @param x X-coordinate of the rectangle.
      * @param y Y-coordinate of the rectangle.
      * @param width Width of the rectangle.

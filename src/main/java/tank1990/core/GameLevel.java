@@ -476,6 +476,63 @@ public class GameLevel implements Serializable {
     }
 
     /**
+     * Checks if a tank can see the eagle with a specified bounding rectangle and direction.
+     * A tank can see the eagle if it is alive and the tank is in the same row or column as the eagle,
+     * and the direction of the tank matches the direction towards the eagle.
+     *
+     * @param tankBound The bounding rectangle of the tank.
+     * @param tankDir The direction of the tank.
+     * @return true if the tank can see the eagle, false otherwise.
+     */
+    public boolean seeTarget(RectangleBound tankBound, Direction tankDir) {
+        // Check if the eagle is alive
+        if (!isEagleAlive()) return false;
+
+        // Calculate the bound that sees directly towards its direction
+        GridLocation tankGloc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
+
+        int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
+        int colDiff = this.eagleLocation.colIndex() - tankGloc.colIndex();
+
+        if (rowDiff==0 || colDiff==0) {
+            if (rowDiff>0 && tankDir==Direction.DIRECTION_DOWNWARDS) return true;
+            if (rowDiff<0 && tankDir==Direction.DIRECTION_UPWARDS) return true;
+            if (colDiff>0 && tankDir==Direction.DIRECTION_RIGHT) return true;
+            if (colDiff<0 && tankDir==Direction.DIRECTION_LEFT) return true;
+        }
+
+        return rowDiff == 0 && colDiff == 0;
+    }
+
+    /**
+     * Gets the target direction towards the eagle based on the tank's bounding rectangle.
+     * This method calculates the direction from the tank's position to the eagle's position
+     * and returns the corresponding Direction enum value.
+     *
+     * @param tankBound The bounding rectangle of the tank.
+     * @return The Direction towards the eagle, or DIRECTION_INVALID if the eagle is not alive.
+     */
+    public Direction getTargetDirection(RectangleBound tankBound) {
+        // Check if the eagle is alive
+        if (!isEagleAlive()) return Direction.DIRECTION_INVALID;
+
+        // Calculate the bound that sees directly towards its direction
+        GridLocation tankGloc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
+
+        int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
+        int colDiff = this.eagleLocation.colIndex() - tankGloc.colIndex();
+
+        if (rowDiff==0 || colDiff==0) {
+            if (rowDiff>0) return Direction.DIRECTION_DOWNWARDS;
+            if (rowDiff<0) return Direction.DIRECTION_UPWARDS;
+            if (colDiff>0) return Direction.DIRECTION_RIGHT;
+            if (colDiff<0) return Direction.DIRECTION_LEFT;
+        }
+
+        return Direction.DIRECTION_INVALID;
+    }
+
+    /**
      * Checks if a tank with a specified bounding rectangle can eligible to move.
      * This method checks the neighboring tiles of the tank's current location
      * to determine if the tank can move without colliding with other tanks or obstacles.
@@ -483,7 +540,7 @@ public class GameLevel implements Serializable {
      * @param tankBound The bounding rectangle of the tank.
      * @return true if the tank can move, false otherwise.
      */
-    public boolean checkMovable(RectangleBound tankBound) {
+    public boolean checkMovable(AbstractTank tank, RectangleBound tankBound) {
         GridLocation tankGLoc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX() ,tankBound.getOriginY()));
         Tile[] neighbors = getNeighbors(tankGLoc);
 
@@ -499,9 +556,8 @@ public class GameLevel implements Serializable {
             if (isCollided) return false;
         }
 
-        //
-
-        return true;
+        // Finally, checks the tank collides with other tanks. If it collides, it cannot move.
+        return !(GameLevelManager.getInstance().getGameEngine().checkTankCollisions(tank, tankBound));
     }
 
     /**

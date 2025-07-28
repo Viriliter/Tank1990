@@ -85,6 +85,9 @@ public class GameEngine extends Subject {
         this.blastFXs = new ArrayList<>();
         this.bullets = new ArrayList<>();
 
+        // Sets the game engine instance to the GameLevelManager.
+        // I know this is ugly but only solution to ensure game levels can access game objects
+        GameLevelManager.getInstance().setGameEngine(this);
         // Add predefined game levels
         GameLevelManager.getInstance().addLevels();
 
@@ -307,6 +310,7 @@ public class GameEngine extends Subject {
     private void createGameObjects(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
         try {
             GameLevelManager.setInstance((GameLevelManager) inputStream.readObject());
+            GameLevelManager.getInstance().setGameEngine(this);
 
             this.players = (ArrayList<Player>) inputStream.readObject();
             this.enemies = (ArrayList<Enemy>) inputStream.readObject();
@@ -794,6 +798,28 @@ public class GameEngine extends Subject {
             this.powerups.remove(powerup);
         }
 
+    }
+
+    /**
+     * Checks if a tank collides with any other tanks.
+     * @param tank The tank to check for collisions
+     * @param tentativeTankBound The bounding box of the tank to check against other tanks
+     * @return true if the tank collides with any other tank, false otherwise
+     */
+    public boolean checkTankCollisions(AbstractTank tank, RectangleBound tentativeTankBound) {
+        for (Player player : this.players) {
+            if (player.getTank() == tank) continue;
+
+            if (RectangleBound.isCollided(tentativeTankBound, player.getBoundingBox())) return true;
+        }
+
+        for (Enemy enemy : this.enemies) {
+            AbstractTank enemyTank = (AbstractTank) enemy;
+            if (enemyTank == tank) continue;
+            if (RectangleBound.isCollided(tentativeTankBound, enemyTank.getBoundingBox())) return true;
+        }
+
+        return false;  // No collision detected
     }
 
     /**

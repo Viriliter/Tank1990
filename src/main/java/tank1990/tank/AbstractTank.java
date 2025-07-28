@@ -201,7 +201,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         RectangleBound newTankBound = new RectangleBound(newX - halfWidth, newY - halfHeight, tankWidth, tankHeight);
 
         // Check map constraints by checking neighbor tiles of the player tank
-        boolean isMovable = level.checkMovable(newTankBound);
+        boolean isMovable = level.checkMovable(this, newTankBound);
         if (isMovable) {
             // Update tank position and direction
             setX(newX);
@@ -325,13 +325,8 @@ public abstract class AbstractTank extends DynamicGameObject {
      * This method also resets the movement speed.
      */
     public void rotateClockwise() {
-        switch (this.dir) {
-            case DIRECTION_UPWARDS -> this.dir = Direction.DIRECTION_RIGHT;
-            case DIRECTION_RIGHT -> this.dir = Direction.DIRECTION_DOWNWARDS;
-            case DIRECTION_DOWNWARDS -> this.dir = Direction.DIRECTION_LEFT;
-            case DIRECTION_LEFT -> this.dir = Direction.DIRECTION_UPWARDS;
-            default -> throw new IllegalStateException("Invalid direction: " + this.dir);
-        }
+        setDir(getDir().rotateCW());
+
         // Reset movement direction
         resetDx();
         resetDy();

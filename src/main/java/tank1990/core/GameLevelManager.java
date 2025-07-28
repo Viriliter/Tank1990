@@ -42,6 +42,8 @@ public class GameLevelManager implements Serializable {
 
     private HashMap<Player, Integer> playersRemainingLives;
 
+    private transient GameEngine gameEngine = null;
+
     private GameLevelManager() {
         this.gameLevels = new ArrayList<>();
         this.currentLevelIndex = 0;
@@ -71,6 +73,14 @@ public class GameLevelManager implements Serializable {
      */
     public static void setInstance(GameLevelManager sourceInstance) {
         instance = sourceInstance;
+    }
+
+    public void setGameEngine(GameEngine engine) {
+        getInstance().gameEngine = engine;
+    }
+
+    public GameEngine getGameEngine() {
+        return getInstance().gameEngine;
     }
 
     /**
@@ -134,6 +144,8 @@ public class GameLevelManager implements Serializable {
 
         // Reset all game levels
         this.gameLevels.clear();
+
+        this.gameEngine = null;
 
         // Add levels again
         addLevels();

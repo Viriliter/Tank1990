@@ -27,5 +27,43 @@ public enum Direction {
     DIRECTION_UPWARDS,
     DIRECTION_RIGHT,
     DIRECTION_DOWNWARDS,
-    DIRECTION_LEFT
+    DIRECTION_LEFT;
+
+    public Direction opposite() {
+        switch (this) {
+            case DIRECTION_UPWARDS:
+                return DIRECTION_DOWNWARDS;
+            case DIRECTION_RIGHT:
+                return DIRECTION_LEFT;
+            case DIRECTION_DOWNWARDS:
+                return DIRECTION_UPWARDS;
+            case DIRECTION_LEFT:
+                return DIRECTION_RIGHT;
+            default:
+                return DIRECTION_INVALID;
+        }
+    }
+
+    public Direction rotateCW() {
+        Direction direction = switch (this) {
+            case DIRECTION_UPWARDS -> DIRECTION_RIGHT;
+            case DIRECTION_RIGHT -> DIRECTION_DOWNWARDS;
+            case DIRECTION_DOWNWARDS -> DIRECTION_LEFT;
+            case DIRECTION_LEFT -> DIRECTION_UPWARDS;
+            default -> DIRECTION_INVALID;
+        };
+        return direction;
+    }
+
+    public Direction rotateCCW() {
+        Direction direction = switch (this) {
+            case DIRECTION_UPWARDS -> DIRECTION_LEFT;
+            case DIRECTION_LEFT -> DIRECTION_DOWNWARDS;
+            case DIRECTION_DOWNWARDS -> DIRECTION_RIGHT;
+            case DIRECTION_RIGHT -> DIRECTION_UPWARDS;
+            default -> DIRECTION_INVALID;
+        };
+        return direction;
+    }
+
 }
