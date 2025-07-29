@@ -213,7 +213,10 @@ public class GameLevelManager implements Serializable {
                 return null;
             }
 
-            return this.spawnTick.isTimeOut() ? gameLevel.spawnEnemyTank(): null;
+            if (this.spawnTick.isTimeOut()) {
+                this.spawnTick.reset();
+                return gameLevel.spawnEnemyTank();
+            }
         }
 
         return null;

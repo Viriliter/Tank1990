@@ -59,6 +59,8 @@ public interface Globals {
     // Tank Parameters
     int TANK_WIDTH = 16;
     int TANK_HEIGHT = 16;
+
+    int DEFAULT_SHOOT_PERIOD_MS = 500;
     
     // Bullet Parameters
     int BULLET_WIDTH = 2;
@@ -76,6 +78,7 @@ public interface Globals {
     int SHOVEL_COOLDOWN_MS = 10000;  // Cooldown for shovel powerup in milliseconds ((Shovel is a powerup activates when player tank collects shovel powerup))
     int ANTI_SHOVEL_COOLDOWN_MS = 10000;  // Cooldown for anti-shovel powerup in milliseconds (Anti-shovel is a powerup activates when enemy tank collects shovel powerup)
     int FROZEN_COOLDOWN_MS = 5000;  // Cooldown for frozen powerup in milliseconds (Frozen is a powerup activates when either player or enemy tank collects frozen powerup)
+    int HELMET_COOLDOWN_MS = 10000;  // Cooldown for helmet powerup in milliseconds (Helmet is a powerup activates when a tank collects helmet powerup)
 
     // Map Dimensions
     int COL_TILE_COUNT = 13;// * TILE_SUBDIVISION;
@@ -136,6 +139,8 @@ public interface Globals {
     GridLocation ENEMY_SPAWN_LOCATION_2 = new GridLocation(0, 6);
     GridLocation ENEMY_SPAWN_LOCATION_3 = new GridLocation(0, 12);
 
+    int ENEMY_TANK_SPAWN_DELAY_MS = 1000;
+
     /**
      * COLOR PALLETTE
      */
@@ -152,13 +157,6 @@ public interface Globals {
     int PLAYER_SPAWN_PROTECTION_TIME = 3;   // Protection time in seconds
 
     int SKID_DISTANCE = 10;                 // Skid distance of a tank on ice tile in pixels
-
-    /**
-     * GAME LEVEL PARAMETERS
-     */
-    int GAME_LEVEL_COUNTS = 5; // Total number of game levels
-    int ENEMY_SPAWN_DELAY = 100;
-    int ENEMY_TANK_SPAWN_DELAY_MS = 3000;
 
     /**
      * POWERUPS

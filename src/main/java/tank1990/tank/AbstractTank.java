@@ -52,8 +52,9 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     // Do not move tanks after each update call, but after a certain time interval.
     private TimeTick movementTick;
-    private TimeTick frozenTick; // Tick for blinking effect
-
+    private TimeTick shootTick;  // Tick for shooting bullets
+    private TimeTick frozenTick;  // Tick for blinking effect
+    private TimeTick helmetTick;  // Tick for helmet powerup effect
 
     private transient HashMap<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
@@ -101,6 +102,12 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         redTankTick = new TimeTick(Utils.Time2GameTick(Globals.RED_TANK_BLINK_ANIMATION_PERIOD_MS));
         redTankTick.setRepeats(-1);  // Repeat indefinitely
+
+        helmetTick = new TimeTick(Utils.Time2GameTick(Globals.HELMET_COOLDOWN_MS));
+        helmetTick.setRepeats(-1);  // Repeat indefinitely
+
+        shootTick = new TimeTick(Utils.Time2GameTick(Globals.DEFAULT_SHOOT_PERIOD_MS));
+        shootTick.setRepeats(-1);  // Repeat indefinitely
 
         tankState = TankState.SPAWNING;
     }
@@ -180,6 +187,14 @@ public abstract class AbstractTank extends DynamicGameObject {
                 this.frozenTick.reset();
             } else {
                 return;
+            }
+        }
+
+        if (this.hasHelmet) {
+            this.helmetTick.updateTick();
+            if (this.helmetTick.isTimeOut()) {
+                this.hasHelmet = false;  // Consume the helmet after cooldown
+                this.helmetTick.reset();
             }
         }
 
@@ -297,6 +312,10 @@ public abstract class AbstractTank extends DynamicGameObject {
      */
     public void setMaxSpeedUnit(int maxSpeedUnit) {this.maxSpeedUnit = maxSpeedUnit;}
 
+    public void setShootPreiod(int shootPeriod) {
+        this.shootTick.setDefaultTick(Utils.Time2GameTick(shootPeriod));
+    }
+
     /**
      * Freezes the tank.
      * Frozen tank cannot move.
@@ -355,6 +374,18 @@ public abstract class AbstractTank extends DynamicGameObject {
      * @return Bullet object if shoot is successful, null otherwise.
      */
     public Bullet shoot() {
+        // If tank is enemy regulate shooting rate with shoot tick.
+        if (this instanceof Enemy) {
+            this.shootTick.updateTick();
+
+            if (this.shootTick.isTimeOut()) {
+                this.shootTick.reset();  // Reset the shoot tick for next shot
+            }
+            else {
+                return null;  // Do not shoot if shoot tick is not timed out
+            }
+        }
+
         // Frozen enemy tanks cannot shoot as well.
         if (this instanceof Enemy && this.isFrozen) {
             return null;
@@ -403,6 +434,7 @@ public abstract class AbstractTank extends DynamicGameObject {
 
         // After each damage decrement armor level by one.
         armorLevel = armorLevel>0 ? --armorLevel: 0;
+        resetTier();  // Reset the tank tier to default upon destruction
         return true;  // Tank is damaged
     }
 
@@ -414,6 +446,7 @@ public abstract class AbstractTank extends DynamicGameObject {
      */
     public Blast destroy() {
         armorLevel = -1;
+        resetTier();  // Reset the tank tier to default upon destruction
         return new Blast(getX(), getY());
     }
 
@@ -459,6 +492,29 @@ public abstract class AbstractTank extends DynamicGameObject {
     protected abstract void setRedTankTextureFXs();
 
     /**
+     * Increments the tank tier.
+     * This method is used to upgrade the tank's tier, for example, when it collects a powerup.
+     * It will not exceed the maximum tier defined in TankTier enum.
+     */
+    private void incrementTier() {
+        switch (this.currentTier) {
+            case TIER_DEFAULT -> this.currentTier = TankTier.TIER_2;
+            case TIER_2 -> this.currentTier = TankTier.TIER_3;
+            case TIER_3 -> this.currentTier = TankTier.TIER_4;
+            case TIER_4 -> this.currentTier = TankTier.TIER_5;
+            default -> this.currentTier = TankTier.TIER_5;  // Do not exceed maximum tier
+        }
+    }
+
+    /**
+     * Resets the tank tier to the default tier.
+     * This method is used to reset the tank's tier, for example, when the tank is destroyed.
+     */
+    private void resetTier() {
+        this.currentTier = TankTier.TIER_DEFAULT;
+    }
+
+    /**
      * Collects a powerup and applies its effects to the tank.
      * This method handles different types of powerups and updates the tank's state accordingly.
      *
@@ -479,7 +535,7 @@ public abstract class AbstractTank extends DynamicGameObject {
                 // No specific action for timer powerup in tanks
             }
             case POWERUP_STAR -> {
-                // No specific action for timer powerup in tanks
+                if (!(this instanceof Enemy)) incrementTier();  // Only players can upgrade their tank tier
             }
             case POWERUP_TANK -> {
                 // No specific action for timer powerup in tanks

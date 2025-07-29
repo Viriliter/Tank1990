@@ -61,6 +61,9 @@ public class GameLevel implements Serializable {
 
     private boolean isShovelActive = false;
     private boolean isAntiShovelActive = false;
+    private boolean shovelActivationTriggered = false;
+    private boolean antiShovelActivationTriggered = false;
+
 
     private TimeTick shovelTick;
     private TimeTick antiShovelTick;
@@ -80,9 +83,9 @@ public class GameLevel implements Serializable {
 
         // Default timestamp for spawn locations is -1 which means invalid
         SPAWN_LOCATIONS.clear();
-        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
-        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
-        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(Globals.ENEMY_SPAWN_LOCATION_1, -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(Globals.ENEMY_SPAWN_LOCATION_2, -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(Globals.ENEMY_SPAWN_LOCATION_3, -1L));
 
         this.eagleLocation = findEagleLocation();
 
@@ -114,9 +117,9 @@ public class GameLevel implements Serializable {
 
         // Default timestamp for spawn locations is -1 which means invalid
         SPAWN_LOCATIONS.clear();
-        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
-        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
-        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(Globals.ENEMY_SPAWN_LOCATION_1, -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(Globals.ENEMY_SPAWN_LOCATION_2, -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(Globals.ENEMY_SPAWN_LOCATION_3, -1L));
 
         this.eagleLocation = findEagleLocation();
 
@@ -207,6 +210,11 @@ public class GameLevel implements Serializable {
         }
 
         if (this.isShovelActive) {
+            if (this.shovelActivationTriggered) {
+                this.shovelTick.reset();
+                this.shovelActivationTriggered = false;
+            }
+
             this.shovelTick.updateTick();
 
             if (this.shovelTick.isTimeOut()) {
@@ -216,6 +224,11 @@ public class GameLevel implements Serializable {
         }
 
         if (this.isAntiShovelActive) {
+            if (this.antiShovelActivationTriggered) {
+                this.antiShovelTick.reset();
+                this.antiShovelActivationTriggered = false;
+            }
+
             this.antiShovelTick.updateTick();
 
             if (this.antiShovelTick.isTimeOut()) {
@@ -633,7 +646,6 @@ public class GameLevel implements Serializable {
      * It stores the original state of the tiles before conversion for later restoration.
      */
     public void activateShovelPowerup() {
-        System.out.println("Activating shovel powerup...");
         if (this.originalTilesAroundEagle.isEmpty()) return;
 
         setSurroundingEagleTiles(this.currentTilesAroundEagle);  // Store the current state which will be needed to restore later
@@ -649,6 +661,7 @@ public class GameLevel implements Serializable {
 
         isShovelActive = true;
         isAntiShovelActive = false;  // Activating shovel powerup deactivates the anti-shovel powerup
+        shovelActivationTriggered = true;  // Set the flag to indicate that the shovel powerup was activated. It is useful in successive activations.
     }
 
     /**
@@ -676,7 +689,6 @@ public class GameLevel implements Serializable {
      * It stores the original state of the tiles before removal for later restoration.
      */
     public void activateAntiShovelPowerup() {
-        System.out.println("Activating anti-shovel powerup...");
         if (this.originalTilesAroundEagle.isEmpty()) return;
 
         setSurroundingEagleTiles(this.currentTilesAroundEagle);  // Store the current state which will be needed to restore later
@@ -690,6 +702,7 @@ public class GameLevel implements Serializable {
 
         isShovelActive = false;  // Activating anti-shovel powerup deactivates the shovel powerup
         isAntiShovelActive = false;
+        antiShovelActivationTriggered = true;  // Set the flag to indicate that the anti-shovel powerup was activated. It is useful in successive activations.
     }
 
     /**

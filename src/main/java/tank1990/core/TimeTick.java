@@ -83,6 +83,19 @@ public class TimeTick implements Serializable {
     }
 
     /**
+     * Sets the default tick.
+     *
+     * @param defaultTick The default number of ticks before the timer reaches zero.
+     */
+    public void setDefaultTick(int defaultTick) {
+        if (defaultTick < 0) {
+            throw new IllegalArgumentException("Default tick must be non-negative.");
+        }
+        this.defaultTick = defaultTick;
+        this.reset();
+    }
+
+    /**
      * Returns the current tick value of the timer.
      *
      * @return The remaining time in ticks.
