@@ -88,8 +88,7 @@ public class GameEngine extends Subject {
         // Sets the game engine instance to the GameLevelManager.
         // I know this is ugly but only solution to ensure game levels can access game objects
         GameLevelManager.getInstance().setGameEngine(this);
-        // Add predefined game levels
-        GameLevelManager.getInstance().addLevels();
+        GameLevelManager.getInstance().addPredefinedGameLevels();
 
         // Initialize game timer
         gameTimer = new Timer(Globals.GAME_TICK_MS, e -> this.update());

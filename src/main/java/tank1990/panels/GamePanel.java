@@ -416,13 +416,11 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
                 //System.out.println("Stopping fire for Player 1");
                 break;
             case (KeyEvent.VK_ENTER):
-                switch (gameEngine.getCurrentLevel().getCurrentState()) {
-                    case LevelState.GET_READY:
-                        SwingUtilities.invokeLater(() -> {
-                            showGamePanel();
-                        });
-                        break;
-                    default: break;
+                GameLevel currentLevel = gameEngine.getCurrentLevel();
+                if (currentLevel!=null && currentLevel.getCurrentState() == LevelState.GET_READY) {
+                    SwingUtilities.invokeLater(() -> {
+                        showGamePanel();
+                    });
                 }
                 break;
             default:
@@ -466,6 +464,8 @@ public class GamePanel extends AbstractPanel implements ActionListener, KeyListe
      */
     private void showGetReadyPanel() {
         int levelIndex = this.gameEngine.getCurrentLevelIndex();
+        levelIndex = (levelIndex == 0) ? 1 : levelIndex+1;
+
         // Hide the main game panel
         if (this.gamePanel != null) {
             this.gamePanel.setVisible(false);

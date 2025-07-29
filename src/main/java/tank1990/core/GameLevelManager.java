@@ -46,7 +46,7 @@ public class GameLevelManager implements Serializable {
 
     private GameLevelManager() {
         this.gameLevels = new ArrayList<>();
-        this.currentLevelIndex = 0;
+        this.currentLevelIndex = -1;
         this.totalPlayerScore = 0;
 
         this.playersRemainingLives = new HashMap<>();
@@ -86,7 +86,8 @@ public class GameLevelManager implements Serializable {
     /**
      * Initializes the game level manager by adding predefined levels.
      */
-    public void addLevels() {
+    public void addPredefinedGameLevels() {
+        this.gameLevels.clear();
         // Add predefined game levels to the manager.
         // For now only stage 1 is predefined one which is second stage in original Tank 1990 game.
         GameLevel level = new GameLevel(Globals.MAP_PATH + String.format("stage-%02d.bin", 1));
@@ -106,6 +107,10 @@ public class GameLevelManager implements Serializable {
      * @return The current GameLevel instance.
      */
     public GameLevel getCurrentLevel() {
+        if (this.currentLevelIndex < 0 || this.currentLevelIndex >= this.gameLevels.size()) {
+            return null;
+        }
+
         return this.gameLevels.get(this.currentLevelIndex);
     }
 
@@ -133,7 +138,7 @@ public class GameLevelManager implements Serializable {
      */
     public void reset() {
         System.out.println("Resetting game level manager...");
-        this.currentLevelIndex = 0;
+        this.currentLevelIndex = -1;
         this.totalPlayerScore = 0;
         this.gameScore = new GameScoreStruct();
         this.spawnTick = null;
@@ -144,8 +149,8 @@ public class GameLevelManager implements Serializable {
 
         this.gameEngine = null;
 
-        // Add levels again
-        addLevels();
+        // Add predefined game levels again
+        addPredefinedGameLevels();
     }
 
     /**
@@ -155,7 +160,7 @@ public class GameLevelManager implements Serializable {
      * @return The next GameLevel instance.
      */
     public GameLevel nextLevel() {
-        currentLevelIndex = Math.max(1, ++this.currentLevelIndex % (this.gameLevels.size()+1));
+        currentLevelIndex = Math.max(0, (this.currentLevelIndex+1));
         return loadLevel(currentLevelIndex);
     }
 
@@ -169,16 +174,17 @@ public class GameLevelManager implements Serializable {
     private GameLevel loadLevel(int levelIndex) {
         System.out.println("Loading level: " + levelIndex);
 
-        // Generate a new level info with random game map and enemy types.
-        LevelInfo newLevelInfo = MapGenerator.generateRandomLevelInfo();
-        this.gameLevels.add(newLevelInfo);
+        // Generate a new level info with random game map and enemy types if level index exceeds the size of gameLevels
+        if (levelIndex >= this.gameLevels.size()) {
+            this.gameLevels.add(new GameLevel());
+        }
 
         if (levelIndex < 0 || levelIndex >= this.gameLevels.size()) {
             throw new IndexOutOfBoundsException("Invalid level index: " + levelIndex);
         }
         // Create a new game score structure for the new level
         this.gameScore = new GameScoreStruct();
-        this.gameScore.setReachedLevel(levelIndex);
+        this.gameScore.setReachedLevel(levelIndex+1); // Level index is 0-based, so we add 1 to match the level number
         this.gameScore.setHiScore(ConfigHandler.getInstance().getBattleCityProperties().hiScore());
         this.gameScore.setRemainingTankCount(0);
 

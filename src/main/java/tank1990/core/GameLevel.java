@@ -99,6 +99,40 @@ public class GameLevel implements Serializable {
         this.antiShovelTick.setRepeats(-1);  // Repeat indefinitely
     }
 
+    public GameLevel() {
+        this.currentState = LevelState.NOT_LOADED;
+        this.levelInfo = MapGenerator.generateRandomLevelInfo();
+        this.enemyTankCounts = new HashMap<TankType, Integer>();
+        this.activeEnemyTankCount = 0;
+
+        // Set default size values for now, it will be updated on draw method
+        this.gameAreaSize = new Dimension(Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT);
+
+        HashMap<TankType, Integer> enemyTankCount = this.levelInfo.enemyTankCount;
+        this.setEnemyTankCount(enemyTankCount);
+        this.totalEnemyTankCount = enemyTankCount.values().stream().mapToInt(Integer::intValue).sum();
+
+        // Default timestamp for spawn locations is -1 which means invalid
+        SPAWN_LOCATIONS.clear();
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 0), -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 6), -1L));
+        SPAWN_LOCATIONS.add(new AbstractMap.SimpleEntry<>(new GridLocation(0, 12), -1L));
+
+        this.eagleLocation = findEagleLocation();
+
+        this.originalTilesAroundEagle = new HashMap<>();
+        this.currentTilesAroundEagle = new HashMap<>();
+
+        // Store the original state of tiles around the eagle for later use
+        setSurroundingEagleTiles(this.originalTilesAroundEagle);
+
+        // Initialize the shovel and anti-shovel ticks
+        this.shovelTick = new TimeTick(Utils.Time2GameTick(Globals.SHOVEL_COOLDOWN_MS));
+        this.shovelTick.setRepeats(-1);  // Repeat indefinitely
+        this.antiShovelTick = new TimeTick(Utils.Time2GameTick(Globals.ANTI_SHOVEL_COOLDOWN_MS));
+        this.antiShovelTick.setRepeats(-1);  // Repeat indefinitely
+    }
+
     /**
      * Gets the current state of the game level.
      * This method returns the current state of the level, which can be used

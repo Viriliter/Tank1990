@@ -23,6 +23,7 @@
 package tank1990.core;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Random;
@@ -220,11 +221,11 @@ public class MapGenerator {
         eagleProtectionGridLocations.add(PROTECTION_LOCATION_4);
         eagleProtectionGridLocations.add(PROTECTION_LOCATION_5);
 
-        final BlockConfiguration PROTECTION_TILE_CONF_1 = BlockConfiguration.BLOCK_CONF_FULL;
-        final BlockConfiguration PROTECTION_TILE_CONF_2 = BlockConfiguration.BLOCK_CONF_FULL;
-        final BlockConfiguration PROTECTION_TILE_CONF_3 = BlockConfiguration.BLOCK_CONF_FULL;
-        final BlockConfiguration PROTECTION_TILE_CONF_4 = BlockConfiguration.BLOCK_CONF_FULL;
-        final BlockConfiguration PROTECTION_TILE_CONF_5 = BlockConfiguration.BLOCK_CONF_FULL;
+        final BlockConfiguration PROTECTION_TILE_CONF_1 = BlockConfiguration.BLOCK_CONF_3;
+        final BlockConfiguration PROTECTION_TILE_CONF_2 = BlockConfiguration.BLOCK_CONF_7;
+        final BlockConfiguration PROTECTION_TILE_CONF_3 = BlockConfiguration.BLOCK_CONF_4;
+        final BlockConfiguration PROTECTION_TILE_CONF_4 = BlockConfiguration.BLOCK_CONF_6;
+        final BlockConfiguration PROTECTION_TILE_CONF_5 = BlockConfiguration.BLOCK_CONF_8;
         ArrayList<BlockConfiguration> protectionTileConfiguration = new ArrayList<>();
         protectionTileConfiguration.add(PROTECTION_TILE_CONF_1);
         protectionTileConfiguration.add(PROTECTION_TILE_CONF_2);
@@ -264,21 +265,27 @@ public class MapGenerator {
 
                 BlockConfiguration tentativeBlockConfiguration = Utils.getRandomProbability(80) ? BlockConfiguration.BLOCK_CONF_FULL: BlockConfiguration.valueOf(random.nextInt(0, BlockConfiguration.values().length-1));
                 if (tentativeTileType != TileType.TILE_NONE && tentativeBlockConfiguration != BlockConfiguration.BLOCK_CONF_EMPTY) {
-                    Tile tile = TileFactory.createTile(tentativeTileType, r, c, tentativeBlockConfiguration);
+                    Tile tile = TileFactory.createTile(tentativeTileType, c, r, tentativeBlockConfiguration);
                     grid[r][c] = tile;
                 } else {
                     grid[r][c] = null;
                 }
             }
         }
-        
+
+        // Set eagle protection tiles
         int i=0;
         for (GridLocation gLoc: eagleProtectionGridLocations) {
-            grid[gLoc.rowIndex()][gLoc.colIndex()] = TileFactory.createTile(TileType.TILE_BRICKS, gLoc.rowIndex(), gLoc.colIndex(), protectionTileConfiguration.get(i));
+            grid[gLoc.rowIndex()][gLoc.colIndex()] = TileFactory.createTile(TileType.TILE_BRICKS, gLoc.colIndex(), gLoc.rowIndex(), protectionTileConfiguration.get(i));
             i++;
         }
 
-        grid[EAGLE_LOCATION.rowIndex()][EAGLE_LOCATION.colIndex()] = TileFactory.createTile(TileType.TILE_EAGLE, EAGLE_LOCATION.rowIndex(), EAGLE_LOCATION.colIndex(), BlockConfiguration.BLOCK_CONF_FULL);
+        // Set eagle tile in the center of the protection tiles
+        grid[EAGLE_LOCATION.rowIndex()][EAGLE_LOCATION.colIndex()] = TileFactory.createTile(TileType.TILE_EAGLE, EAGLE_LOCATION.colIndex(), EAGLE_LOCATION.rowIndex(), BlockConfiguration.BLOCK_CONF_FULL);
+
+        // Add extra steel tile in a random row for protection of eagle
+        int extraSteelRowIndex = random.nextInt(2, 10);
+        grid[extraSteelRowIndex][EAGLE_LOCATION.colIndex()] = TileFactory.createTile(TileType.TILE_STEEL, EAGLE_LOCATION.colIndex(), extraSteelRowIndex, BlockConfiguration.BLOCK_CONF_FULL);
 
         return grid;
     }

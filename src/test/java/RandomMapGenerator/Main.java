@@ -2,6 +2,7 @@ package RandomMapGenerator;
 
 import tank1990.core.LevelInfo;
 import tank1990.core.MapGenerator;
+import tank1990.tank.TankType;
 
 public class Main {
     public static void main(String[] args) {
