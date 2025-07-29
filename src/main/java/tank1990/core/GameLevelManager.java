@@ -87,13 +87,10 @@ public class GameLevelManager implements Serializable {
      * Initializes the game level manager by adding predefined levels.
      */
     public void addLevels() {
-        // Add predefined game levels to the manager
-        for (int i = 1; i <= Globals.GAME_LEVEL_COUNTS; i++) {
-            // FIXME: Use a proper path for the level files
-            // For now, we will use a placeholder path
-            GameLevel level = new GameLevel(Globals.MAP_PATH + String.format("stage-%02d.bin", 1));
-            this.gameLevels.add(level);
-        }
+        // Add predefined game levels to the manager.
+        // For now only stage 1 is predefined one which is second stage in original Tank 1990 game.
+        GameLevel level = new GameLevel(Globals.MAP_PATH + String.format("stage-%02d.bin", 1));
+        this.gameLevels.add(level);
     }
 
     /**
@@ -171,6 +168,10 @@ public class GameLevelManager implements Serializable {
      */
     private GameLevel loadLevel(int levelIndex) {
         System.out.println("Loading level: " + levelIndex);
+
+        // Generate a new level info with random game map and enemy types.
+        LevelInfo newLevelInfo = MapGenerator.generateRandomLevelInfo();
+        this.gameLevels.add(newLevelInfo);
 
         if (levelIndex < 0 || levelIndex >= this.gameLevels.size()) {
             throw new IndexOutOfBoundsException("Invalid level index: " + levelIndex);

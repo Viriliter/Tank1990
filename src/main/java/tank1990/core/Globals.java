@@ -132,6 +132,10 @@ public interface Globals {
 
     int RED_TANK_BLINK_ANIMATION_PERIOD_MS = 500;
 
+    GridLocation ENEMY_SPAWN_LOCATION_1 = new GridLocation(0, 0);
+    GridLocation ENEMY_SPAWN_LOCATION_2 = new GridLocation(0, 6);
+    GridLocation ENEMY_SPAWN_LOCATION_3 = new GridLocation(0, 12);
+
     /**
      * COLOR PALLETTE
      */

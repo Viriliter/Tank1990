@@ -27,5 +27,16 @@ public enum TankType {
     FAST_TANK,
     POWER_TANK,
     ARMOR_TANK,
-    PLAYER_TANK
+    PLAYER_TANK;
+
+    public static TankType valueOf(int val) {
+        return switch (val) {
+            case (0) -> BASIC_TANK;
+            case (1) -> FAST_TANK;
+            case (2) -> POWER_TANK;
+            case (3) -> ARMOR_TANK;
+            case (4) -> PLAYER_TANK;
+            default -> throw new RuntimeException("Invalid Value for TankType");
+        };
+    }
 }

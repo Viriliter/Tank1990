@@ -29,5 +29,18 @@ public enum TileType {
     TILE_TREES,
     TILE_SEA,
     TILE_ICE,
-    TILE_EAGLE
+    TILE_EAGLE;
+
+    public static TileType valueOf(int val) {
+        return switch (val) {
+            case (0) -> TILE_NONE;
+            case (1) -> TILE_BRICKS;
+            case (2) -> TILE_STEEL;
+            case (3) -> TILE_TREES;
+            case (4) -> TILE_SEA;
+            case (5) -> TILE_ICE;
+            case (6) -> TILE_EAGLE;
+            default -> throw new RuntimeException("Invalid Value for TileType");
+        };
+    }
 }
