@@ -601,7 +601,7 @@ public abstract class AbstractTank extends DynamicGameObject {
     public void move(GameLevel level) {
         //if (currentTimeMillis - stateTimer < 150) return;
 
-        System.out.printf("%d - (%d) %s\n", System.currentTimeMillis(), System.identityHashCode(this), tankState);
+        //System.out.printf("%d - (%d) %s\n", System.currentTimeMillis(), System.identityHashCode(this), tankState);
 
         switch (this.tankState) {
             case SPAWNING -> {
@@ -628,17 +628,17 @@ public abstract class AbstractTank extends DynamicGameObject {
                 GridLocation oldGloc = Utils.Loc2GridLoc(new Location(x, y));
                 GridLocation newGloc = Utils.Loc2GridLoc(newLocation);
 
-                System.out.println("Old location: " + oldLocation  + " New location: " + newLocation);
+                //System.out.println("Old location: " + oldLocation  + " New location: " + newLocation);
 
                 if (level.checkMovable(this, new RectangleBound(newLocation.x(), newLocation.y(), getSize()))) {
-                    System.out.println("Movable for new location: " + Utils.Loc2GridLoc(newLocation));
+                    //System.out.println("Movable for new location: " + Utils.Loc2GridLoc(newLocation));
                     moveForward();
                 } else if (level.seeTarget(getBoundingBox(), getDir())) {
-                    System.out.println("Target seen, random rotation");
+                    //System.out.println("Target seen, random rotation");
                     tankState = TankState.RANDOM_ROTATION;
                     moveForward();
                 } else {
-                    System.out.println("Cannot move forward, random rotation");
+                    //System.out.println("Cannot move forward, random rotation");
                     tankState = TankState.RANDOM_ROTATION;
                     moveForward();
                 }

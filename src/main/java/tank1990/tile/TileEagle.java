@@ -23,6 +23,7 @@
 package tank1990.tile;
 
 import tank1990.core.Globals;
+import tank1990.core.SpriteAnimation;
 import tank1990.core.TextureFX;
 import tank1990.projectiles.Bullet;
 
@@ -30,12 +31,12 @@ public class TileEagle extends Tile {
     public TileEagle(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_EAGLE, blockConf);
 
-        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_EAGLE);
+        this.spriteAnimationFX = new SpriteAnimation(Globals.TEXTURE_TILE_EAGLE_SPRITE);
     }
 
     public boolean destroy(Bullet b) {
         // Set the texture to the withdraw texture
-        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_WITHDRAW);
+        this.spriteAnimationFX = new SpriteAnimation(Globals.TEXTURE_TILE_WITHDRAW_SPRITE);
         return true;
     }
 

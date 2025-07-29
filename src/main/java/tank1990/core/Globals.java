@@ -174,13 +174,14 @@ public interface Globals {
      */
     String TEXTURE_TILE_BRICKS_PATH = "textures/tiles/tile-bricks.png";
 
-    TextureFXStruct TEXTURE_TILE_BRICKS = new TextureFXStruct("textures/tiles/tile-bricks.png",0,0,0);
-    TextureFXStruct TEXTURE_TILE_STEEL = new TextureFXStruct("textures/tiles/tile-steel.png",0,0,0);
-    TextureFXStruct TEXTURE_TILE_TREES = new TextureFXStruct("textures/tiles/tile-trees.png",0,0,0);
-    TextureFXStruct TEXTURE_TILE_SEA = new TextureFXStruct("textures/tiles/tile-sea.png",0,0,0);
-    TextureFXStruct TEXTURE_TILE_ICE = new TextureFXStruct("textures/tiles/tile-ice.png",0,0,0);
-    TextureFXStruct TEXTURE_TILE_EAGLE = new TextureFXStruct("textures/tiles/tile-eagle.png",0,0,0);
-    TextureFXStruct TEXTURE_TILE_WITHDRAW = new TextureFXStruct("textures/tiles/tile-withdraw.png",0,0,0);
+    // SpriteFXStructs for tiles
+    SpriteAnimationStruct TEXTURE_TILE_BRICKS_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-bricks.png", 1, 1, 1, 1, 0, 0);
+    SpriteAnimationStruct TEXTURE_TILE_STEEL_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-steel.png", 1, 1, 1, 1, 0, 0);
+    SpriteAnimationStruct TEXTURE_TILE_TREES_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-trees.png", 1, 1, 1, 1, 0, 0);
+    SpriteAnimationStruct TEXTURE_TILE_SEA_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-sea.png", 4, 60, 1, 4, 0, 0);
+    SpriteAnimationStruct TEXTURE_TILE_ICE_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-ice.png", 1, 1, 1, 1, 0, 0);
+    SpriteAnimationStruct TEXTURE_TILE_EAGLE_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-eagle.png", 1, 1, 1, 1, 0, 0);
+    SpriteAnimationStruct TEXTURE_TILE_WITHDRAW_SPRITE = new SpriteAnimationStruct("textures/tiles/tile-withdraw.png", 1, 1, 1, 1, 0, 0);
 
     /**
      * TANKS

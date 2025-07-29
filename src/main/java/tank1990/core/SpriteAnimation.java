@@ -234,7 +234,7 @@ public class SpriteAnimation implements Serializable{
         AffineTransform oldTransform = g2d.getTransform();
 
         // Apply transformations (rotation + centering)
-        g2d.translate(x + targetWidth / 2, y + targetHeight / 2);
+        g2d.translate(x, y);
         g2d.rotate(rotation+rOffset);
 
         if (this.subFrames != null) {

@@ -31,7 +31,7 @@ import tank1990.tank.AbstractTank;
 public abstract class Tile extends StaticGameObject {
     protected TileType type = null;
     protected BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
-    protected TextureFX textureFX = null;
+    protected SpriteAnimation spriteAnimationFX = null;
     protected boolean isDestroyed = false;
 
     protected AbstractTank includedTankInst = null;
@@ -93,7 +93,7 @@ public abstract class Tile extends StaticGameObject {
     public void update() { }
     
     public void draw(Graphics g) {
-        if (this.textureFX == null) {
+        if (this.spriteAnimationFX == null) {
             System.err.println("Tile textureFX is null for tile: " + this.type);
             return;
         }
@@ -113,8 +113,8 @@ public abstract class Tile extends StaticGameObject {
 
         // Get the clip bounds of the graphics context
         java.awt.Rectangle clipBounds = g.getClipBounds();
-        this.textureFX.setTargetSize(getSize().width, getSize().height);
-        this.textureFX.draw(g, x, y, 0.0);
+        this.spriteAnimationFX.setTargetSize(getSize().width, getSize().height);
+        this.spriteAnimationFX.draw(g, x, y, 0.0);
 
         boolean allSubpiecesDestroyed = true;
         // If the sub-pieces are not visible, draw it as a black rectangle

@@ -23,6 +23,7 @@
 package tank1990.tile;
 
 import tank1990.core.Globals;
+import tank1990.core.SpriteAnimation;
 import tank1990.core.TextureFX;
 import tank1990.projectiles.Bullet;
 
@@ -30,7 +31,14 @@ public class TileSea extends Tile {
     public TileSea(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_SEA, blockConf);
 
-        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_SEA);
+        this.spriteAnimationFX = new SpriteAnimation(Globals.TEXTURE_TILE_SEA_SPRITE);
+    }
+
+    @Override
+    public void update() {
+        if (this.spriteAnimationFX != null) {
+            this.spriteAnimationFX.update();
+        }
     }
 
     public boolean destroy(Bullet b) {

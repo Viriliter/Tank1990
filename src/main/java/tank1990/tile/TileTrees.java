@@ -23,6 +23,7 @@
 package tank1990.tile;
 
 import tank1990.core.Globals;
+import tank1990.core.SpriteAnimation;
 import tank1990.core.TextureFX;
 import tank1990.projectiles.Bullet;
 import tank1990.projectiles.BulletType;
@@ -32,7 +33,7 @@ public class TileTrees extends Tile {
         super(x, y, TileType.TILE_TREES, blockConf);
         setDepth(1);
 
-        this.textureFX = new TextureFX(Globals.TEXTURE_TILE_TREES);
+        this.spriteAnimationFX = new SpriteAnimation(Globals.TEXTURE_TILE_TREES_SPRITE);
     }
 
     public boolean destroy(Bullet b) {
