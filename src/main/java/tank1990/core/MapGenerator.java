@@ -36,12 +36,22 @@ import tank1990.tank.TankType;
 
 public class MapGenerator {
 
+    /**
+     * Reads the level information from a binary file.
+     * @param filePath The path to the binary file containing level information.
+     * @return LevelInfo object containing the grid and enemy tank count.
+     */
     public static LevelInfo readLevelInfo(String filePath) {
         LevelInfo levelInfo = loadFromBinary(filePath);
 
         return levelInfo;
     }
 
+    /**
+     * Saves the level information to a binary file.
+     * @param sourceTxtPath The path to the source text file containing level information.
+     * @param targetBinPath The path where the binary file will be saved.
+     */
     public static void saveToBinary(String sourceTxtPath, String targetBinPath) {
         ObjectOutputStream os = null;
         try {
@@ -57,6 +67,10 @@ public class MapGenerator {
         }    
     }
 
+    /**
+     * Prints the grid in a formatted way to the console.
+     * @param grid The 2D array of Tile objects representing the game grid.
+     */
     public static void printGrid(Tile[][] grid) {
         System.out.print("||===|===|===|===|===|===|===|===|===|===|===|===|===||\n");
         for (int i = 0; i< Globals.ROW_TILE_COUNT; i++) {
@@ -88,6 +102,11 @@ public class MapGenerator {
         System.out.print("||===|===|===|===|===|===|===|===|===|===|===|===|===||\n");
     }
 
+    /**
+     * Loads the level information from a binary file.
+     * @param filePath The path to the binary file containing level information.
+     * @return LevelInfo object containing the grid and enemy tank count.
+     */
     private static LevelInfo loadFromBinary(String filePath) {
         try {
             InputStream inputStream = MapGenerator.class.getClassLoader().getResourceAsStream(filePath);
@@ -101,6 +120,14 @@ public class MapGenerator {
         }
     }
 
+    /**
+     * Creates a LevelInfo object from a text file.
+     * The first line of the text file should contain enemy tank types and their counts.
+     * The subsequent lines should contain tile information in the format: TileType rowIndex colIndex [blockConfiguration].
+     * @param filePath The path to the text file containing level information.
+     * @return LevelInfo object containing the grid and enemy tank count.
+     * @throws FileNotFoundException if the specified file does not exist.
+     */
     public static LevelInfo createFromText(String filePath) throws FileNotFoundException {
         Tile[][] grid = new Tile[Globals.ROW_TILE_COUNT][Globals.COL_TILE_COUNT];
         HashMap<TankType, Integer> enemyTankCount = new HashMap<>();
@@ -154,7 +181,13 @@ public class MapGenerator {
 
         return new LevelInfo(grid, enemyTankCount);
     }
-    
+
+    /**
+     * Generates a random map of enemy tanks.
+     * The method creates a HashMap with TankType as keys and random counts as values.
+     * The total number of enemy tanks is set to 20, excluding the player tank.
+     * @return A HashMap containing TankType as keys and their respective counts as values.
+     */
     public static HashMap<TankType, Integer> generateRandomEnemies() {
         Random random = new Random();
 
@@ -179,6 +212,16 @@ public class MapGenerator {
         return enemyMap;
     }
 
+    /**
+     * Returns the neighboring tiles of a given grid location.
+     * The neighbors are returned in a 1D array with the following order:
+     * [top-left, top, top-right, left, right, bottom-left, bottom, bottom-right].
+     * If a neighbor is out of bounds or does not exist, it will be null.
+     *
+     * @param grid The 2D array of Tile objects representing the game grid.
+     * @param gLoc The GridLocation for which to find neighbors.
+     * @return An array of Tile objects representing the neighbors.
+     */
     public static Tile[] getNeighbors(Tile[][] grid, GridLocation gLoc) {
         Tile[] neighbors = new Tile[5]; 
         for (int i=-1; i<=1; i++) {
@@ -196,6 +239,13 @@ public class MapGenerator {
         return neighbors;
     }
 
+    /**
+     * Returns a random TileType excluding the TILE_EAGLE type.
+     * This method uses a random number generator to select a TileType from the TileType enum.
+     * If the randomly selected type is TILE_EAGLE, it recursively calls itself to get another type.
+     *
+     * @return A random TileType excluding TILE_EAGLE.
+     */
     public static TileType getRandomTileType() {
         Random random = new Random();
         TileType tentativeTileType = TileType.valueOf(random.nextInt(TileType.values().length));
@@ -205,6 +255,13 @@ public class MapGenerator {
         return tentativeTileType;
     }
 
+    /**
+     * Generates a random grid of tiles for the game.
+     * The grid is generated based on predefined locations for eagle protection and enemy spawn.
+     * It uses random probabilities to determine tile types and configurations.
+     *
+     * @return A 2D array of Tile objects representing the generated grid.
+     */
     public static Tile[][] generateRandomGrid() {
         Random random = new Random();
 
@@ -290,6 +347,13 @@ public class MapGenerator {
         return grid;
     }
 
+    /**
+     * Generates a random LevelInfo object containing a grid and enemy tank counts.
+     * The grid is generated using the generateRandomGrid method, and the enemy tank counts
+     * are generated using the generateRandomEnemies method.
+     *
+     * @return A LevelInfo object containing the generated grid and enemy tank counts.
+     */
     public static LevelInfo generateRandomLevelInfo() {
         HashMap<TankType, Integer> enemyMap = generateRandomEnemies();
         Tile[][] grid = generateRandomGrid();

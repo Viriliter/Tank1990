@@ -299,7 +299,11 @@ public abstract class AbstractTank extends DynamicGameObject {
      */
     public void setMaxSpeedUnit(int maxSpeedUnit) {this.maxSpeedUnit = maxSpeedUnit;}
 
-    public void setShootPreiod(int shootPeriod) {
+    /**
+     * Sets the shooting period for the tank.
+     * @param shootPeriod The period in milliseconds between each shot.
+     */
+    public void setShootPeriod(int shootPeriod) {
         this.shootTick.setDefaultTick(Utils.Time2GameTick(shootPeriod));
     }
 
@@ -310,8 +314,16 @@ public abstract class AbstractTank extends DynamicGameObject {
      */
     public void setFrozen(boolean isFrozen) {this.isFrozen = isFrozen;}
 
+    /**
+     * Returns the delta speed of the tank in x direction.
+     * @return dx
+     */
     public int getDx() { return this.dx; }
 
+    /**
+     * Returns the delta speed of the tank in y direction.
+     * @return dy
+     */
     public int getDy() { return this.dy; }
 
     /**
@@ -731,10 +743,10 @@ public abstract class AbstractTank extends DynamicGameObject {
      * @param level The current game level where the tank is located.
      */
     public synchronized void move(GameLevel level) {
-        GridLocation startLoc = Utils.Loc2GridLoc(new Location(getX(), getY()));
+        GridLocation startLoc = Utils.loc2GridLoc(new Location(getX(), getY()));
 
         Location currentLoc = new Location(getX(), getY());
-        GridLocation currentGridLoc = Utils.Loc2GridLoc(currentLoc);
+        GridLocation currentGridLoc = Utils.loc2GridLoc(currentLoc);
         Location gridCenterLoc = Utils.gridLoc2Loc(currentGridLoc);
 
         GridLocation nextTileLoc = null;
@@ -769,6 +781,12 @@ public abstract class AbstractTank extends DynamicGameObject {
         }
     }
 
+    /**
+     * Deserializes the tank object from a stream.
+     * @param in The ObjectInputStream to read the tank object from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 

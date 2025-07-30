@@ -556,6 +556,10 @@ public class GameEngine extends Subject {
         }
     }
 
+    /**
+     * Checks for collisions between game objects.
+     * @param gameLevel The current game level to check for collisions
+     */
     private void checkCollisions(GameLevel gameLevel) {
         checkProjectileCollisions(gameLevel);
 
@@ -712,7 +716,7 @@ public class GameEngine extends Subject {
         RectangleBound bulletBounds = bullet.getBoundingBox();
 
         // Convert bullet position to grid coordinates
-        GridLocation bulletGridLoc = Utils.Loc2GridLoc(new Location(bullet.getX(), bullet.getY()));
+        GridLocation bulletGridLoc = Utils.loc2GridLoc(new Location(bullet.getX(), bullet.getY()));
 
         // Get the neighboring tiles of the bullet's grid location
         Tile[] neighborTiles = gameLevel.getNeighbors(bulletGridLoc);
@@ -832,7 +836,7 @@ public class GameEngine extends Subject {
         for (Player player : this.players) {
             if (!player.isTankDestroyed()) {
                 RectangleBound bound = player.getBoundingBox();
-                GridLocation loc = Utils.Loc2GridLoc(new Location(bound.getOriginX(), bound.getOriginY()));
+                GridLocation loc = Utils.loc2GridLoc(new Location(bound.getOriginX(), bound.getOriginY()));
                 tankLocations.add(loc);
             }
         }
@@ -842,7 +846,7 @@ public class GameEngine extends Subject {
             AbstractTank enemyTank = (AbstractTank) enemy;
             if (!enemyTank.isDestroyed()) {
                 RectangleBound bound = enemyTank.getBoundingBox();
-                GridLocation loc = Utils.Loc2GridLoc(new Location(bound.getOriginX(), bound.getOriginY()));
+                GridLocation loc = Utils.loc2GridLoc(new Location(bound.getOriginX(), bound.getOriginY()));
                 tankLocations.add(loc);
             }
         }

@@ -106,21 +106,42 @@ public class Bullet extends DynamicGameObject {
         }
     }
 
+    /**
+     * Gets the current speed of the bullet.
+     *
+     * @return The current speed of the bullet.
+     */
     public BulletType getType() {
         return this.type;
     }
 
+    /**
+     * Sets the type of the bullet.
+     *
+     * @param type The new type to set for the bullet.
+     */
     public void setType(BulletType type) {
         this.type = type;
     }
 
+    /**
+     * Sets the speed of the bullet.
+     *
+     * @param speed The new speed to set for the bullet.
+     */
     public void setMoveSpeed(int speed) {
         this.baseSpeed = speed;
     }
 
+    /**
+     * Destroys the bullet and returns a new Blast object at the current bullet position.
+     * This method sets the bullet status in the tank instance to true,
+     * indicating that the bullet has been destroyed.
+     * @return A new Blast object representing the explosion
+     */
     public Blast destroy() {
         this.tankInst.setBulletStatus(true);
-        // Create an blast at the current bullet position
+        // Create a blast at the current bullet position
         return new Blast(x, y);
 
     }
@@ -136,10 +157,20 @@ public class Bullet extends DynamicGameObject {
         return this.x < 0 || this.x > width || this.y < 0 || this.y > height;
     }
 
+    /**
+     * Checks if the bullet belongs to an enemy tank.
+     *
+     * @return true if the bullet is fired by an enemy tank, false otherwise.
+     */
     public boolean isEnemyBullet() {
         return this.tankInst instanceof Enemy;
     }
 
+    /**
+     * Checks for collision with the game level's tile map. (DEPRECATED)
+     * @param gameLevel The current game level to check for collisions.
+     * @return true if the bullet collides with a tile that should destroy it (like bricks or eagle), false otherwise.
+     */
     public boolean checkCollision(GameLevel gameLevel) {
         if (gameLevel == null || gameLevel.getMap() == null) {
             return false;
@@ -154,7 +185,7 @@ public class Bullet extends DynamicGameObject {
         int maxHeight = (int) gameAreaSize.getHeight();
         
         // Convert bullet position to grid location
-        GridLocation gLoc = Utils.Loc2GridLoc(new Location(this.x, this.y));
+        GridLocation gLoc = Utils.loc2GridLoc(new Location(this.x, this.y));
         
         int r = gLoc.rowIndex();
         int c = gLoc.colIndex();

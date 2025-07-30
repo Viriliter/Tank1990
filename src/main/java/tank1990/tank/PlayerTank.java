@@ -59,6 +59,10 @@ public class PlayerTank extends AbstractTank {
     @Override
     protected void setRedTankTextureFXs() { }
 
+    /* * Set the player type and update the tank texture accordingly.
+     * This method is used to switch between player 1 and player 2 tanks.
+     * @param playerType The type of player (PLAYER_1 or PLAYER_2).
+     */
     public void setPlayerType(PlayerType playerType) {
         if (playerType == PlayerType.PLAYER_1) {
             this.tankTextureFxStruct = Globals.TEXTURE_PLAYER1_TANK_STRUCT;

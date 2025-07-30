@@ -53,30 +53,60 @@ public class Player implements Serializable {
         //System.out.println("x:" + myTank.getX() + " y:" + myTank.getY() + " dir:" + myTank.getDir() + " speed:" + this.speed);
     }
 
+    /**
+     * Update the player tank and its position in the game level.
+     * @param level the current game level
+     */
     public void update(GameLevel level) {
         myTank.update(level);
 
         // Update player location in the level
-        GridLocation gLoc = Utils.Loc2GridLoc(new Location(myTank.getX(), myTank.getY()));
+        GridLocation gLoc = Utils.loc2GridLoc(new Location(myTank.getX(), myTank.getY()));
         level.setPlayerLocation(gLoc);
     }
 
+    /**
+     * Decrement the tank's horizontal speed (dx).
+     */
     public void decrementDx() { this.myTank.decrementDx(); }
 
+    /**
+     * Increment the tank's horizontal speed (dx).
+     */
     public void incrementDx() { this.myTank.incrementDx(); }
 
+    /**
+     * Decrement the tank's vertical speed (dy).
+     */
     public void decrementDy() { this.myTank.decrementDy(); }
 
+    /**
+     * Increment the tank's vertical speed (dy).
+     */
     public void incrementDy() { this.myTank.incrementDy(); }
 
+    /**
+     * Reset the tank's horizontal speed (dx) to zero.
+     */
     public void resetDx() { this.myTank.resetDx(); }
 
+    /**
+     * Reset the tank's vertical speed (dy) to zero.
+     */
     public void resetDy() { this.myTank.resetDy(); }
 
+    /**
+     * Shoot a bullet from the player's tank.
+     * @return the bullet shot by the tank
+     */
     public Bullet shoot() {
         return myTank.shoot();
     }
 
+    /**
+     * Check if the player's tank is damaged.
+     * @return true if the tank is damaged, false otherwise
+     */
     public boolean getDamage() {
         boolean isDamaged = myTank.getDamage();
         if (isDamaged) {
@@ -86,15 +116,27 @@ public class Player implements Serializable {
         return isDamaged;
     }
 
+    /**
+     * Destroy the player's tank and return a blast effect.
+     * @return the blast effect from the tank's destruction
+     */
     public Blast destroy() {
         --remainingLife;
         return myTank.destroy();
     }
 
+    /**
+     * Get the number of remaining lives for the player.
+     * @return the number of remaining lives
+     */
     public int getRemainingLives() {
         return remainingLife;
     }
 
+    /**
+     * Collect a powerup and apply its effects to the player's tank.
+     * @param powerup the powerup to collect
+     */
     public void collectPowerup(AbstractPowerup powerup) {
         if (powerup == null) return;
 
@@ -129,26 +171,57 @@ public class Player implements Serializable {
         GameLevelManager.getInstance().addPlayerScore(powerup.getPoints());
     }
 
+    /**
+     * Check if the player's tank is destroyed.
+     * @return true if the tank is destroyed, false otherwise
+     */
     public boolean isTankDestroyed() { return myTank.isDestroyed(); }
 
+    /**
+     * Get the type of the player (PLAYER_1 or PLAYER_2).
+     * @return the PlayerType of this player
+     */
     public PlayerType getPlayerType() {return this.playerType;}
 
+    /**
+     * Get the player's tank instance.
+     * @return the PlayerTank instance associated with this player
+     */
     public AbstractTank getTank() { return myTank; }
 
+    /**
+     * Check if the player's tank is frozen.
+     */
     public void isFrozen() {
         myTank.isFrozen();
     }
 
+    /**
+     * Set the frozen state of the player's tank.
+     * @param frozen true to freeze the tank, false to unfreeze it
+     */
     public void setFrozen(boolean frozen) {
         myTank.setFrozen(frozen);
     }
 
+    /**
+     * Set the remaining lives for the player.
+     * @param lives the number of lives to set
+     */
     public void setRemainingLives(int lives) {
         this.remainingLife = lives;
     }
 
+    /**
+     * Get the bounding box of the player's tank.
+     * @return the RectangleBound representing the bounding box of the tank
+     */
     public RectangleBound getBoundingBox() { return myTank.getBoundingBox(); }
 
+    /**
+     * Spawn a new tank for the player.
+     * This method is called when the player needs to respawn or start the game.
+     */
     public void spawnTank() {
         remainingLife = remainingLife>0? --remainingLife: 0;
 

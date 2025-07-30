@@ -11,10 +11,18 @@ public class GridLocation implements Serializable {
         this.colIndex = colIndex;
     }
 
+    /**
+     * Returns the row index of this grid location.
+     * @return the row index
+     */
     public int rowIndex() {
         return rowIndex;
     }
 
+    /**
+     * Returns the column index of this grid location.
+     * @return the column index
+     */
     public int colIndex() {
         return colIndex;
     }

@@ -77,11 +77,6 @@ public class ConfigHandler implements Serializable{
     }
 
     /**
-     * Constructor that loads and parses the configuration file.
-     * @param filePath The path to the configuration file.
-     */
-
-    /**
      * Sets value for the key of the configuration parameter in provided section.
      * @param section The section where the key locates.
      * @param key The key of the configuration parameter.
@@ -102,7 +97,6 @@ public class ConfigHandler implements Serializable{
         int y = Integer.parseInt(ConfigHandler.ini.get("Window").get("Y"));
         return new WindowProperties(windowWidth, windowHeight, x ,y);
     }
-
 
     /**
      * Returns window properties of the game.

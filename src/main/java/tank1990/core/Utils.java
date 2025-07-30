@@ -33,14 +33,32 @@ import java.io.InputStream;
 import static tank1990.core.Globals.GAME_TICK_MS;
 
 public interface Utils {
+    /**
+     * Converts a duration in milliseconds to the number of game ticks.
+     * @param durationMs Duration in milliseconds
+     * @return Number of game ticks
+     */
     static int Time2GameTick(int durationMs) {
         return durationMs / GAME_TICK_MS;
     }
 
+    /**
+     * Converts a game tick to the corresponding time in milliseconds.
+     * @param tick Game tick
+     * @return Time in milliseconds
+     */
     static int GameTick2Time(int tick) {
         return tick * GAME_TICK_MS;
     }
 
+    /**
+     * Loads a PNG icon from resources and scales it to the specified width and height.
+     * @param path Path to the PNG file (e.g., "icons/icon.png")
+     * @param targetWidth Desired width of the icon
+     * @param targetHeight Desired height of the icon
+     * @return ImageIcon scaled to the specified dimensions, or null if loading failed
+     * @throws NullPointerException
+     */
     static ImageIcon loadPNGIcon(String path, int targetWidth, int targetHeight) throws NullPointerException {
         try {
             InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(path);
@@ -72,6 +90,14 @@ public interface Utils {
         }
     }
 
+    /**
+     * Loads a texture image from resources and scales it to the specified width and height.
+     *
+     * @param fileName Name of the texture file (e.g., "textures/texture.png")
+     * @param width    Desired width of the texture
+     * @param height   Desired height of the texture
+     * @return Scaled Image or null if loading failed
+     */
     static Image loadTexture(String fileName, int width, int height) {
         try {
             InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(fileName);
@@ -114,6 +140,11 @@ public interface Utils {
         }
     }
 
+    /**
+     * Converts radians to degrees.
+     * @param radians angle in radians
+     * @return angle in degrees
+     */
     static double radToDeg(double radians) {
         return Math.toDegrees(radians);
     }
@@ -162,7 +193,7 @@ public interface Utils {
      * @param loc Location to convert
      * @return GridLocation corresponding to the Location
      */
-    static GridLocation Loc2GridLoc(Location loc) {
+    static GridLocation loc2GridLoc(Location loc) {
         Dimension gameAreaDimension = GamePanel.getGameAreaDimension();
 
         if (gameAreaDimension == null) {
@@ -191,7 +222,6 @@ public interface Utils {
         return new Dimension(width, height);
     }
 
-
     /*
      * Normalizes length in respect to size of tile size.
      *
@@ -207,10 +237,16 @@ public interface Utils {
         return value * (gSize / tileCount) / tileSize;
     }
 
+    /**
+     * Generates a random boolean based on the given probability percentage.
+     * @param percent Probability percentage (0-100)
+     * @return true with the given probability, false otherwise
+     */
     static boolean getRandomProbability(int percent) {
         if (percent < 0 || percent > 100) {
             throw new IllegalArgumentException("Probability must be between 0 and 100");
         }
+        if (percent == 0) return false; // 0% chance
         return Math.random() * 100 < percent;
     }
 }

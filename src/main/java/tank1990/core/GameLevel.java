@@ -550,7 +550,7 @@ public class GameLevel implements Serializable {
         if (!isEagleAlive()) return false;
 
         // Calculate the bound that sees directly towards its direction
-        GridLocation tankGloc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
+        GridLocation tankGloc = Utils.loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
 
         int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
         int colDiff = this.eagleLocation.colIndex() - tankGloc.colIndex();
@@ -577,7 +577,7 @@ public class GameLevel implements Serializable {
         if (!isEagleAlive()) return false;
 
         // Calculate the bound that alignes with the eagle
-        GridLocation tankGloc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
+        GridLocation tankGloc = Utils.loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
 
         int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
         int colDiff = this.eagleLocation.colIndex() - tankGloc.colIndex();
@@ -598,7 +598,7 @@ public class GameLevel implements Serializable {
         if (!isEagleAlive()) return Direction.DIRECTION_INVALID;
 
         // Calculate the bound that sees directly towards its direction
-        GridLocation tankGloc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
+        GridLocation tankGloc = Utils.loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
 
         int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
         int colDiff = this.eagleLocation.colIndex() - tankGloc.colIndex();
@@ -630,7 +630,7 @@ public class GameLevel implements Serializable {
             tankBound.getMinY() < 0) return false;
 
         // 2- Get neighbor tiles in order to check tile collisions 
-        GridLocation tankGLoc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX() ,tankBound.getOriginY()));
+        GridLocation tankGLoc = Utils.loc2GridLoc(new Location(tankBound.getOriginX() ,tankBound.getOriginY()));
         Tile[] neighbors = getNeighbors(tankGLoc);
 
         for (Tile neighbor : neighbors) {

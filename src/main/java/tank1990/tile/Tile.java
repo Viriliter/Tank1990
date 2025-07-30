@@ -82,10 +82,22 @@ public abstract class Tile extends StaticGameObject {
         setSubPieceVisibility(this.blockConf);
     }
 
+    /**
+     * Returns the type of the tile.
+     * @return the type of the tile
+     */
     public TileType getType() { return this.type; }
 
+    /**
+     * Returns the block configuration of the tile.
+     * @return the block configuration of the tile
+     */
     public BlockConfiguration getBlockConf() { return this.blockConf; }
 
+    /**
+     * Returns the grid location of the tile.
+      * @return the grid location of the tile
+     */
     public GridLocation getGridLocation() {
         return this.gloc;
     }
@@ -156,14 +168,26 @@ public abstract class Tile extends StaticGameObject {
      */
     public abstract boolean destroy(Bullet b);
 
+    /**
+     * Checks if the tile is destroyed.
+     * @return true if the tile is destroyed, false otherwise
+     */
     public boolean isDestroyed() {
         return this.isDestroyed;
     }
 
+    /**
+     * Sets the tile as destroyed.
+     * This method should be called when the tile is destroyed. Actual destruction logic is controlled by Game Engine.
+     */
     public void setAsDestroyed() {
         this.isDestroyed = true;
     }
 
+    /**
+     * Sets the visibility of sub-pieces based on the block configuration.
+     * @param blockConfiguration the block configuration to set visibility for sub-pieces
+     */
     protected void setSubPieceVisibility(BlockConfiguration blockConfiguration) {
         for (int r=0; r<Globals.TILE_SUBDIVISION; r++) {
             for (int c=0; c<Globals.TILE_SUBDIVISION; c++) {
@@ -236,6 +260,11 @@ public abstract class Tile extends StaticGameObject {
         } else { }
     }
 
+    /**
+     * Checks if a row or column of sub-pieces is hit based on the direction.
+     * @param hitDir the direction of the hit
+     * @return true if a row or column was hit, false otherwise
+     */
     protected boolean hitRow(Direction hitDir) {
         boolean isHit = false;
         if (hitDir == Direction.DIRECTION_DOWNWARDS) {
@@ -266,6 +295,11 @@ public abstract class Tile extends StaticGameObject {
         return isHit;
     }
 
+    /**
+     * Checks if a column of sub-pieces is hit based on the direction.
+     * @param hitDir the direction of the hit
+     * @return true if a column was hit, false otherwise
+     */
     protected boolean hitColumn(Direction hitDir) {
         boolean isHit = false;
         if (hitDir == Direction.DIRECTION_LEFT) {
@@ -296,6 +330,14 @@ public abstract class Tile extends StaticGameObject {
         return isHit;
     }
 
+    /**
+     * Handles a hit on the tile based on the direction.
+     * If the hit is vertical (upwards or downwards), it checks the rows.
+     * If the hit is horizontal (left or right), it checks the columns.
+     * If no sub-pieces were hit, it sets the tile as destroyed.
+     *
+     * @param hitDir the direction of the hit
+     */
     protected void hit(Direction hitDir) {
         boolean isHit;
 

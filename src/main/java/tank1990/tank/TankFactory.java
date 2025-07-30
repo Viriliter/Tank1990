@@ -66,6 +66,18 @@ public class TankFactory {
         }
     }
 
+    /**
+     * Creates a new tank based on the given type.
+     *
+     * This method generates an enemy using the provided configuration
+     * and assigns it the given x and y coordinates.
+     *
+     * @param type The type of tank to create.
+     * @param x The x-coordinate of the tank's spawn location.
+     * @param y The y-coordinate of the tank's spawn location.
+     * @return A newly created Tank object of the specified type.
+     * @throws IllegalArgumentException If the type parameter is null.
+     */
     public static AbstractTank createTank(TankType type, int x, int y) {
         if (type == null) {
             throw new IllegalArgumentException("Tank type cannot be null!");

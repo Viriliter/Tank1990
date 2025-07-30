@@ -80,22 +80,42 @@ public abstract class AbstractPowerup extends DynamicGameObject {
 
     }
 
+    /**
+     * Checks if the powerup is expired based on its lifetime and active status.
+     * @return true if the powerup is expired, false otherwise.
+     */
     public boolean isExpired() {
         return !isActive || lifeTimeTick.isTimeOut();
     }
 
+    /**
+     * Sets the active status of the powerup.
+     * @param active true to activate the powerup, false to deactivate it.
+     */
     public void setActive(boolean active) {
         this.isActive = active;
     }
 
+    /**
+     * Gets the type of the powerup.
+     * @return the PowerupType of this powerup.
+     */
     public PowerupType getPowerupType() {
         return this.powerupType;
     }
 
+    /**
+     * Gets the points to be earned from this powerup.
+     * @return the points
+     */
     public int getPoints() {
         return this.points;
     }
 
+    /**
+     * Sets the points for this powerup.
+     * @param points the points to set
+     */
     protected void setPoints(int points) {
         this.points = points;
     }

@@ -75,10 +75,22 @@ public class GameLevelManager implements Serializable {
         instance = sourceInstance;
     }
 
+    /**
+     * Sets the game engine for the GameLevelManager.
+     * This method is used to set the game engine instance that manages the game levels.
+     *
+     * @param engine The GameEngine instance to set.
+     */
     public void setGameEngine(GameEngine engine) {
         getInstance().gameEngine = engine;
     }
 
+    /**
+     * Returns the game engine associated with the GameLevelManager.
+     * This method retrieves the game engine instance that manages the game levels.
+     *
+     * @return The GameEngine instance associated with this GameLevelManager.
+     */
     public GameEngine getGameEngine() {
         return getInstance().gameEngine;
     }

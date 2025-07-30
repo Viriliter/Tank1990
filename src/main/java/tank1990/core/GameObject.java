@@ -26,6 +26,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.Serializable;
 
+/**
+ * Represents a game object in the Tank1990 game.
+ * This class serves as a base class for all game objects, providing common properties and methods.
+ * It implements Serializable to allow saving and loading game states.
+ */
 public abstract class GameObject implements Serializable {
     protected int x;
     protected int y;
@@ -37,41 +42,100 @@ public abstract class GameObject implements Serializable {
     // Marked as transient since it can be reconstructed from other fields
     protected transient RectangleBound boundingBox = null;
 
+    /**
+     * Gets x-coordinate of the object.
+     * @return x-coordinate
+     */
     public int getX() { return this.x; }
 
+    /**
+     * Gets y-coordinate of the object.
+     * @return y-coordinate
+     */
     public int getY() { return this.y; }
 
+    /**
+     * Gets direction of the object.
+     * @return direction
+     */
     public Direction getDir() { return this.dir; }
 
+    /**
+     * Gets depth of the object.
+     * Depth is used to determine the rendering order of objects.
+     * Objects with lower depth values are rendered first.
+     * @return depth
+     */
     public int getDepth() { return this.depth; }
 
+    /**
+     * Sets x-coordinate of the object.
+     * @param x x-coordinate to set
+     */
     public void setX(int x) { this.x = x; }
 
+    /**
+     * Sets y-coordinate of the object.
+     * @param y y-coordinate to set
+     */
     public void setY(int y) { this.y = y; }
 
+    /**
+     * Sets direction of the object.
+     * @param dir direction to set
+     */
     public void setDir(Direction dir) { this.dir = dir; }
 
+    /**
+     * Sets depth of the object.
+     * @param depth depth to set
+     */
     public void setDepth(int depth) { this.depth = depth; }
 
+    /**
+     * Gets the size of the object.
+     * @return Dimension representing the size of the object
+     */
     public Dimension getSize() {return new Dimension(this.width, this.height);}
 
+    /**
+     * Sets the size of the object.
+     * @param dimension Dimension representing the new size of the object
+     */
     public void setSize(Dimension dimension) {this.width = (int) dimension.getWidth(); this.height = (int) dimension.getHeight();}
 
+    /**
+     * Draws the object on the given graphics context.
+     * @param g Graphics context to draw on
+     */
     public abstract void draw(Graphics g);
 
+    /**
+     * Gets the bounding box of the object.
+     * @return RectangleBound representing the bounding box of the object
+     */
     public RectangleBound getBoundingBox() {
         return new RectangleBound(this.x - (int) (this.width*0.5), this.y - (int) (this.height*0.5), this.width, this.height);
     }
 
-    private void readObject(java.io.ObjectInputStream in)
-            throws java.io.IOException, ClassNotFoundException {
+    /**
+     * Reads the object from the input stream.
+     * @param in ObjectInputStream to read the object from
+     * @throws java.io.IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
         in.defaultReadObject();
         // Reset transient fields after deserialization
         this.boundingBox = null;
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-            throws java.io.IOException {
+    /**
+     * Writes the object to the output stream.
+     * @param out ObjectOutputStream to write the object to
+     * @throws java.io.IOException
+     */
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
         out.defaultWriteObject();
     }
 }

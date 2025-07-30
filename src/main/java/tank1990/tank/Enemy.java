@@ -22,4 +22,8 @@
 
 package tank1990.tank;
 
+/**
+ * Represents an enemy in the game.
+ * This interface can be implemented by various enemy types.
+ */
 public interface Enemy { }
