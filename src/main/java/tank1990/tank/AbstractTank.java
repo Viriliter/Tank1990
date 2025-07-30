@@ -67,6 +67,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     protected TankState tankState = TankState.UNDEFINED;
     protected Direction lastRandomDirection = Direction.DIRECTION_INVALID;
 
+    private int lastEagleDistance = Integer.MAX_VALUE;
+
     protected enum TankState {
         UNDEFINED,
         SPAWNING,
@@ -204,8 +206,6 @@ public abstract class AbstractTank extends DynamicGameObject {
         if (!movementTick.isTimeOut()) return;
         movementTick.reset();
 
-        this.move(level);
-
         // Get tank dimensions for boundary calculations
         int tankWidth = (int) getSize().getWidth();
         int tankHeight = (int) getSize().getHeight();
@@ -223,25 +223,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         // TODO: Dynamically updating size is not ideal, but necessary for now.
         setSize(new Dimension(tankWidth, tankHeight));  // Dynamically update tank size.
 
-        // Since tank position is center point, calculate proper boundaries
-        int halfWidth = tankWidth / 2;
-        int halfHeight = tankHeight / 2;
-
-        // Calculate new position with boundary checking (accounting for center position)
-        int newX = Math.max(halfWidth, Math.min(getX() + this.dx, (int) gameAreaSize.getWidth() - halfWidth));
-        int newY = Math.max(halfHeight, Math.min(getY() + this.dy, (int) gameAreaSize.getHeight() - halfHeight));
-        //System.out.println("newX:" + newX + " newY:" + newY);
-        RectangleBound newTankBound = new RectangleBound(newX - halfWidth, newY - halfHeight, tankWidth, tankHeight);
-
-        // Check map constraints by checking neighbor tiles of the player tank
-        boolean isMovable = level.checkMovable(this, newTankBound);
-        if (isMovable) {
-            // Update tank position and direction
-            setX(newX);
-            setY(newY);
-        } else {}
-
-        setDir(dir);
+        this.move(level);
     }
 
     /**
@@ -322,6 +304,10 @@ public abstract class AbstractTank extends DynamicGameObject {
      * @param isFrozen true if the tank should be frozen, false otherwise.
      */
     public void setFrozen(boolean isFrozen) {this.isFrozen = isFrozen;}
+
+    public int getDx() { return this.dx; }
+
+    public int getDy() { return this.dy; }
 
     /**
      * Decrements delta speed of tank in x direction.
@@ -562,9 +548,10 @@ public abstract class AbstractTank extends DynamicGameObject {
      * Notice that this function does not update tank's position only gives hint about the new position.
      * It should be called after setting the direction of the tank.
      */
-    public Location moveForwardHint() {
+    public RectangleBound moveForwardHint() {
         int newX = getX();
         int newY = getY();
+
 
         switch (getDir()) {
             case DIRECTION_UPWARDS -> newY = newY - this.speed;
@@ -573,8 +560,7 @@ public abstract class AbstractTank extends DynamicGameObject {
             case DIRECTION_LEFT -> newX = newX - this.speed;
             default -> throw new IllegalStateException("Invalid direction: " + getDir());
         }
-
-        return new Location(newX, newY);
+        return new RectangleBound(newX - getSize().width/2, newY - getSize().height/2, getSize());
     }
 
     /**
@@ -584,10 +570,10 @@ public abstract class AbstractTank extends DynamicGameObject {
      */
     public void moveForward() {
         switch (getDir()) {
-            case DIRECTION_UPWARDS -> decrementDy();
-            case DIRECTION_RIGHT -> incrementDx();
-            case DIRECTION_DOWNWARDS -> incrementDy();
-            case DIRECTION_LEFT -> decrementDx();
+            case DIRECTION_UPWARDS -> setY(getY() - this.speed);
+            case DIRECTION_RIGHT -> setX(getX() + this.speed);
+            case DIRECTION_DOWNWARDS -> setY(getY() + this.speed);
+            case DIRECTION_LEFT -> setX(getX() - this.speed);
             default -> throw new IllegalStateException("Invalid direction: " + getDir());
         }
     }
@@ -614,33 +600,60 @@ public abstract class AbstractTank extends DynamicGameObject {
             }
             case SEEKING_GOAL -> {
                 Direction goalDir = level.getTargetDirection(getBoundingBox());
+                int eagleDistance = level.getEagleDistance(Utils.Loc2GridLoc(new Location(x, y)));
+
                 if (goalDir != null || goalDir != Direction.DIRECTION_INVALID) {
+                    // Try to minimize the distance from eagle to prevent stuck
+                    if (eagleDistance==lastEagleDistance && eagleDistance > 1) {
+                        tankState = TankState.MOVING_FORWARD;
+                    }
                     setDir(goalDir);
                 } else {
                     tankState = TankState.MOVING_FORWARD;
                 }
+                lastEagleDistance = eagleDistance;
             }
             case MOVING_FORWARD -> {
-                Location newLocation = moveForwardHint();
-                Location oldLocation = new Location(x, y);
+                RectangleBound newBound = moveForwardHint();
 
+                System.out.println("CurrentBound: " + getBoundingBox() + " HintBound: " + newBound + " hintGLoc: " + Utils.Loc2GridLoc(new Location(newBound.getOriginX(), newBound.getOriginY())));
 
-                GridLocation oldGloc = Utils.Loc2GridLoc(new Location(x, y));
-                GridLocation newGloc = Utils.Loc2GridLoc(newLocation);
+                boolean canMove = level.checkMovable(this, newBound);
+                boolean canSeeTarget = level.seeTarget(getBoundingBox(), getDir());
+                boolean isAligned = level.isTargetAligned(getBoundingBox());
+                int eagleDistance = level.getEagleDistance(Utils.Loc2GridLoc(new Location(x, y)));
+                Direction targetDirection = level.getTargetDirection(getBoundingBox());
 
-                //System.out.println("Old location: " + oldLocation  + " New location: " + newLocation);
-
-                if (level.checkMovable(this, new RectangleBound(newLocation.x(), newLocation.y(), getSize()))) {
-                    //System.out.println("Movable for new location: " + Utils.Loc2GridLoc(newLocation));
+                if (canMove && !canSeeTarget) {
+                    System.out.println("Tank can move but cannot see the target: move forward");
                     moveForward();
-                } else if (level.seeTarget(getBoundingBox(), getDir())) {
-                    //System.out.println("Target seen, random rotation");
+                }
+
+                else if (canMove && isAligned && !canSeeTarget) {
+                    System.out.println("Tank can move and aligned with the target but cannot see the target: rotate and move forward");
+                    tankState = TankState.SEEKING_GOAL;
+                    return;
+                }
+
+                else if (canMove && canSeeTarget) {
+                    System.out.println("Target can be seen and tank can move forward: move forward");
+                    moveForward();
+                    return;
+                }
+
+                else if (!canMove && !isAligned && this.lastEagleDistance<eagleDistance) {
+                    System.out.println("Cannot neither see eagle nor move forward. Moreover distance to target is getting larger: backtrack");
+                    tankState = TankState.BACKTRACK;
+                }
+
+                else if (!canMove && !isAligned) {
+                    System.out.println("Cannot neither see eagle nor move forward: random rotation");
                     tankState = TankState.RANDOM_ROTATION;
-                    moveForward();
-                } else {
-                    //System.out.println("Cannot move forward, random rotation");
+                }
+
+                else if (!canMove && isAligned) {
+                    System.out.println("Target seen but cannot move forward: random rotation");
                     tankState = TankState.RANDOM_ROTATION;
-                    moveForward();
                 }
 
                 if (Utils.getRandomProbability(5)) {

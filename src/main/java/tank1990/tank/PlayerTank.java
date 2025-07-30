@@ -22,9 +22,12 @@
 
 package tank1990.tank;
 
+import java.awt.Dimension;
+
 import tank1990.core.Direction;
 import tank1990.core.GameLevel;
 import tank1990.core.Globals;
+import tank1990.core.RectangleBound;
 import tank1990.player.PlayerType;
 
 public class PlayerTank extends AbstractTank {
@@ -65,6 +68,32 @@ public class PlayerTank extends AbstractTank {
     }
 
     @Override
-    public void move(GameLevel level) {}
+    public void move(GameLevel level) {
+        // Get tank dimensions for boundary calculations
+        int tankWidth = (int) getSize().getWidth();
+        int tankHeight = (int) getSize().getHeight();
+
+        Dimension gameAreaSize = level.getGameAreaSize();
+
+        // Since tank position is center point, calculate proper boundaries
+        int halfWidth = tankWidth / 2;
+        int halfHeight = tankHeight / 2;
+        
+        // Calculate new position with boundary checking (accounting for center position)
+        int newX = Math.max(halfWidth, Math.min(getX() + getDx(), (int) gameAreaSize.getWidth() - halfWidth));
+        int newY = Math.max(halfHeight, Math.min(getY() + getDy(), (int) gameAreaSize.getHeight() - halfHeight));
+        //System.out.println("newX:" + newX + " newY:" + newY);
+        RectangleBound newTankBound = new RectangleBound(newX - halfWidth, newY - halfHeight, tankWidth, tankHeight);
+
+        // Check map constraints by checking neighbor tiles of the player tank
+        boolean isMovable = level.checkMovable(this, newTankBound);
+        if (isMovable) {
+            // Update tank position and direction
+            setX(newX);
+            setY(newY);
+        } else {}
+
+        setDir(dir);
+    }
 
 }

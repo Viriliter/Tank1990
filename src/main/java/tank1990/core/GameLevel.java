@@ -551,6 +551,19 @@ public class GameLevel implements Serializable {
         return rowDiff == 0 && colDiff == 0;
     }
 
+    public boolean isTargetAligned(RectangleBound tankBound) {
+        // Check if the eagle is alive
+        if (!isEagleAlive()) return false;
+
+        // Calculate the bound that alignes with the eagle
+        GridLocation tankGloc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
+
+        int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
+        int colDiff = this.eagleLocation.colIndex() - tankGloc.colIndex();
+
+        return rowDiff == 0 || colDiff == 0;
+    }
+
     /**
      * Gets the target direction towards the eagle based on the tank's bounding rectangle.
      * This method calculates the direction from the tank's position to the eagle's position
@@ -588,6 +601,15 @@ public class GameLevel implements Serializable {
      * @return true if the tank can move, false otherwise.
      */
     public boolean checkMovable(AbstractTank tank, RectangleBound tankBound) {
+        // 1- Check tankbound is within game area
+        Dimension gameArea = GameLevelManager.getInstance().getCurrentLevel().getGameAreaSize();
+
+        if (tankBound.getMaxX() > gameArea.width ||
+            tankBound.getMaxY() > gameArea.height ||
+            tankBound.getMinX() < 0 ||
+            tankBound.getMinY() < 0) return false;
+
+        // 2- Get neighbor tiles in order to check tile collisions 
         GridLocation tankGLoc = Utils.Loc2GridLoc(new Location(tankBound.getOriginX() ,tankBound.getOriginY()));
         Tile[] neighbors = getNeighbors(tankGLoc);
 
@@ -603,7 +625,7 @@ public class GameLevel implements Serializable {
             if (isCollided) return false;
         }
 
-        // Finally, checks the tank collides with other tanks. If it collides, it cannot move.
+        // 3- Finally, checks the tank collides with other tanks. If it collides, it cannot move.
         return !(GameLevelManager.getInstance().getGameEngine().checkTankCollisions(tank, tankBound));
     }
 
