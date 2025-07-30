@@ -43,4 +43,32 @@ public enum TileType {
             default -> throw new RuntimeException("Invalid Value for TileType");
         };
     }
+
+    /**
+     * Checks if a tile of the given type is passable.
+     * @param type The type of the tile.
+     * @return True if the tile is passable, false otherwise.
+     */
+    public static boolean isPassable(TileType type) {
+        return switch (type) {
+            case TILE_NONE, TILE_BRICKS, TILE_TREES, TILE_ICE, TILE_EAGLE-> true;
+            case TILE_STEEL, TILE_SEA  -> false;
+        };
+    }
+
+    /**
+     * Returns the cost of moving through a tile of the given type.
+     * @param type The type of the tile.
+     * @return The cost associated with the tile type.
+     */
+    public static int getCost(TileType type) {
+        return switch (type) {
+            case TILE_NONE -> 1;
+            case TILE_BRICKS -> 10;
+            case TILE_TREES -> 1;
+            case TILE_ICE -> 2;
+            case TILE_EAGLE -> 1;
+            case TILE_STEEL, TILE_SEA -> Integer.MAX_VALUE; // Not passable
+        };
+    }
 }

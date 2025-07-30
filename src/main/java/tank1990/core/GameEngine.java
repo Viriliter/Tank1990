@@ -822,6 +822,35 @@ public class GameEngine extends Subject {
     }
 
     /**
+     * Gets the locations of all tanks in the game.
+     * @return A list of grid locations representing the positions of all tanks (both player and enemy).
+     */
+    public ArrayList<GridLocation> getTankLocations() {
+        ArrayList<GridLocation> tankLocations = new ArrayList<>();
+
+        // Add player tanks
+        for (Player player : this.players) {
+            if (!player.isTankDestroyed()) {
+                RectangleBound bound = player.getBoundingBox();
+                GridLocation loc = Utils.Loc2GridLoc(new Location(bound.getOriginX(), bound.getOriginY()));
+                tankLocations.add(loc);
+            }
+        }
+
+        // Add enemy tanks
+        for (Enemy enemy : this.enemies) {
+            AbstractTank enemyTank = (AbstractTank) enemy;
+            if (!enemyTank.isDestroyed()) {
+                RectangleBound bound = enemyTank.getBoundingBox();
+                GridLocation loc = Utils.Loc2GridLoc(new Location(bound.getOriginX(), bound.getOriginY()));
+                tankLocations.add(loc);
+            }
+        }
+
+        return tankLocations;
+    }
+
+    /**
      * Applies the effects of a powerup on the player.
      * This method handles the specific effects of each powerup type.
      *

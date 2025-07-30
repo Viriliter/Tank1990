@@ -24,10 +24,7 @@ package tank1990.tank;
 
 import java.awt.Dimension;
 
-import tank1990.core.Direction;
-import tank1990.core.GameLevel;
-import tank1990.core.Globals;
-import tank1990.core.RectangleBound;
+import tank1990.core.*;
 import tank1990.player.PlayerType;
 
 public class PlayerTank extends AbstractTank {
@@ -40,6 +37,8 @@ public class PlayerTank extends AbstractTank {
 
         setSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_MAX_SPEED);
+
+        this.movementTick.setDefaultTick(Utils.Time2GameTick(60));  // This value is more suitable for player tank
     }
 
     public PlayerTank(int x, int y, Direction dir) {
@@ -50,6 +49,8 @@ public class PlayerTank extends AbstractTank {
 
         setSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_SPEED);
         setMaxSpeedUnit(Globals.PLAYER_TANK_MOVEMENT_MAX_SPEED);
+
+        this.movementTick.setDefaultTick(Utils.Time2GameTick(60));  // This value is more suitable for player tank
     }
 
     @Override

@@ -137,6 +137,13 @@ public interface Utils {
         return RectangleBound.isCollided(rect1, rectBound2);
     }
 
+    /**
+     * Converts a GridLocation to a Location in the game area.
+     * Converted location is the center of the cell.
+     * Note: This method assumes that the game area has been initialized and its dimensions are set.
+     * @param gloc GridLocation to convert
+     * @return Location corresponding to the GridLocation
+     */
     static Location gridLoc2Loc(GridLocation gloc) {
         Dimension gameAreaDimension = GamePanel.getGameAreaDimension();
 
@@ -149,6 +156,12 @@ public interface Utils {
         return new Location(cellWidth * gloc.colIndex() + cellWidth/2, cellHeight * gloc.rowIndex() + cellHeight/2);
     }
 
+    /**
+     * Converts a Location in the game area to a GridLocation.
+     * Note: This method assumes that the game area has been initialized and its dimensions are set.
+     * @param loc Location to convert
+     * @return GridLocation corresponding to the Location
+     */
     static GridLocation Loc2GridLoc(Location loc) {
         Dimension gameAreaDimension = GamePanel.getGameAreaDimension();
 

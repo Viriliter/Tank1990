@@ -64,7 +64,6 @@ public class GameLevel implements Serializable {
     private boolean shovelActivationTriggered = false;
     private boolean antiShovelActivationTriggered = false;
 
-
     private TimeTick shovelTick;
     private TimeTick antiShovelTick;
 
@@ -168,6 +167,9 @@ public class GameLevel implements Serializable {
         return this.activeEnemyTankCount;
     }
 
+    /**
+     * Decreases the count of active enemy tanks.
+     */
     public void decreaseActiveEnemyTank() {
         this.activeEnemyTankCount = this.activeEnemyTankCount>0 ? this.activeEnemyTankCount - 1 : 0;
     }
@@ -267,6 +269,11 @@ public class GameLevel implements Serializable {
         return this.levelInfo.levelGrid;
     }
 
+    /*
+     * Gets the neighbors of a tile at the specified grid location.
+     * @param gloc The grid location of the tile.
+     * @return An array of Tile objects representing the neighbors of the tile,
+     */
     public Tile[] getNeighbors(GridLocation gloc) {
         if (gloc == null) return null;
 
@@ -374,6 +381,13 @@ public class GameLevel implements Serializable {
 
         //If spawn time is not old enough, do not spawn any tank
         if (spawnLocationEntry.getValue()>0) {
+            //Update the list
+            this.SPAWN_LOCATIONS.add(spawnLocationEntry);
+            return null;
+        }
+
+        // If tile is occupied, do not spawn any tank
+        if (isTileOccupied(spawnLocationEntry.getKey(), null)) {
             //Update the list
             this.SPAWN_LOCATIONS.add(spawnLocationEntry);
             return null;
@@ -551,6 +565,13 @@ public class GameLevel implements Serializable {
         return rowDiff == 0 && colDiff == 0;
     }
 
+    /**
+     * Checks if a tank with a specified bounding rectangle is aligned with the eagle.
+     * A tank is considered aligned with the eagle if it is in the same row or column as the eagle.
+     *
+     * @param tankBound The bounding rectangle of the tank.
+     * @return true if the tank is aligned with the eagle, false otherwise.
+     */
     public boolean isTargetAligned(RectangleBound tankBound) {
         // Check if the eagle is alive
         if (!isEagleAlive()) return false;
@@ -603,7 +624,6 @@ public class GameLevel implements Serializable {
     public boolean checkMovable(AbstractTank tank, RectangleBound tankBound) {
         // 1- Check tankbound is within game area
         Dimension gameArea = GameLevelManager.getInstance().getCurrentLevel().getGameAreaSize();
-
         if (tankBound.getMaxX() > gameArea.width ||
             tankBound.getMaxY() > gameArea.height ||
             tankBound.getMinX() < 0 ||
@@ -627,6 +647,28 @@ public class GameLevel implements Serializable {
 
         // 3- Finally, checks the tank collides with other tanks. If it collides, it cannot move.
         return !(GameLevelManager.getInstance().getGameEngine().checkTankCollisions(tank, tankBound));
+    }
+
+    /**
+     * Checks if a tile at the specified grid location is occupied by a tank.
+     *
+     * @param gloc The grid location to check for occupancy.
+     * @param exceptionLoc An optional grid location to exclude from the check.
+     * @return true if the tile is occupied by a tank, false otherwise.
+     */
+    public boolean isTileOccupied(GridLocation gloc, GridLocation exceptionLoc) {
+        if (gloc == null) return false;
+
+        // Check if the tile is within bounds
+        if (gloc.rowIndex() < 0 || gloc.rowIndex() >= Globals.ROW_TILE_COUNT ||
+            gloc.colIndex() < 0 || gloc.colIndex() >= Globals.COL_TILE_COUNT) {
+            return false;
+        }
+
+        ArrayList<GridLocation> tankLocations = GameLevelManager.getInstance().getGameEngine().getTankLocations();
+        if(exceptionLoc!=null) tankLocations.remove(exceptionLoc); // Remove the exception location if it exists
+
+        return tankLocations.contains(gloc);
     }
 
     /**

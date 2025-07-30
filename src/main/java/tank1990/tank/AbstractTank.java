@@ -24,14 +24,15 @@ package tank1990.tank;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 import tank1990.core.*;
 import tank1990.powerup.AbstractPowerup;
 import tank1990.projectiles.Blast;
 import tank1990.projectiles.Bullet;
 import tank1990.projectiles.BulletType;
+import tank1990.tile.Tile;
+import tank1990.tile.TileType;
 
 public abstract class AbstractTank extends DynamicGameObject {
     private boolean isBulletDestroyed = true;  // Flag to indicate if the bullet fired from the tank is destroyed or not
@@ -51,7 +52,7 @@ public abstract class AbstractTank extends DynamicGameObject {
     private boolean isColorRed = false;
 
     // Do not move tanks after each update call, but after a certain time interval.
-    private TimeTick movementTick;
+    protected TimeTick movementTick;
     private TimeTick shootTick;  // Tick for shooting bullets
     private TimeTick frozenTick;  // Tick for blinking effect
     private TimeTick helmetTick;  // Tick for helmet powerup effect
@@ -68,6 +69,9 @@ public abstract class AbstractTank extends DynamicGameObject {
     protected Direction lastRandomDirection = Direction.DIRECTION_INVALID;
 
     private int lastEagleDistance = Integer.MAX_VALUE;
+
+    private transient Thread movementThread;
+    private volatile boolean moving = false;
 
     protected enum TankState {
         UNDEFINED,
@@ -95,8 +99,8 @@ public abstract class AbstractTank extends DynamicGameObject {
         speed = 0;
         maxSpeed = 0;
 
-        // From experimental results, updating tank movement in every 60 milliseconds is a good value.
-        movementTick = new TimeTick(Utils.Time2GameTick(60));
+        // From experimental results, updating tank movement in every 100 milliseconds is a good value for at least enemy tanks.
+        movementTick = new TimeTick(Utils.Time2GameTick(100));
         movementTick.setRepeats(-1);  // Repeat indefinitely
 
         frozenTick = new TimeTick(Utils.Time2GameTick(Globals.FROZEN_COOLDOWN_MS));
@@ -223,7 +227,8 @@ public abstract class AbstractTank extends DynamicGameObject {
         // TODO: Dynamically updating size is not ideal, but necessary for now.
         setSize(new Dimension(tankWidth, tankHeight));  // Dynamically update tank size.
 
-        this.move(level);
+        // Calculate movement based on the current direction and speed
+        move(level);
     }
 
     /**
@@ -579,107 +584,12 @@ public abstract class AbstractTank extends DynamicGameObject {
     }
 
     /**
-         * Moves the tank in the current direction.
-         * This method should be implemented by subclasses to define specific movement behavior.
-         *
-         * @param level The current game level where the tank is located.
-         */
-    public void move(GameLevel level) {
-        //if (currentTimeMillis - stateTimer < 150) return;
-
-        //System.out.printf("%d - (%d) %s\n", System.currentTimeMillis(), System.identityHashCode(this), tankState);
-
-        switch (this.tankState) {
-            case SPAWNING -> {
-                setDir(Direction.DIRECTION_DOWNWARDS);
-                if (level.seeTarget(getBoundingBox(), getDir())) {
-                    tankState = TankState.SEEKING_GOAL;
-                } else {
-                    tankState = TankState.MOVING_FORWARD;
-                }
-            }
-            case SEEKING_GOAL -> {
-                Direction goalDir = level.getTargetDirection(getBoundingBox());
-                int eagleDistance = level.getEagleDistance(Utils.Loc2GridLoc(new Location(x, y)));
-
-                if (goalDir != null || goalDir != Direction.DIRECTION_INVALID) {
-                    // Try to minimize the distance from eagle to prevent stuck
-                    if (eagleDistance==lastEagleDistance && eagleDistance > 1) {
-                        tankState = TankState.MOVING_FORWARD;
-                    }
-                    setDir(goalDir);
-                } else {
-                    tankState = TankState.MOVING_FORWARD;
-                }
-                lastEagleDistance = eagleDistance;
-            }
-            case MOVING_FORWARD -> {
-                RectangleBound newBound = moveForwardHint();
-
-                System.out.println("CurrentBound: " + getBoundingBox() + " HintBound: " + newBound + " hintGLoc: " + Utils.Loc2GridLoc(new Location(newBound.getOriginX(), newBound.getOriginY())));
-
-                boolean canMove = level.checkMovable(this, newBound);
-                boolean canSeeTarget = level.seeTarget(getBoundingBox(), getDir());
-                boolean isAligned = level.isTargetAligned(getBoundingBox());
-                int eagleDistance = level.getEagleDistance(Utils.Loc2GridLoc(new Location(x, y)));
-                Direction targetDirection = level.getTargetDirection(getBoundingBox());
-
-                if (canMove && !canSeeTarget) {
-                    System.out.println("Tank can move but cannot see the target: move forward");
-                    moveForward();
-                }
-
-                else if (canMove && isAligned && !canSeeTarget) {
-                    System.out.println("Tank can move and aligned with the target but cannot see the target: rotate and move forward");
-                    tankState = TankState.SEEKING_GOAL;
-                    return;
-                }
-
-                else if (canMove && canSeeTarget) {
-                    System.out.println("Target can be seen and tank can move forward: move forward");
-                    moveForward();
-                    return;
-                }
-
-                else if (!canMove && !isAligned && this.lastEagleDistance<eagleDistance) {
-                    System.out.println("Cannot neither see eagle nor move forward. Moreover distance to target is getting larger: backtrack");
-                    tankState = TankState.BACKTRACK;
-                }
-
-                else if (!canMove && !isAligned) {
-                    System.out.println("Cannot neither see eagle nor move forward: random rotation");
-                    tankState = TankState.RANDOM_ROTATION;
-                }
-
-                else if (!canMove && isAligned) {
-                    System.out.println("Target seen but cannot move forward: random rotation");
-                    tankState = TankState.RANDOM_ROTATION;
-                }
-
-                if (Utils.getRandomProbability(5)) {
-                    tankState = TankState.DIRECTIONAL_JITTER;
-                }
-            }
-            case DIRECTIONAL_JITTER -> {
-                setDir(Utils.getRandomProbability(50) ? Direction.DIRECTION_UPWARDS : Direction.DIRECTION_DOWNWARDS);
-                tankState = TankState.MOVING_FORWARD;
-            }
-            case RANDOM_ROTATION -> {
-                lastRandomDirection = Utils.getRandomProbability(50) ? getDir().rotateCW() : getDir().rotateCCW();
-                setDir(lastRandomDirection);
-                tankState = TankState.MOVING_FORWARD;
-            }
-            case BACKTRACK -> {
-                setDir(getDir().opposite());
-                tankState = TankState.MOVING_FORWARD;
-            }
-            case PATROLLING -> {
-                setDir(getWeightedRandomDirection());
-                tankState = TankState.MOVING_FORWARD;
-            }
-        }
-    }
-
+     * Returns a weighted random direction for the tank to move.
+     * This method is used to add some randomness to the tank's movement behavior.
+     * The probabilities are set such that left and right movements are more likely than upwards.
+     *
+     * @return A Direction object representing the chosen direction.
+     */
     private Direction getWeightedRandomDirection() {
         Random random = new Random();
         double r = random.nextDouble();
@@ -688,9 +598,188 @@ public abstract class AbstractTank extends DynamicGameObject {
         else return Direction.DIRECTION_UPWARDS;
     }
 
+    /**
+     * Represents a cell in the grid with its row, column, distance from the start,
+     * and the first move coordinates that led to this cell.
+     * This class is used for pathfinding algorithms like Dijkstra's.
+     */
+    private static class Cell implements Comparable<Cell> {
+        int r, c, dist;
+        int firstMoveRow, firstMoveCol;
+
+        Cell(int r, int c, int dist, int firstMoveRow, int firstMoveCol) {
+            this.r = r;
+            this.c = c;
+            this.dist = dist;
+            this.firstMoveRow = firstMoveRow;
+            this.firstMoveCol = firstMoveCol;
+        }
+
+        public int compareTo(Cell other) {
+            return Integer.compare(this.dist, other.dist);
+        }
+    }
+
+    /**
+     * Finds the best move for the tank to reach the eagle location applying Dijkstra path finding algorithm.
+     * This method uses a priority queue to find the shortest path to the eagle location.
+     * It returns the first move that leads towards the eagle.
+     *
+     * @param level The current game level where the tank is located.
+     * @param start The starting location of the tank.
+     * @return The best move as a GridLocation, or null if no valid move is found.
+     */
+    private GridLocation findBestMove(GameLevel level, GridLocation start) {
+        int[][] costMap = new int[Globals.ROW_TILE_COUNT][Globals.COL_TILE_COUNT];
+        Tile[][] map = level.getMap();
+
+        int eagleRow = level.getEagleLocation().rowIndex();
+        int eagleCol = level.getEagleLocation().colIndex();
+
+        for (int[] row : costMap) {
+            Arrays.fill(row, Integer.MAX_VALUE);
+        }
+
+        costMap[start.rowIndex()][start.colIndex()] = 0;
+
+        PriorityQueue<Cell> pq = new PriorityQueue<>();
+        pq.offer(new Cell(start.rowIndex(), start.colIndex(), 0, start.rowIndex(), start.colIndex()));
+
+        while (!pq.isEmpty()) {
+            Cell current = pq.poll();
+
+            if (current.c == eagleCol && current.r == eagleRow) {
+                if (current.r == start.rowIndex() && current.c == start.colIndex()) {
+                    return null;
+                }
+                return new GridLocation(current.firstMoveRow, current.firstMoveCol);
+            }
+
+            for (Direction dir: Direction.values()) {
+                if (dir == Direction.DIRECTION_INVALID) continue;
+
+                int dRow =0;
+                int dCol =0;
+                switch (dir) {
+                    case DIRECTION_UPWARDS -> dRow=-1;
+                    case DIRECTION_RIGHT -> dCol=1;
+                    case DIRECTION_LEFT -> dCol=-1;
+                    case DIRECTION_DOWNWARDS -> dRow=1;
+                    default -> throw new IllegalStateException("Unexpected value: " + dir);
+                }
+
+                int nRow = current.r + dRow;
+                int nCol = current.c + dCol;
+
+                if (nRow < 0 || nRow >= Globals.ROW_TILE_COUNT ||
+                    nCol < 0 || nCol >= Globals.COL_TILE_COUNT) continue;
+
+                Tile t = map[nRow][nCol];
+
+                if (t != null && !TileType.isPassable(t.getType())) continue;
+
+                int tileCost = (t == null) ? 1 : TileType.getCost(t.getType());
+
+                // Skip if tile is occupied by another tank or object
+                if (level.isTileOccupied(new GridLocation(nRow, nCol), start)) continue;
+
+                // Calculate new cumulative cost to reach this neighbor
+                int newCost = current.dist + tileCost;
+
+                if (newCost < costMap[nRow][nCol]) {
+                    costMap[nRow][nCol] = newCost;
+
+                    int firstMoveRow = (current.r == start.rowIndex() && current.c == start.colIndex()) ? nRow : current.firstMoveRow;
+                    int firstMoveCol = (current.r == start.rowIndex() && current.c == start.colIndex()) ? nCol : current.firstMoveCol;
+
+                    // Add this neighbor to the priority queue for further exploration
+                    pq.offer(new Cell(nRow, nCol, newCost, firstMoveRow, firstMoveCol));
+                }
+            }
+        }
+
+        // No path found to eagle location
+        return null;
+    }
+
+    /**
+     * Moves the tank in a random direction.
+     * This method is used when the tank cannot find a valid move in the current direction.
+     * It recursively tries to move in a random direction for a specified depth.
+     *
+     * @param level The current game level where the tank is located.
+     * @param depth The depth of recursion for random movement.
+     */
+    private void randomMove(GameLevel level, int depth) {
+        if (depth < 0) return;
+
+        // If the next tile is not movable, try to find a random direction
+        Direction randomDir = getWeightedRandomDirection();
+        setDir(randomDir);
+        RectangleBound nextTileHint = moveForwardHint();
+
+        if (level.checkMovable(this, nextTileHint)) {
+            moveForward();
+            randomMove(level, --depth);  // Continue moving in the random direction
+        }
+    }
+
+    /**
+     * Moves the tank in the current direction.
+     * This method should be implemented by subclasses to define specific movement behavior.
+     *
+     * @param level The current game level where the tank is located.
+     */
+    public synchronized void move(GameLevel level) {
+        GridLocation startLoc = Utils.Loc2GridLoc(new Location(getX(), getY()));
+
+        Location currentLoc = new Location(getX(), getY());
+        GridLocation currentGridLoc = Utils.Loc2GridLoc(currentLoc);
+        Location gridCenterLoc = Utils.gridLoc2Loc(currentGridLoc);
+
+        GridLocation nextTileLoc = null;
+
+        // Try to calculate best move only if the tank is at the center of a grid cell.
+        if (currentLoc.x()==gridCenterLoc.x() && currentLoc.y()==gridCenterLoc.y()) {
+            nextTileLoc = findBestMove(level, startLoc);
+        } else {
+            nextTileLoc = currentGridLoc;  // If not at the center, stay in the grid center
+        }
+
+        if (nextTileLoc != null) {
+            // Update the tank's position based on the next tile
+            int dx = nextTileLoc.colIndex() - startLoc.colIndex();
+            int dy = nextTileLoc.rowIndex() - startLoc.rowIndex();
+
+            if (dx > 0) setDir(Direction.DIRECTION_RIGHT);
+            else if (dx < 0) setDir(Direction.DIRECTION_LEFT);
+            else if (dy > 0) setDir(Direction.DIRECTION_DOWNWARDS);
+            else if (dy < 0) setDir(Direction.DIRECTION_UPWARDS);
+
+            RectangleBound nextTileHint = moveForwardHint();
+            if (level.checkMovable(this, nextTileHint)) {
+                moveForward();
+            } else {
+                // If the next tile is not movable, try to find a random direction
+                randomMove(level, 0);  // No recursion depth limit for random movement
+            }
+        } else {
+            // If the next tile is not movable, try to find a random direction
+            randomMove(level, 0);  // No recursion depth limit for random movement
+        }
+    }
+
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 
         createTextureFXs();
     }
+
+    public synchronized void setX(int x) { this.x = x; }
+    public synchronized int getX() { return this.x; }
+    public synchronized void setY(int y) { this.y = y; }
+    public synchronized int getY() { return this.y; }
+    public synchronized void setDir(Direction dir) { this.dir = dir; }
+    public synchronized Direction getDir() { return this.dir; }
+
 }
