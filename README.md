@@ -53,6 +53,7 @@ Tank1990/
 │       |       └── projectiles/ # Game Components related to Projectiles
 │       |       └── tank/        # Game Components related to Tanks
 │       |       └── tile/        # Game Components related to Tiles
+│       |       └── Game.java    # Game entry point
 │       └── resources/           # Game resources (textures, sounds etc.)
 ├── build.gradle                 # Gradle build configuration
 ├── settings.gradle              # Gradle project settings
@@ -63,6 +64,9 @@ Tank1990/
 ```
 
 ## Screenshots
+![Alt text](screenshots/menu.png)
+
+![Alt text](screenshots/gamearea.png)
 
 ## Contributing
 N/A
