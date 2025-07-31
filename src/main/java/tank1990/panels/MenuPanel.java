@@ -111,7 +111,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
         panelGameTitle.setBackground(Color.BLACK);
 
         TexturedFontPanel labelTitle = new TexturedFontPanel(Utils.loadPNGIcon(Globals.TEXTURE_TILE_BRICKS_PATH, 64, 64));
-        labelTitle.setText("TANK H");
+        labelTitle.setText(Globals.GAME_RULE_TEXT);
         labelTitle.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, 68));
         labelTitle.setBackground(Color.BLACK);
         labelTitle.setOpaque(true);

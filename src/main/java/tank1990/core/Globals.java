@@ -42,6 +42,8 @@ public interface Globals {
     String GAME_TITLE = "TANK 1990 - NES";
     String COPYRIGHT_TEXT = "Viriliter 2025";
 
+    String GAME_RULE_TEXT = "TANK N";
+
     // Debugging Parameters
     Boolean SHOW_BOUNDING_BOX = false;  // Show bounding box of game objects
 
