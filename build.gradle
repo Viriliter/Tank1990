@@ -33,6 +33,10 @@ test {
     useJUnitPlatform()
 }
 
+tasks.withType(Copy).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE // or EXCLUDE, WARN
+}
+
 application {
     // Define the main class for the application.
     mainClass = 'tank1990.Game'
