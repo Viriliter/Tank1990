@@ -77,6 +77,8 @@ public abstract class AbstractTank extends DynamicGameObject {
     private transient Thread movementThread;
     private volatile boolean moving = false;
 
+    protected BulletType bulletType = BulletType.NORMAL; // Default bullet type
+
     protected enum TankState {
         UNDEFINED,
         SPAWNING,
@@ -431,6 +433,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         Dimension offset = this.textureFXs.get(dir).getOffsets();
 
         Bullet bullet = new Bullet(this, getX() + (int) offset.getWidth(), getY() + (int) offset.getHeight(), getDir(), Globals.BULLET_SPEED_PER_TICK);
+        bullet.setType(this.bulletType);  // Set the bullet type
 
         // Configure bullet properties based on tank tier
         if (currentTier == TankTier.TIER_2) {
@@ -477,8 +480,9 @@ public abstract class AbstractTank extends DynamicGameObject {
      * @return A new Blast object representing the explosion of the destroyed tank.
      */
     public Blast destroy() {
-        armorLevel = -1;
+        this.armorLevel = -1;
         resetTier();  // Reset the tank tier to default upon destruction
+        this.bulletType = BulletType.NORMAL;  // Reset bullet type to default
         return new Blast(getX(), getY());
     }
 
@@ -574,6 +578,9 @@ public abstract class AbstractTank extends DynamicGameObject {
             }
             case POWERUP_TIMER -> {
                 // No specific action for timer powerup in tanks
+            }
+            case POWERUP_WEAPON -> {
+                bulletType = BulletType.UPGRADED;
             }
             default -> System.err.println("Unknown powerup type: " + powerup.getPowerupType());
         }

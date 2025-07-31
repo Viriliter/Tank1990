@@ -54,6 +54,8 @@ public class PowerupFactory {
                 return new PowerupTank(x, y);
             case POWERUP_TIMER:
                 return new PowerupTimer(x, y);
+            case POWERUP_WEAPON:
+                return new PowerupWeapon(x, y);
             default:
                 return null;
         }

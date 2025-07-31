@@ -170,7 +170,7 @@ public interface Globals {
     TextureFXStruct TEXTURE_POWERUP_STAR = new TextureFXStruct("textures/powerups/powerup-star.png",0,0,0);
     TextureFXStruct TEXTURE_POWERUP_TANK = new TextureFXStruct("textures/powerups/powerup-tank.png",0,0,0);
     TextureFXStruct TEXTURE_POWERUP_TIMER = new TextureFXStruct("textures/powerups/powerup-timer.png",0,0,0);
-
+    TextureFXStruct TEXTURE_POWERUP_WEAPON = new TextureFXStruct("textures/powerups/powerup-weapon.png",0,0,0);
     /**
      * TILES
      */

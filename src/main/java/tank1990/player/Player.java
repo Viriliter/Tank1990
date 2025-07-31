@@ -162,6 +162,9 @@ public class Player implements Serializable {
             case POWERUP_TIMER -> {
                 // No specific action for timer powerup in players
             }
+            case POWERUP_WEAPON -> {
+                // No specific action for timer powerup in players
+            }
             default -> {
                 System.err.println("Unknown powerup type: " + powerup.getPowerupType());
             }

@@ -38,6 +38,7 @@ import tank1990.player.PlayerType;
 import tank1990.powerup.AbstractPowerup;
 import tank1990.projectiles.Blast;
 import tank1990.projectiles.Bullet;
+import tank1990.projectiles.BulletType;
 import tank1990.tank.AbstractTank;
 import tank1990.tank.Enemy;
 import tank1990.tile.Tile;
@@ -910,6 +911,9 @@ public class GameEngine extends Subject {
                     }
                 }
             }
+            case POWERUP_WEAPON -> {
+                // No specific action for tank powerup
+            }
             default -> {
                 System.err.println("Unknown powerup type: " + powerup.getPowerupType());
             }
@@ -956,6 +960,9 @@ public class GameEngine extends Subject {
                         player.setFrozen(true);
                     }
                 }
+            }
+            case POWERUP_WEAPON -> {
+                // No specific action for tank powerup
             }
             default -> {
                 System.err.println("Unknown powerup type: " + powerup.getPowerupType());

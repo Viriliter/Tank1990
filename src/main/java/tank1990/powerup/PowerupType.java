@@ -6,7 +6,8 @@ public enum PowerupType {
     POWERUP_SHOVEL,
     POWERUP_STAR,
     POWERUP_TANK,
-    POWERUP_TIMER;
+    POWERUP_TIMER,
+    POWERUP_WEAPON;
 
     public static PowerupType valueOf(int val) {
         return switch (val) {
@@ -16,6 +17,7 @@ public enum PowerupType {
             case (3) -> POWERUP_STAR;
             case (4) -> POWERUP_TANK;
             case (5) -> POWERUP_TIMER;
+            case (6) -> POWERUP_WEAPON;
             default -> throw new RuntimeException("Invalid Value for PowerupType");
         };
     }
