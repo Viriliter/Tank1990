@@ -37,6 +37,10 @@ public class AboutGamePanel extends SlidingPanel implements KeyListener {
     private static final int SUB_TITLE_FONT_SIZE = 16;
     private static final int FONT_SIZE = 12;
 
+    private Timer blinkTimer = null;
+    private JLabel pressButton;
+    private boolean colorChanged = false;
+
     public AboutGamePanel(JFrame frame, AbstractPanel parentPanel) {
         super(frame);
         this.parentPanel = parentPanel;
@@ -58,6 +62,9 @@ public class AboutGamePanel extends SlidingPanel implements KeyListener {
 
             // Reset current panel
             resetPanel();
+
+            // Stop the blink timer
+            this.blinkTimer.stop();
 
             // Reset menu panel
             SwingUtilities.invokeLater(() -> {
@@ -84,7 +91,27 @@ public class AboutGamePanel extends SlidingPanel implements KeyListener {
 
     @Override
     protected void animationFinished() {
+        if (this.blinkTimer!=null && this.blinkTimer.isRunning()) {
+            this.blinkTimer.stop();
+        }
 
+        this.blinkTimer = new Timer(500, e -> {
+            if (this.pressButton == null) return;
+
+            colorChanged = !colorChanged;
+            if (colorChanged) {
+                this.pressButton.setForeground(Color.WHITE);
+                this.frame.revalidate();
+                this.frame.repaint();
+
+            } else {
+                this.pressButton.setForeground(Color.CYAN);
+                this.frame.revalidate();
+                this.frame.repaint();
+            }
+        });
+
+        this.blinkTimer.start();
     }
 
     @Override
@@ -124,27 +151,17 @@ public class AboutGamePanel extends SlidingPanel implements KeyListener {
 
         // Top Section - How to Play
         JPanel howToPlaySection = createHowToPlaySection();
+        howToPlaySection.setPreferredSize(new Dimension(width, 400));
         contentPanel.add(howToPlaySection, BorderLayout.CENTER);
 
         // Center Section - Credits
         JPanel creditsSection = createCreditsSection();
-        creditsSection.setPreferredSize(new Dimension(width, 120));
+        creditsSection.setPreferredSize(new Dimension(width, 240));
         contentPanel.add(creditsSection, BorderLayout.SOUTH);
-
-        // Bottom Panel
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setPreferredSize(new Dimension(width, 60)); // Fixed height of 60px
-        bottomPanel.setBackground(Color.BLACK);
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
-        JLabel instructionLabel = new JLabel("PRESS ENTER TO CONTINUE", SwingConstants.CENTER);
-        instructionLabel.setForeground(Color.WHITE);
-        instructionLabel.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.BOLD, SUB_TITLE_FONT_SIZE));
-        bottomPanel.add(instructionLabel);
 
         // Add all sections
         basePanel.add(titlePanel, BorderLayout.NORTH);
         basePanel.add(contentPanel, BorderLayout.CENTER);
-        basePanel.add(bottomPanel, BorderLayout.SOUTH);
 
         revalidate();
         repaint();
@@ -238,6 +255,22 @@ public class AboutGamePanel extends SlidingPanel implements KeyListener {
         projectDesc.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.PLAIN, SUB_TITLE_FONT_SIZE));
         projectDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(projectDesc);
+
+        panel.add(Box.createVerticalStrut(15));
+
+        JLabel emptyField = new JLabel(" ", SwingConstants.CENTER);
+        emptyField.setForeground(Color.WHITE);
+        emptyField.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.PLAIN, SUB_TITLE_FONT_SIZE));
+        emptyField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(emptyField);
+
+        panel.add(Box.createVerticalStrut(15));
+
+        this.pressButton = new JLabel("PRESS ENTER TO CONTINUE", SwingConstants.CENTER);
+        this.pressButton.setForeground(Color.WHITE);
+        this.pressButton.setFont(Utils.loadFont(Globals.FONT_PRESS_START_2P, Font.PLAIN, SUB_TITLE_FONT_SIZE));
+        this.pressButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(this.pressButton);
 
         panel.add(Box.createVerticalStrut(20));
 

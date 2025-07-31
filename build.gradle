@@ -14,7 +14,7 @@ sourceSets {
     // Define the main source directory.
     main {
         java {
-            srcDirs 'src/main/java/tank1990'
+            srcDirs 'src/main/java'
         }
         resources {
             srcDirs 'src/main/resources'
