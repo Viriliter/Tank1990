@@ -49,7 +49,7 @@ public abstract class AbstractPowerup extends DynamicGameObject {
         this.lifeTimeMs = lifeTimeMs;
 
         lifeTimeTick = new TimeTick(Utils.Time2GameTick(this.lifeTimeMs)); // Tick for managing lifetime
-        lifeTimeTick.setRepeats(1); // Repeat only once
+        lifeTimeTick.setRepeats(0);  // Do not repeat
         blinkTick = new TimeTick(Utils.Time2GameTick(Globals.POWERUP_BLINK_INTERVAL_MS));
         blinkTick.setRepeats(-1); // Repeat indefinitely
     }

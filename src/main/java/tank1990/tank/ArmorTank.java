@@ -40,6 +40,8 @@ public class ArmorTank extends AbstractTank implements Enemy {
         this.lastArmorLevel = getArmorLevel();
 
         setDefaultTankTextureFXs();
+        // Decrease the movement speed for ArmorTank since movement speed is set as low as possible, but it is not enough.
+        this.movementTick.setDefaultTick(Utils.Time2GameTick(200));
     }
 
     public ArmorTank(int x, int y, Direction dir) {

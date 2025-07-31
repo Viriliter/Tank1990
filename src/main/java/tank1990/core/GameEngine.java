@@ -76,7 +76,7 @@ public class GameEngine extends Subject {
 
         // Game level manager stores the players lives even if game engine is created again.
         for (Player player : players) {
-            player.setRemainingLives(GameLevelManager.getInstance().getPlayerLives(player));
+            player.setRemainingLives(GameLevelManager.getInstance().getPlayerLives(player.getPlayerType()));
         }
 
         // Initialize other game objects
@@ -207,7 +207,7 @@ public class GameEngine extends Subject {
      *
      * @return The first player in multiplayer mode or the only player in single player mode.
      */
-    public Player getPlayer1() { return players.getFirst(); }
+    public Player getPlayer1() { return players.size() > 0 ? players.getFirst(): null; }
 
     /**
      * Gets the second player in multiplayer mode.
@@ -454,7 +454,7 @@ public class GameEngine extends Subject {
         while (it.hasNext()) {
             Player p = it.next();
 
-            if (p.isTankDestroyed()) {
+            if (p.isTankDestroyed() && p.getRemainingLives() >= 0) {
                 p.spawnTank();
             }
 
@@ -464,7 +464,7 @@ public class GameEngine extends Subject {
             }
 
             p.update(gameLevel);
-            GameLevelManager.getInstance().setPlayerLives(p, p.getRemainingLives());
+            GameLevelManager.getInstance().setPlayerLives(p.getPlayerType(), p.getRemainingLives());
         }
 
         // If there are no players left, game is over
@@ -610,7 +610,7 @@ public class GameEngine extends Subject {
                             if (bullet.isEnemyBullet()) {
                                 // Player tank hit by enemy bullet
                                 // TODO uncomment this line to enable player damage
-                                //player.getDamage();
+                                player.getDamage();
 
                                 Blast blast = bullet.destroy();
                                 blastFXs.add(blast);
@@ -636,7 +636,14 @@ public class GameEngine extends Subject {
                             if (!bullet.isEnemyBullet()) {
                                 // Enemy tank hit by player bullet
                                 boolean isDamaged = enemyTank.getDamage();
-                                if (!isDamaged) continue;
+                                if (!isDamaged) {
+                                    // Just destroy the bullet if enemy tank is not damaged
+                                    Blast blast = bullet.destroy();
+                                    blastFXs.add(blast);
+                                    bulletsToRemove.add(bullet);
+                                    bulletDestroyed = true;
+                                    break;
+                                }
 
                                 // If enemy tank is red, spawn a powerup
                                 if (enemyTank.isRedTank()) {
@@ -926,8 +933,8 @@ public class GameEngine extends Subject {
                 while (playerIt.hasNext()) {
                     Player player = playerIt.next();
                     // TODO uncomment this line to enable player damage
-                    //Blast b = player.destroy();  // Destroy call directly destructs player's tank
-                    //this.blastFXs.add(b);
+                    Blast b = player.destroy();  // Destroy call directly destructs player's tank
+                    this.blastFXs.add(b);
                 }
             }
             case POWERUP_HELMET -> {

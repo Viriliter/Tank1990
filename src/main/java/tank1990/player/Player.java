@@ -35,14 +35,14 @@ import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 
 public class Player implements Serializable {
-    private int remainingLife;
+    private int remainingLives;
 
     private PlayerTank myTank = null;
     private PlayerType playerType;
 
     public Player(PlayerType playerType) {
         this.playerType = playerType;
-        this.remainingLife = Globals.INITAL_PLAYER_HEALTH;
+        this.remainingLives = Globals.INITAL_PLAYER_HEALTH;
 
         // While creating a player, we spawn the tank
         spawnTank();
@@ -108,11 +108,12 @@ public class Player implements Serializable {
      * @return true if the tank is damaged, false otherwise
      */
     public boolean getDamage() {
-        boolean isDamaged = myTank.getDamage();
-        if (isDamaged) {
-            --remainingLife;
+        // Player tanks do not take damage during spawn protection
+        if (myTank.isSpawnProtectionEnabled()) {
+            return false;
         }
 
+        boolean isDamaged = myTank.getDamage();
         return isDamaged;
     }
 
@@ -121,7 +122,6 @@ public class Player implements Serializable {
      * @return the blast effect from the tank's destruction
      */
     public Blast destroy() {
-        --remainingLife;
         return myTank.destroy();
     }
 
@@ -130,7 +130,7 @@ public class Player implements Serializable {
      * @return the number of remaining lives
      */
     public int getRemainingLives() {
-        return remainingLife;
+        return remainingLives;
     }
 
     /**
@@ -157,7 +157,7 @@ public class Player implements Serializable {
                 // No specific action for timer powerup in players
             }
             case POWERUP_TANK -> {
-                remainingLife++; // Increase the player's life by one
+                remainingLives++; // Increase the player's life by one
             }
             case POWERUP_TIMER -> {
                 // No specific action for timer powerup in players
@@ -209,7 +209,7 @@ public class Player implements Serializable {
      * @param lives the number of lives to set
      */
     public void setRemainingLives(int lives) {
-        this.remainingLife = lives;
+        this.remainingLives = lives;
     }
 
     /**
@@ -223,9 +223,9 @@ public class Player implements Serializable {
      * This method is called when the player needs to respawn or start the game.
      */
     public void spawnTank() {
-        remainingLife = remainingLife>0? --remainingLife: 0;
+        --remainingLives;
 
-        if (remainingLife >= 0) {
+        if (remainingLives >= 0) {
             if (playerType == PlayerType.PLAYER_1) {
                 myTank = (PlayerTank) TankFactory.createTank(TankType.PLAYER_TANK,
                                                              Utils.gridLoc2Loc(Globals.INITIAL_PLAYER_1_LOC).x(),

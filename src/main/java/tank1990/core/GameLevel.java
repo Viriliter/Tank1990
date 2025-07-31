@@ -712,6 +712,10 @@ public class GameLevel implements Serializable {
     public void activateShovelPowerup() {
         if (this.originalTilesAroundEagle.isEmpty()) return;
 
+        if (isAntiShovelActive) {
+            deactivateAntiShovelPowerup();
+        }
+
         setSurroundingEagleTiles(this.currentTilesAroundEagle);  // Store the current state which will be needed to restore later
 
         for (Map.Entry<GridLocation, BlockConfiguration> entry : this.originalTilesAroundEagle.entrySet()) {
@@ -733,7 +737,6 @@ public class GameLevel implements Serializable {
      * It uses the stored state from when the powerup was activated to restore the tiles.
      */
     public void deactivateShovelPowerup() {
-        System.out.println("Deactivating shovel powerup...");
         if (this.currentTilesAroundEagle.isEmpty()) return;
 
         for (Map.Entry<GridLocation, BlockConfiguration> entry : this.currentTilesAroundEagle.entrySet()) {
@@ -755,6 +758,10 @@ public class GameLevel implements Serializable {
     public void activateAntiShovelPowerup() {
         if (this.originalTilesAroundEagle.isEmpty()) return;
 
+        if (isShovelActive) {
+            deactivateShovelPowerup();
+        }
+
         setSurroundingEagleTiles(this.currentTilesAroundEagle);  // Store the current state which will be needed to restore later
 
         for (Map.Entry<GridLocation, BlockConfiguration> entry : this.originalTilesAroundEagle.entrySet()) {
@@ -765,7 +772,7 @@ public class GameLevel implements Serializable {
         }
 
         isShovelActive = false;  // Activating anti-shovel powerup deactivates the shovel powerup
-        isAntiShovelActive = false;
+        isAntiShovelActive = true;
         antiShovelActivationTriggered = true;  // Set the flag to indicate that the anti-shovel powerup was activated. It is useful in successive activations.
     }
 
@@ -774,7 +781,6 @@ public class GameLevel implements Serializable {
      * It uses the stored state from when the powerup was activated to restore the tiles.
      */
     public void deactivateAntiShovelPowerup() {
-        System.out.println("Deactivating anti-shovel powerup...");
         if (this.currentTilesAroundEagle.isEmpty()) return;
 
         for (Map.Entry<GridLocation, BlockConfiguration> entry : this.currentTilesAroundEagle.entrySet()) {

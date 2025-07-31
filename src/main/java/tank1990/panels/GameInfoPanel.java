@@ -184,7 +184,7 @@ public class GameInfoPanel extends AbstractPanel {
 
         int remainingEnemies = gameScore.getRemainingTankCount();
         this.labelCurrentLevel.setText(Integer.toString(gameScore.getReachedLevel()));
-        this.labelPlayerRemainingLives.setText(Integer.toString(gameScore.getPlayerRemainingLives()));
+        this.labelPlayerRemainingLives.setText(Integer.toString(Math.max(gameScore.getPlayerRemainingLives(), 0)));
 
         updateRemainingEnemies(remainingEnemies);
 

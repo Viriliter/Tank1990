@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import tank1990.player.Player;
+import tank1990.player.PlayerType;
 import tank1990.tank.*;
 
 public class GameLevelManager implements Serializable {
@@ -40,7 +41,7 @@ public class GameLevelManager implements Serializable {
 
     private GameScoreStruct gameScore = null;
 
-    private HashMap<Player, Integer> playersRemainingLives;
+    private HashMap<PlayerType, Integer> playersRemainingLives;
 
     private transient GameEngine gameEngine = null;
 
@@ -199,6 +200,7 @@ public class GameLevelManager implements Serializable {
         this.gameScore.setReachedLevel(levelIndex+1); // Level index is 0-based, so we add 1 to match the level number
         this.gameScore.setHiScore(ConfigHandler.getInstance().getBattleCityProperties().hiScore());
         this.gameScore.setRemainingTankCount(0);
+        this.gameScore.setTotalScore(this.totalPlayerScore);  // Update total score to the current score for new level
 
         if (this.spawnTick!=null) this.spawnTick.reset();
 
@@ -221,7 +223,7 @@ public class GameLevelManager implements Serializable {
         if (gameLevel.getActiveEnemyTankCount()<4 && gameLevel.getEnemyTankCounts()>0) {
             if (this.spawnTick==null) {
                 this.spawnTick = new TimeTick(Utils.Time2GameTick(Globals.ENEMY_TANK_SPAWN_DELAY_MS));
-                this.spawnTick.setRepeats(1);
+                this.spawnTick.setRepeats(0);  // Do not repeat
                 return null;
             }
 
@@ -279,24 +281,24 @@ public class GameLevelManager implements Serializable {
     /**
      * Sets the player's remaining lives.
      *
-     * @param player The player whose lives are to be set.
+     * @param playerType The player whose lives are to be set.
      * @param lives The number of lives to set for the player.
      */
-    public void setPlayerLives(Player player, int lives) {
+    public void setPlayerLives(PlayerType playerType, int lives) {
         if (this.gameScore != null) {
             this.gameScore.setPlayerRemainingLives(lives);
         }
 
-        this.playersRemainingLives.putIfAbsent(player, lives);
+        this.playersRemainingLives.putIfAbsent(playerType, lives);
     }
 
     /**
      * Gets the number of lives remaining for a player.
      *
-     * @param player The player whose lives are to be retrieved.
+     * @param playerType The player whose lives are to be retrieved.
      * @return The number of lives remaining for the player.
      */
-    public int getPlayerLives(Player player) {
-        return this.playersRemainingLives.getOrDefault(player, Globals.INITAL_PLAYER_HEALTH-1);  // Player tanks should be already spawned so decrease by 1 for the first time
+    public int getPlayerLives(PlayerType playerType) {
+        return this.playersRemainingLives.getOrDefault(playerType, Globals.INITAL_PLAYER_HEALTH-1);  // Player tanks should be already spawned so decrease by 1 for the first time
     }
 }

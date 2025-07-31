@@ -51,14 +51,18 @@ public abstract class AbstractTank extends DynamicGameObject {
     private TimeTick redTankTick = null; // Tick for red tank blink animation
     private boolean isColorRed = false;
 
-    // Do not move tanks after each update call, but after a certain time interval.
-    protected TimeTick movementTick;
+    protected TimeTick spawnTick;  // Tick for spawn animation
+    protected TimeTick spawnBlinkTick;  // Tick for spawn blink animation
+    private boolean isSpawnBlinkedOut = false;
+    protected TimeTick movementTick;  // Tick for tank movement updates to avoid too frequent updates
     private TimeTick shootTick;  // Tick for shooting bullets
     private TimeTick frozenTick;  // Tick for blinking effect
     private TimeTick helmetTick;  // Tick for helmet powerup effect
 
     private transient HashMap<Direction, TextureFX> textureFXs = null;
     protected TankTextureStruct tankTextureFxStruct = null;
+
+    protected boolean spawnProtectionEnabled = true; // Flag to indicate if spawn protection is enabled
 
     protected boolean hasHelmet = false; // Flag to indicate if the tank has a helmet powerup
     protected boolean isFrozen = false;  // Flag to indicate if the tank is frozen and cannot move but can still shoot and rotate
@@ -98,6 +102,14 @@ public abstract class AbstractTank extends DynamicGameObject {
         maxSpeedUnit = 0;
         speed = 0;
         maxSpeed = 0;
+
+        spawnTick = new TimeTick(Utils.Time2GameTick(Globals.SPAWN_PROTECTION_COOLDOWN_MS), ()-> {
+            spawnProtectionEnabled = false;  // Disable spawn protection after the cooldown
+        });
+        spawnTick.setRepeats(0);  // Repeat only once for spawning animation
+
+        spawnBlinkTick = new TimeTick(Utils.Time2GameTick(Globals.SPAWN_PROTECTION_BLINK_PERIOD_MS));
+        spawnBlinkTick.setRepeats(-1);  // Repeat only once for spawning animation
 
         // From experimental results, updating tank movement in every 100 milliseconds is a good value for at least enemy tanks.
         movementTick = new TimeTick(Utils.Time2GameTick(100));
@@ -139,6 +151,14 @@ public abstract class AbstractTank extends DynamicGameObject {
 
     @Override
     public void draw(Graphics g) {
+        if (this.spawnProtectionEnabled) {
+            if (spawnBlinkTick.isTimeOut()) {
+                spawnBlinkTick.reset();
+                isSpawnBlinkedOut = !isSpawnBlinkedOut;
+            }
+            if (isSpawnBlinkedOut) return;  // Do not draw the tank if it is blinked out
+        }
+
         // Update the tank texture if it is red tank
         if (isRedTank) {
             redTankTick.updateTick();
@@ -185,6 +205,11 @@ public abstract class AbstractTank extends DynamicGameObject {
      * @param level The current game level where the tank is located.
      */
     public void update(GameLevel level) {
+        if (this.spawnProtectionEnabled) {
+            spawnTick.updateTick();
+            spawnBlinkTick.updateTick();
+        }
+
         // If tank is frozen, do not update its position or direction.
         if (this.isFrozen) {
             this.frozenTick.updateTick();
@@ -419,6 +444,10 @@ public abstract class AbstractTank extends DynamicGameObject {
         }
 
         return  bullet;
+    }
+
+    public boolean isSpawnProtectionEnabled() {
+        return this.spawnProtectionEnabled;
     }
 
     /**

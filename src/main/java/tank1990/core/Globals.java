@@ -72,7 +72,7 @@ public interface Globals {
     // Powerup Parameters
     int POWERUP_WIDTH = 16;
     int POWERUP_HEIGHT = 16;
-    int DEFAULT_POWERUP_LIFETIME_MS = 10000; // Default powerup duration in milliseconds
+    int DEFAULT_POWERUP_LIFETIME_MS = 15000; // Default powerup duration in milliseconds
     int POWERUP_BLINK_INTERVAL_MS = 500;
 
     int SHOVEL_COOLDOWN_MS = 10000;  // Cooldown for shovel powerup in milliseconds ((Shovel is a powerup activates when player tank collects shovel powerup))
@@ -130,8 +130,8 @@ public interface Globals {
     int POWER_TANK_MOVEMENT_SPEED = 4;
     int POWER_TANK_MOVEMENT_MAX_SPEED = 4;
 
-    int ARMOR_TANK_MOVEMENT_SPEED = 2;
-    int ARMOR_TANK_MOVEMENT_MAX_SPEED = 2;
+    int ARMOR_TANK_MOVEMENT_SPEED = 4;
+    int ARMOR_TANK_MOVEMENT_MAX_SPEED = 4;
 
     int RED_TANK_BLINK_ANIMATION_PERIOD_MS = 500;
 
@@ -153,8 +153,8 @@ public interface Globals {
      */
     int GAME_TICK_MS = 12;
 
-    int ENEMY_SPAWN_PROTECTION_TIME = 3;    // Protection time in seconds
-    int PLAYER_SPAWN_PROTECTION_TIME = 3;   // Protection time in seconds
+    int SPAWN_PROTECTION_COOLDOWN_MS = 1500;    // Protection time in milliseconds
+    int SPAWN_PROTECTION_BLINK_PERIOD_MS = 100;   // Blink animation during Protection period in seconds
 
     int SKID_DISTANCE = 10;                 // Skid distance of a tank on ice tile in pixels
 
@@ -280,7 +280,7 @@ public interface Globals {
      * MISCS TEXTURES
      */
     int FRAME_DELAY = 1;
-    SpriteAnimationStruct BLAST_ANIMATION = new SpriteAnimationStruct("textures/miscs/blast.png", 3, FRAME_DELAY, 1, 3, 0, 0);
+    SpriteAnimationStruct BLAST_ANIMATION = new SpriteAnimationStruct("textures/miscs/blast.png", 5, FRAME_DELAY*2, 1, 5, 0, 0);
 
     /**
      * MAPS
