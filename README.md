@@ -23,7 +23,7 @@ You need to have the following installed:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Tank1990.git
+git clone https://github.com/Viriliter/Tank1990.git
 cd Tank1990
 ```
 
