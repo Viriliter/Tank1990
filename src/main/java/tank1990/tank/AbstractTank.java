@@ -260,8 +260,18 @@ public abstract class AbstractTank extends DynamicGameObject {
         // TODO: Dynamically updating size is not ideal, but necessary for now.
         setSize(new Dimension(tankWidth, tankHeight));  // Dynamically update tank size.
 
-        // Calculate movement based on the current direction and speed
-        move(level);
+        // Calculate movement based on the current direction and speed in separate thread
+        Thread movementThread = new Thread(() -> {
+            synchronized (this) {
+                move(level);
+            }
+        });
+        movementThread.start();
+        try {
+            movementThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
