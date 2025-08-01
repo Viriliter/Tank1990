@@ -30,6 +30,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+/**
+ * @class AboutGamePanel
+ * @brief A panel that displays information about the game, including how to play and credits.
+ * @details This panel is shown when the user selects the "About" option from the main menu.
+ */
 public class AboutGamePanel extends SlidingPanel implements KeyListener {
 
     private static final int TITLE_FONT_SIZE = 32;
@@ -101,14 +106,12 @@ public class AboutGamePanel extends SlidingPanel implements KeyListener {
             colorChanged = !colorChanged;
             if (colorChanged) {
                 this.pressButton.setForeground(Color.WHITE);
-                this.frame.revalidate();
-                this.frame.repaint();
 
             } else {
                 this.pressButton.setForeground(Color.CYAN);
-                this.frame.revalidate();
-                this.frame.repaint();
             }
+            this.frame.revalidate();
+            this.frame.repaint();
         });
 
         this.blinkTimer.start();

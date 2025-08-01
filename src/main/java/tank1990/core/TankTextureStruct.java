@@ -24,6 +24,11 @@ package tank1990.core;
 
 import java.io.Serializable;
 
+/**
+ * @class TankTextureStruct
+ * @brief Represents the textures for a tank in different directions.
+ * @details This class holds the texture paths for a tank facing upwards, right, downwards, and left.
+ */
 public class TankTextureStruct implements Serializable {
     public TextureFXStruct upwardsTexturePath;
     public TextureFXStruct rightTexturePath;

@@ -26,6 +26,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * @class TexturedFontPanel
+ * @brief A JPanel that renders text with a texture applied to it.
+ * @details This panel can display text with a texture background, supporting both plain text and HTML formatted text.
+ */
 public class TexturedFontPanel extends JPanel {
     private TexturePaint texturePaint;
     private String text = "Textured Text!";

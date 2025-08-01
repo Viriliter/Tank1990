@@ -27,6 +27,12 @@ import java.awt.Graphics;
 
 import tank1990.core.*;
 
+/**
+ * @class AbstractPowerup
+ * @brief Represents a powerup in the game.
+ * @details This class is an abstract base class for all powerups, providing common
+ * functionality such as lifetime management and blinking effects.
+ */
 public abstract class AbstractPowerup extends DynamicGameObject {
     protected PowerupType powerupType;
     protected int lifeTimeMs;

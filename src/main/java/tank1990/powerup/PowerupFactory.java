@@ -22,6 +22,11 @@
 
 package tank1990.powerup;
 
+/**
+ * @class PowerupFactory
+ * @brief Factory class for creating powerup objects based on their type.
+ * @details This class provides a static method to create instances of different powerup types.
+ */
 public class PowerupFactory {
     /**
      * Creates a new powerup based on the given type.
@@ -30,8 +35,8 @@ public class PowerupFactory {
      * and assigns it the given x and y coordinates.
      *
      * @param type The type of powerup to create.
-     * @param x The x-coordinate of the powerup's spawn location.
-     * @param y The y-coordinate of the powerup's spawn location.
+     * @param x The x-coordinate of spawn location of the powerup.
+     * @param y The y-coordinate of the spawn location of the powerup.
      * @return A newly created AbstractPowerup object of the specified type.
      * @throws IllegalStateException If the config parameter is null.
      * @throws IllegalArgumentException If the type parameter is null.

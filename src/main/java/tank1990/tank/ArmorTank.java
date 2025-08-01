@@ -26,6 +26,11 @@ import tank1990.core.*;
 
 import java.util.Random;
 
+/**
+ * @class ArmorTank
+ * @brief Represents an armored tank in the game.
+ * @details This tank has a high armor level and is designed to be more resilient against attacks.
+ */
 public class ArmorTank extends AbstractTank implements Enemy {
 
     int lastArmorLevel=0;

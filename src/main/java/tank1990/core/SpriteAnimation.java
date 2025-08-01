@@ -36,8 +36,7 @@ import java.util.Objects;
 /**
  * @class SpriteAnimation
  * @brief Class to handle sprite-based animation using a sprite sheet.
- * 
- * This class loads a sprite sheet, preloads individual frames from it, and
+ * @details This class loads a sprite sheet, preloads individual frames from it, and
  * manages frame updates, animation speed, repeat count, and drawing the 
  * animation with rotation.
  * The animation frames are drawn sequentially with a specified delay between 
@@ -130,7 +129,7 @@ public class SpriteAnimation implements Serializable{
      * Preloads all frames from the sprite sheet into the subFrames array.
      * 
      * Perform this operation on constructor so that no need to perform this 
-     * operation over and over again since it is bit time consuming.
+     * operation over and over again since it is a bit time-consuming.
      */
     public void setSubFrames() {
         this.frameWidth = this.spriteSheet.getWidth() / this.columns;

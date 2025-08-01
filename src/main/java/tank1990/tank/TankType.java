@@ -22,6 +22,11 @@
 
 package tank1990.tank;
 
+/**
+ * @class TankType
+ * @brief Enum representing the different types of tanks in the game.
+ * @details This enum defines the various tank types available, including basic, fast, power, armor, and player tanks.
+ */
 public enum TankType {
     BASIC_TANK,
     FAST_TANK,

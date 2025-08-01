@@ -30,6 +30,13 @@ import tank1990.player.Player;
 import tank1990.player.PlayerType;
 import tank1990.tank.*;
 
+/**
+ * @class GameLevelManager
+ * @brief Manages the game levels, player scores, and game state.
+ * @details This class is responsible for loading, updating, and transitioning between game levels.
+ * It also keeps track of the player's score and lives. Since it is a singleton, it ensures that there is only one
+ * instance of GameLevelManager throughout the game.
+ */
 public class GameLevelManager implements Serializable {
     private ArrayList<GameLevel> gameLevels; // List of game levels
     private int currentLevelIndex; // Index of the current game level

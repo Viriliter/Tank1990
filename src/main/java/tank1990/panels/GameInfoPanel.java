@@ -30,6 +30,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * @class GameInfoPanel
+ * @brief Displays game information such as current level, player lives, and remaining enemies.
+ * @details This panel is used to show the current game state, including the number of remaining enemies,
+ * the player's remaining lives, and the current level.
+ */
 public class GameInfoPanel extends AbstractPanel {
     AbstractPanel parentPanel;
 

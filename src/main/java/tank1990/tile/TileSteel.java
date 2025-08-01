@@ -28,6 +28,11 @@ import tank1990.core.TextureFX;
 import tank1990.projectiles.Bullet;
 import tank1990.projectiles.BulletType;
 
+/**
+ * @class TileSteel
+ * @brief Represents a steel tile in the game.
+ * @details This tile is indestructible by normal bullets and can only be damaged by upgraded bullets.
+ */
 public class TileSteel extends Tile {
     public TileSteel(int x, int y, BlockConfiguration blockConf) {
         super(x, y, TileType.TILE_STEEL, blockConf);

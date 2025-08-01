@@ -28,8 +28,7 @@ import java.awt.geom.AffineTransform;
 /**
  * @class RectangleBound
  * @brief Represents a rectangular boundary with optional rotation.
- *
- * This class extends the Rectangle class to include rotation support.
+ * @details This class extends the Rectangle class to include rotation support.
  * It provides methods for collision detection, retrieving rotated coordinates,
  * and rendering the rotated rectangle.
  */

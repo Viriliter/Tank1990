@@ -44,6 +44,11 @@ import tank1990.tile.TileSea;
 import tank1990.tile.TileSteel;
 import tank1990.tile.TileTrees;
 
+/**
+ * @class Bullet
+ * @brief Represents a bullet fired by a tank in the game.
+ * @details This class handles the bullet's position, direction, speed, and rendering.
+ */
 public class Bullet extends DynamicGameObject {
 
     private AbstractTank tankInst = null;

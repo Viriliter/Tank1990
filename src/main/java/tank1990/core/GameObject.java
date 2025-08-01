@@ -27,7 +27,9 @@ import java.awt.Graphics;
 import java.io.Serializable;
 
 /**
- * Represents a game object in the Tank1990 game.
+ * @class GameObject
+ * @brief Represents a game object in the game world.
+ * @details This class is abstract and should be extended by specific game objects.
  * This class serves as a base class for all game objects, providing common properties and methods.
  * It implements Serializable to allow saving and loading game states.
  */

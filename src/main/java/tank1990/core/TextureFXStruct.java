@@ -27,8 +27,7 @@ import java.io.Serializable;
 /**
  * @class TextureFXStruct
  * @brief A structure that holds metadata and configuration for a texture effect.
- *
- * This class is used to define the properties of a texture effect, including the path to the texture
+ * @details This class is used to define the properties of a texture effect, including the path to the texture
  * file, offset values for positioning, and the default delay for rendering the texture.
  */
 public class TextureFXStruct implements Serializable {

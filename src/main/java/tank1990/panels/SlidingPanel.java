@@ -25,6 +25,10 @@ package tank1990.panels;
 import javax.swing.*;
 import java.awt.*;
 
+/** * @class SlidingPanel
+ * @brief Abstract class for panels that can slide in and out of view.
+ * @details This class provides methods to handle sliding animations for panels in a JFrame.
+ */
 public abstract class SlidingPanel extends AbstractPanel{
     protected boolean isAnimationFinished = false; // Flag to check if animation is finished
     private JPanel panel; // The panel to animate

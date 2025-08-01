@@ -34,11 +34,17 @@ import tank1990.tank.PlayerTank;
 import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 
+/**
+ * @class Player
+ * @brief Represents a player in the game, managing their tank and lives.
+ * @details This class handles player actions such as moving the tank, shooting bullets,
+ * collecting powerups, and managing player lives.
+ */
 public class Player implements Serializable {
     private int remainingLives;
 
     private PlayerTank myTank = null;
-    private PlayerType playerType;
+    private final PlayerType playerType;
 
     public Player(PlayerType playerType) {
         this.playerType = playerType;
@@ -113,8 +119,7 @@ public class Player implements Serializable {
             return false;
         }
 
-        boolean isDamaged = myTank.getDamage();
-        return isDamaged;
+        return myTank.getDamage();
     }
 
     /**
@@ -170,7 +175,7 @@ public class Player implements Serializable {
             }
         }
 
-        // Add powerup's points to the player's score
+        // Add power-up points to the player's score
         GameLevelManager.getInstance().addPlayerScore(powerup.getPoints());
     }
 
@@ -195,8 +200,8 @@ public class Player implements Serializable {
     /**
      * Check if the player's tank is frozen.
      */
-    public void isFrozen() {
-        myTank.isFrozen();
+    public boolean isFrozen() {
+        return myTank.isFrozen();
     }
 
     /**

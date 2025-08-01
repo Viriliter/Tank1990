@@ -27,8 +27,7 @@ import java.io.Serializable;
 /**
  * @class SpriteAnimationStruct
  * @brief A structure that holds metadata for sprite-based animation.
- * 
- * This class contains information about the sprite sheet, including the image path,
+ * @details This class contains information about the sprite sheet, including the image path,
  * number of frames, frame delay, number of rows and columns in the sprite sheet,
  * offsets for positioning, rotation offset, and the default delay for animations.
  * It is used to initialize the `SpriteAnimation` class for creating and controlling

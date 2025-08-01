@@ -22,6 +22,10 @@
 
 package tank1990.player;
 
+/**
+ * @class PlayerType
+ * @brief Enum representing the two types of players in the game.
+ */
 public enum PlayerType {
     PLAYER_1,
     PLAYER_2

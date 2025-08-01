@@ -23,8 +23,10 @@
 package tank1990.tile;
 
 /**
- * Block Configurations
- *
+ * @class Block Configurations
+ * @brief Enum representing the different configurations of blocks in the game.
+ * @details This enum defines various configurations of blocks based on their states.
+ * Following is the mapping of configurations:
  * X => FULL, 0 => EMPTY
  *
  * 00 BLOCK_CONF_EMPTY
@@ -33,10 +35,10 @@ package tank1990.tile;
  * XX BLOCK_CONF_FULL
  * XX
  *
- * XO BLOCK_CONF_1  OX BLOCK_CONF_2  0O BLOCK_CONF_3  0O BLOCK_CONF_4
+ * XO BLOCK_CONF_1  OX BLOCK_CONF_2  OO BLOCK_CONF_3  0O BLOCK_CONF_4
  * OO               OO               OX               XO
  *
- * XX BLOCK_CONF_5  OX BLOCK_CONF_6  0O BLOCK_CONF_7  XO BLOCK_CONF_8
+ * XX BLOCK_CONF_5  OX BLOCK_CONF_6  OO BLOCK_CONF_7  XO BLOCK_CONF_8
  * OO               OX               XX               XO
  *
  */

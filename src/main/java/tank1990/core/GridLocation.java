@@ -2,6 +2,11 @@ package tank1990.core;
 
 import java.io.Serializable;
 
+/**
+ * @class GridLocation
+ * @brief Represents a location in a grid with row and column indices.
+ * @details This class is used to identify specific positions in a grid structure of game world.
+ */
 public class GridLocation implements Serializable {
     private final int rowIndex;
     private final int colIndex;

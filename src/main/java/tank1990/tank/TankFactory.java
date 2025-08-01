@@ -27,8 +27,7 @@ import tank1990.core.Direction;
 /**
  * @class TankFactory
  * @brief A factory class for creating different types of tanks.
- *
- * This class provides a static method to generate zombies of different types
+ * @details This class provides a static method to generate zombies of different types
  * based on a configuration handler.
  */
 public class TankFactory {

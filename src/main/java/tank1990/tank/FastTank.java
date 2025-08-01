@@ -28,6 +28,11 @@ import tank1990.core.Globals;
 
 import java.util.Random;
 
+/**
+ * @class FastTank
+ * @brief Represents a fast-moving enemy tank in the game.
+ * @details This type of tank moves quickly and is designed to challenge the player with its speed.
+ */
 public class FastTank extends AbstractTank implements Enemy {
 
     public FastTank(int x, int y) {

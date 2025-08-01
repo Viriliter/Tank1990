@@ -30,6 +30,11 @@ import tank1990.core.Globals;
 import tank1990.core.SpriteAnimation;
 import tank1990.core.Utils;
 
+/**
+ * @class Blast
+ * @brief Represents a blast effect in the game.
+ * @details This class handles the visual representation of a blast, including its animation and drawing on the screen.
+ */
 public class Blast extends DynamicGameObject {
     protected SpriteAnimation spriteAnimation;
 

@@ -28,6 +28,11 @@ import javax.swing.JLayeredPane;
 
 import tank1990.core.GameEngine;
 
+/**
+ * @class GameAreaPanel
+ * @brief Represents the main game area where the game is rendered.
+ * @details This panel is responsible for displaying the game engine's graphics and handling the game state.
+ */
 public class GameAreaPanel extends JLayeredPane {
     private GameEngine gameEngine = null;
 

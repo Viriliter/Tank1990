@@ -1,5 +1,10 @@
 package tank1990.core;
 
+/**
+ * @class EventType
+ * @brief Enum representing different types of events in the game.
+ * @details This enum is used to categorize events of GameEngine.
+ */
 public enum EventType {
     NULL,
     UPDATE,

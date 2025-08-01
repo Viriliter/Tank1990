@@ -7,6 +7,10 @@ import tank1990.core.ConfigHandler;
 import tank1990.core.Globals;
 import tank1990.panels.MenuPanel;
 
+/**
+ * @class Game
+ * @brief The main class to start the Tank 1990 game.
+ */
 public class Game {
     public static int iPlayerScore = 0; // Static variable to hold the player's score
 

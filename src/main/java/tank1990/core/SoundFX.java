@@ -36,8 +36,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 /**
  * @class SoundFX
  * @brief A class for handling sound effects.
- * 
- * This class loads and plays sound files using Java's Clip API. It supports 
+ * @details This class loads and plays sound files using Java's Clip API. It supports
  * functionalities such as playing, stopping, pausing, resuming, looping, 
  * fading out, and delayed playback.
  */
@@ -206,7 +205,7 @@ public class SoundFX implements Serializable{
     }
 
     /**
-     * Handles object deserialization and reinitializes the audio clip.
+     * Handles object deserialization and reinitialized the audio clip.
      * @param in The object input stream.
      * @throws IOException If an I/O error occurs.
      * @throws ClassNotFoundException If the class definition is not found.

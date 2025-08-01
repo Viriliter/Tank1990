@@ -27,8 +27,8 @@ import java.awt.event.KeyEvent;
 import java.awt.Color;
 
 /**
- * Globals
- * Stores game specific configuration parameters and file paths of the resources that can be used throughout the application life.
+ * @class Globals
+ * @brief Contains global constants and configuration parameters for the game.
  */
 public interface Globals {
 

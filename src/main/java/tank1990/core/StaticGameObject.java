@@ -23,8 +23,9 @@
 package tank1990.core;
 
 /**
- * Represents a static game object that does not move.
- * This class is an abstract base class for all static game objects.
+ * @class StaticGameObject
+ * @brief Represents a static game object that does not move in the game area.
+ * @details This class is an abstract base class for all static game objects (such as tiles and powerups).
  */
 public abstract class StaticGameObject extends GameObject {
 

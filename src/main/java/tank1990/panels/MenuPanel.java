@@ -40,6 +40,11 @@ import tank1990.core.GameMode;
 import tank1990.core.Globals;
 import tank1990.core.Utils;
 
+/**
+ * @class MenuPanel
+ * @brief Represents the main menu panel of the game.
+ * @details This class extends SlidingPanel and implements KeyListener to handle user input for navigating the menu.
+ */
 public class MenuPanel extends SlidingPanel implements KeyListener {
 
     private int selectedIndex = 0;
@@ -236,7 +241,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             File fileToOpen = fileChooser.getSelectedFile();
 
             // Read content from the selected file
-            boolean isExceptionOccured = true;
+            boolean isExceptionOccurred = true;
             GamePanel gamePanel = new GamePanel(frame, this, GameMode.MODE_SINGLE_PLAYER);
             try {
                 FileInputStream inputStream = new FileInputStream(fileToOpen);
@@ -252,7 +257,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
                     repaint();
                 });
 
-                isExceptionOccured = false;
+                isExceptionOccurred = false;
             } catch (FileNotFoundException e) {
                 JOptionPane.showMessageDialog(
                         null,
@@ -283,7 +288,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Undefined error occured reading the file!",
+                        "Undefined error occurred reading the file!",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
@@ -291,7 +296,7 @@ public class MenuPanel extends SlidingPanel implements KeyListener {
                 e.printStackTrace();
             } finally {
                 // In case of exception, return to menu window
-                if (isExceptionOccured) {
+                if (isExceptionOccurred) {
                     gamePanel.onScorePanelAnimationFinished();
                 }
             }

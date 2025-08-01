@@ -27,6 +27,11 @@ import java.awt.Dimension;
 import tank1990.core.*;
 import tank1990.player.PlayerType;
 
+/** * @class PlayerTank
+ * @brief Represents a player-controlled tank in the game.
+ * @details This class extends AbstractTank and provides functionality specific to player tanks,
+ * including movement, texture management, and player type handling.
+ */
 public class PlayerTank extends AbstractTank {
 
     public PlayerTank(int x, int y) {

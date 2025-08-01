@@ -33,6 +33,11 @@ import tank1990.Game;
 import tank1990.core.*;
 import tank1990.player.Player;
 
+/**
+ * @class GamePanel
+ * @brief Represents the main game panel that contains the game area, info panel, and overlays.
+ * @details This class handles the gameplay area, player controls, game state management, and rendering of game objects.
+ */
 public class GamePanel extends AbstractPanel implements ActionListener, KeyListener, Observer {
 
     private static Dimension gameAreaDimension = null;

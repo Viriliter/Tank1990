@@ -31,6 +31,12 @@ import tank1990.core.GameScoreStruct;
 import tank1990.core.Globals;
 import tank1990.core.Utils;
 
+/**
+ * @class ScorePanel
+ * @brief Displays the score panel with detailed scores for different tank types.
+ * @details This panel shows the scores for basic, fast, power, and armor tanks, along with the total score.
+ * It also handles key events to navigate back to the main menu.
+ */
 public class ScorePanel extends AbstractPanel implements KeyListener {
 
     private boolean keyPressDisabled = true;

@@ -32,6 +32,11 @@ import java.io.InputStream;
 
 import static tank1990.core.Globals.GAME_TICK_MS;
 
+/**
+ * @interface Utils
+ * @brief Utility methods for various game-related operations.
+ * @details This interface provides static methods for time conversion, image loading, collision detection, and more.
+ */
 public interface Utils {
     /**
      * Converts a duration in milliseconds to the number of game ticks.
@@ -217,7 +222,7 @@ public interface Utils {
      */
     static Dimension normalizeDimension(Graphics g, int width, int height) {
         width = width * (g.getClipBounds().width / Globals.COL_TILE_COUNT) / Globals.TILE_WIDTH;
-        height = height * (g.getClipBounds().height / Globals.ROW_TILE_COUNT) / Globals.TILE_HEIGHT;;
+        height = height * (g.getClipBounds().height / Globals.ROW_TILE_COUNT) / Globals.TILE_HEIGHT;
 
         return new Dimension(width, height);
     }

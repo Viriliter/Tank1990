@@ -28,6 +28,11 @@ import java.util.HashMap;
 import tank1990.tank.TankType;
 import tank1990.tile.Tile;
 
+/**
+ * @class LevelInfo
+ * @brief Represents the information of a game level, including the grid structure of game map and enemy tank counts.
+ * @details This class is used to store the configuration of a level, including the arrangement of tiles and the number of enemy tanks.
+ */
 public class LevelInfo implements Serializable {
     public Tile[][] levelGrid;
     public HashMap<TankType, Integer> enemyTankCount;

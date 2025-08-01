@@ -34,6 +34,12 @@ import tank1990.projectiles.BulletType;
 import tank1990.tile.Tile;
 import tank1990.tile.TileType;
 
+/**
+ * @class AbstractTank
+ * @brief Represents a tank in the game.
+ * @details This class is an abstract base class for all tank types, providing common properties and methods.
+ * It handles movement, shooting, and interactions with powerups.
+ */
 public abstract class AbstractTank extends DynamicGameObject {
     private boolean isBulletDestroyed = true;  // Flag to indicate if the bullet fired from the tank is destroyed or not
 

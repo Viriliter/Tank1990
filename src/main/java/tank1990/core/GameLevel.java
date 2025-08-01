@@ -35,6 +35,13 @@ import tank1990.tank.TankFactory;
 import tank1990.tank.TankType;
 import tank1990.tile.*;
 
+/**
+ * @class GameLevel
+ * @brief Represents a game level in the Tank 1990 game.
+ * @details This class manages the state of the game level, including enemy tanks, eagle location,
+ * player location, and various game mechanics such as spawning tanks and power-ups.
+ * GameLevels are handled by the GameLevelManager.
+ */
 public class GameLevel implements Serializable {
     // Create a min-heap for spawn location which spawn location and timestamp of last enemy tank created.
     private static final PriorityQueue<Map.Entry<GridLocation, Long>> SPAWN_LOCATIONS = new PriorityQueue<>(Comparator.comparingLong(Map.Entry::getValue));
@@ -187,7 +194,7 @@ public class GameLevel implements Serializable {
 
     public void update() {
         // Check timestamp of spawn time. Set the timestamp to invalid if it is too old
-        Map.Entry<GridLocation, Long> oldestSpawnLocationEntry = this.SPAWN_LOCATIONS.poll();
+        Map.Entry<GridLocation, Long> oldestSpawnLocationEntry = SPAWN_LOCATIONS.poll();
 
         if (oldestSpawnLocationEntry!=null) {
             if (System.currentTimeMillis() - oldestSpawnLocationEntry.getValue() > Globals.ENEMY_TANK_SPAWN_DELAY_MS) {
@@ -195,7 +202,7 @@ public class GameLevel implements Serializable {
                 oldestSpawnLocationEntry.setValue(-1L);
             }
             // Update the list
-            this.SPAWN_LOCATIONS.add(oldestSpawnLocationEntry);
+            SPAWN_LOCATIONS.add(oldestSpawnLocationEntry);
         }
 
         for (int row = 0; row < this.levelInfo.levelGrid.length; row++) {
@@ -375,21 +382,21 @@ public class GameLevel implements Serializable {
             return null;
         }
 
-        Map.Entry<GridLocation, Long> spawnLocationEntry = this.SPAWN_LOCATIONS.poll();
+        Map.Entry<GridLocation, Long> spawnLocationEntry = SPAWN_LOCATIONS.poll();
 
         if (spawnLocationEntry==null) return null;
 
         //If spawn time is not old enough, do not spawn any tank
         if (spawnLocationEntry.getValue()>0) {
             //Update the list
-            this.SPAWN_LOCATIONS.add(spawnLocationEntry);
+            SPAWN_LOCATIONS.add(spawnLocationEntry);
             return null;
         }
 
         // If tile is occupied, do not spawn any tank
         if (isTileOccupied(spawnLocationEntry.getKey(), null)) {
             //Update the list
-            this.SPAWN_LOCATIONS.add(spawnLocationEntry);
+            SPAWN_LOCATIONS.add(spawnLocationEntry);
             return null;
         }
 
@@ -397,7 +404,7 @@ public class GameLevel implements Serializable {
         spawnLocationEntry.setValue(System.currentTimeMillis());
 
         // Update the list
-        this.SPAWN_LOCATIONS.add(spawnLocationEntry);
+        SPAWN_LOCATIONS.add(spawnLocationEntry);
 
         Direction[] directions = Direction.values();
         Direction spawnDir = directions[random.nextInt(1,directions.length)];
@@ -410,11 +417,10 @@ public class GameLevel implements Serializable {
         AbstractTank enemyTank = TankFactory.createTank(currentTankType, loc.x(), loc.y());
 
         int nThTank = this.totalEnemyTankCount - getRemainingEnemyTanks() + 1;
+        assert enemyTank != null;
         if (MAGIC_NUMBERS.contains(nThTank)) {
-            assert enemyTank != null;
             enemyTank.setAsRed();
         } else {
-            assert enemyTank != null;
             // There is a 30% chance to spawn a red tank
             if (Utils.getRandomProbability(30)) enemyTank.setAsRed();
         }
@@ -576,7 +582,7 @@ public class GameLevel implements Serializable {
         // Check if the eagle is alive
         if (!isEagleAlive()) return false;
 
-        // Calculate the bound that alignes with the eagle
+        // Calculate the bound that aligns with the eagle
         GridLocation tankGloc = Utils.loc2GridLoc(new Location(tankBound.getOriginX(), tankBound.getOriginY()));
 
         int rowDiff = this.eagleLocation.rowIndex() - tankGloc.rowIndex();
@@ -622,7 +628,7 @@ public class GameLevel implements Serializable {
      * @return true if the tank can move, false otherwise.
      */
     public boolean checkMovable(AbstractTank tank, RectangleBound tankBound) {
-        // 1- Check tankbound is within game area
+        // 1- Check tank-bound is within game area
         Dimension gameArea = GameLevelManager.getInstance().getCurrentLevel().getGameAreaSize();
         if (tankBound.getMaxX() > gameArea.width ||
             tankBound.getMaxY() > gameArea.height ||
@@ -752,7 +758,7 @@ public class GameLevel implements Serializable {
 
     /**
      * Activates the anti-shovel powerup, which removes surrounding tiles around the eagle.
-     * Normally there is no such an powerup type in the game, but it is the effect when enemy tanks use the shovel powerup.
+     * Normally there is no such a powerup type in the game, but it is the effect when enemy tanks use the shovel powerup.
      * It stores the original state of the tiles before removal for later restoration.
      */
     public void activateAntiShovelPowerup() {

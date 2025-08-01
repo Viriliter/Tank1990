@@ -22,6 +22,10 @@
 
 package tank1990.core;
 
+/**
+ * @class Direction
+ * @brief Represents the four primary directions and provides methods for direction manipulation.
+ */
 public enum Direction {
     DIRECTION_INVALID,
     DIRECTION_UPWARDS,
@@ -29,6 +33,10 @@ public enum Direction {
     DIRECTION_DOWNWARDS,
     DIRECTION_LEFT;
 
+    /**
+     * Returns the opposite direction of the current direction.
+     * @return The opposite direction.
+     */
     public Direction opposite() {
         switch (this) {
             case DIRECTION_UPWARDS:
@@ -44,26 +52,32 @@ public enum Direction {
         }
     }
 
+    /**
+     * Returns the direction as a string.
+     * @return A string representation of the direction.
+     */
     public Direction rotateCW() {
-        Direction direction = switch (this) {
+        return switch (this) {
             case DIRECTION_UPWARDS -> DIRECTION_RIGHT;
             case DIRECTION_RIGHT -> DIRECTION_DOWNWARDS;
             case DIRECTION_DOWNWARDS -> DIRECTION_LEFT;
             case DIRECTION_LEFT -> DIRECTION_UPWARDS;
             default -> DIRECTION_INVALID;
         };
-        return direction;
     }
 
+    /**
+     * Returns the direction rotated counter-clockwise.
+     * @return The counter-clockwise rotated direction.
+     */
     public Direction rotateCCW() {
-        Direction direction = switch (this) {
+        return switch (this) {
             case DIRECTION_UPWARDS -> DIRECTION_LEFT;
             case DIRECTION_LEFT -> DIRECTION_DOWNWARDS;
             case DIRECTION_DOWNWARDS -> DIRECTION_RIGHT;
             case DIRECTION_RIGHT -> DIRECTION_UPWARDS;
             default -> DIRECTION_INVALID;
         };
-        return direction;
     }
 
 }

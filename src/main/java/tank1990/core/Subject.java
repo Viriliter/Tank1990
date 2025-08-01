@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Subject class that maintains a list of observers and notifies them of events.
- * This is part of the Observer design pattern, where the Subject is the object being observed.
+ * @class Subject
+ * @brief Subject class that maintains a list of observers and notifies them of events.
+ * @details This is part of the Observer design pattern, where the Subject is the object being observed.
  * Observers can subscribe to or unsubscribe from the Subject to receive updates.
  */
 public abstract class Subject {

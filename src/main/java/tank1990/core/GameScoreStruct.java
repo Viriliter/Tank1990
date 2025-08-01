@@ -24,6 +24,11 @@ package tank1990.core;
 
 import java.io.Serializable;
 
+/**
+ * @class GameScoreStruct
+ * @brief Represents the game score structure containing various scoring metrics.
+ * @details This class is used to store and manage the scores and statistics of a game session.
+ */
 public class GameScoreStruct implements Serializable {
     private int hiScore = 0;
     private int totalScore = 0;

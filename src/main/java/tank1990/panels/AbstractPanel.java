@@ -29,6 +29,11 @@ import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @class AbstractPanel
+ * @brief Base class for all panels in the application.
+ * @details This class provides common functionality for panels, such as initialization and resetting.
+ */
 public abstract class AbstractPanel extends JPanel {
     protected JFrame frame;
 

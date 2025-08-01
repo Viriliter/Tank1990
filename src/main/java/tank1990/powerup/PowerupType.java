@@ -1,5 +1,11 @@
 package tank1990.powerup;
 
+/**
+ * @enum PowerupType
+ * @brief Enum representing different types of power-ups available in the game.
+ * @details This enum defines various power-up types that can be collected by players,
+ * each providing different abilities or enhancements to the tank.
+ */
 public enum PowerupType {
     POWERUP_GRENADE,
     POWERUP_HELMET,

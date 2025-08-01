@@ -22,6 +22,13 @@
 
 package tank1990.core;
 
+/**
+ * @class Location
+ * @brief Represents a point in a 2D grid with x and y coordinates.
+ * @details This class is used to define positions on the game map or any 2D space.
+ * Since this class incorporates with cartesian coordinates,
+ * it is more intuitive to use for drawing and positioning elements in the game.
+ */
 public record Location(int x, int y) {
     @Override
     public String toString() {

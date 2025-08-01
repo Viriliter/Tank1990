@@ -25,10 +25,10 @@ package tank1990.core;
 import java.awt.Graphics;
 
 /**
- * Represents a dynamic game object that can be drawn on the screen.
- * This class is abstract and should be extended by specific game objects
- * Dynamic game objects are typically those that changes its position
- * during gameplay, such as moving tanks, bullets, or other entities.
+ * @class DynamicGameObject
+ * @brief Represents a dynamic game object that can be drawn on the screen.
+ * @details This class is abstract and should be extended by specific game objects. Dynamic game objects are typically those
+ * that changes its position during gameplay, such as moving tanks, bullets, or other entities.
  */
 public abstract class DynamicGameObject extends GameObject {
     /**

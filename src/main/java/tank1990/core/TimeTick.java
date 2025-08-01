@@ -28,8 +28,7 @@ import java.io.Serializable;
 /**
  * @class TimeTick
  * @brief A class that manages a countdown timer with optional repeat functionality and associated actions.
- *
- * The TimeTick class is responsible for managing a countdown timer, executing actions when the timer reaches zero.
+ * @details The TimeTick class is responsible for managing a countdown timer, executing actions when the timer reaches zero.
  * It allows setting a countdown action which triggers when the countdown reaches zero.
  */
 public class TimeTick implements Serializable {

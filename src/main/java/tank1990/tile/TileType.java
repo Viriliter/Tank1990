@@ -22,6 +22,11 @@
 
 package tank1990.tile;
 
+/**
+ * @class TileType
+ * @brief Enum representing the different types of tiles in the game.
+ * @details Each tile type has specific properties such as whether it is passable and the cost of moving through it.
+ */
 public enum TileType {
     TILE_NONE,
     TILE_BRICKS,

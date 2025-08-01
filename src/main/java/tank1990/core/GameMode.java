@@ -22,6 +22,11 @@
 
 package tank1990.core;
 
+/**
+ * @class GameMode
+ * @brief Enum representing different game modes.
+ * @details This enum is used to specify the mode in which the game is played, such as single-player or multi-player.
+ */
 public enum GameMode {
     MODE_SINGLE_PLAYER,
     MODE_MULTI_PLAYER

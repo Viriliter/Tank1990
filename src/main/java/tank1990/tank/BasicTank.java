@@ -26,6 +26,11 @@ import tank1990.core.*;
 
 import java.util.Random;
 
+/**
+ * @class BasicTank
+ * @brief Represents a basic enemy tank in the game.
+ * @details This class extends AbstractTank and offers mediocre speed and firepower.
+ */
 public class BasicTank extends AbstractTank implements Enemy {
 
     public BasicTank(int x, int y) {

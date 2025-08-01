@@ -28,6 +28,11 @@ import tank1990.core.*;
 import tank1990.projectiles.Bullet;
 import tank1990.tank.AbstractTank;
 
+/** * @class Tile
+ * @brief Represents a tile in the game map.
+ * @details This class extends StaticGameObject and provides functionality for different types of tiles,
+ * including their type, block configuration, sprite animation, and interaction with tanks and bullets.
+ */
 public abstract class Tile extends StaticGameObject {
     protected TileType type = null;
     protected BlockConfiguration blockConf = BlockConfiguration.BLOCK_CONF_FULL;
@@ -71,8 +76,8 @@ public abstract class Tile extends StaticGameObject {
      * @param blockConf The block configuration of the tile.
      */
     public Tile(int x, int y, TileType type, BlockConfiguration blockConf) {
-        setX(x);  // By default set as index, then it will be updated in draw method for actual X-Y coordinate
-        setY(y);  // By default set as index, then it will be updated in draw method for actual X-Y coordinate
+        setX(x);  // By default, set as index, then it will be updated in draw method for actual X-Y coordinate
+        setY(y);  // By default, set as index, then it will be updated in draw method for actual X-Y coordinate
         setDir(Direction.DIRECTION_INVALID);
 
         this.type = type;

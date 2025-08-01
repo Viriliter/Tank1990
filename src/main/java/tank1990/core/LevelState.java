@@ -22,6 +22,11 @@
 
 package tank1990.core;
 
+/**
+ * @class LevelState
+ * @brief Represents the various states of a game level.
+ * @details This enum is used to track the current state of a level.
+ */
 public enum LevelState {
     NOT_LOADED,
     LOADED,

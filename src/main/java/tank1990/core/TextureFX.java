@@ -37,8 +37,7 @@ import javax.imageio.ImageIO;
 /**
  * @class TextureFX
  * @brief A class representing a texture effect for drawing images.
- *
- * This class handles the loading, updating, and drawing of a texture (image)
+ * @details This class handles the loading, updating, and drawing of a texture (image)
  * The texture is loaded from a path specified in a `TextureFXStruct` object passed during
  * initialization.
  */

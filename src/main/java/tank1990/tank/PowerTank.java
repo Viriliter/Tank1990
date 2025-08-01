@@ -28,6 +28,11 @@ import tank1990.core.Globals;
 
 import java.util.Random;
 
+/**
+ * @class PowerTank
+ * @brief Represents a powerful enemy tank in the game.
+ * @details This tank has higher fire rate and is designed to be more challenging for players.
+ */
 public class PowerTank extends AbstractTank implements Enemy {
 
     public PowerTank(int x, int y) {

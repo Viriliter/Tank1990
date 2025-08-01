@@ -22,6 +22,11 @@
 
 package tank1990.tile;
 
+/**
+ * @class TileFactory
+ * @brief Factory class for creating different types of tiles.
+ * @details This class provides a static method to create tiles based on the specified TileType.
+ */
 public class TileFactory {
     public static Tile createTile(TileType type, int x, int y, BlockConfiguration blockConf) {
         if (type == null) {

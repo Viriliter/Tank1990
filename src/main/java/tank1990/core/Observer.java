@@ -1,8 +1,9 @@
 package tank1990.core;
 
 /**
- * Observer interface to implement Observer pattern.
- * Classes implementing this interface can filter and respond to specific events.
+ * @class Observer
+ * @brief Observer interface to implement Observer pattern.
+ * @details Classes implementing this interface can filter and respond to specific events.
  */
 public interface Observer {
     /**

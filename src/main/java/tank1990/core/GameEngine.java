@@ -43,6 +43,12 @@ import tank1990.tank.AbstractTank;
 import tank1990.tank.Enemy;
 import tank1990.tile.Tile;
 
+/**
+ * @class GameEngine
+ * @brief The main game engine that manages the game state, updates game objects, and handles game logic.
+ * @details This class is responsible for managing players, enemies, powerups, bullets, and other game objects.
+ * It also handles the game loop and updates the game state periodically.
+ */
 public class GameEngine extends Subject {
     private GameAreaPanel parentPanel = null;
 
@@ -208,7 +214,7 @@ public class GameEngine extends Subject {
      *
      * @return The first player in multiplayer mode or the only player in single player mode.
      */
-    public Player getPlayer1() { return players.size() > 0 ? players.getFirst(): null; }
+    public Player getPlayer1() { return !players.isEmpty() ? players.getFirst(): null; }
 
     /**
      * Gets the second player in multiplayer mode.

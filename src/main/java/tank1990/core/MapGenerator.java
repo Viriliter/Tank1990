@@ -34,6 +34,11 @@ import tank1990.tile.TileFactory;
 import tank1990.tile.TileType;
 import tank1990.tank.TankType;
 
+/**
+ * @class MapGenerator
+ * @brief Responsible for generating and managing game maps, including reading from and writing to binary files.
+ * @details This class provides methods to create maps from text files, save them as binary files, and generate random maps.
+ */
 public class MapGenerator {
 
     /**
@@ -42,9 +47,8 @@ public class MapGenerator {
      * @return LevelInfo object containing the grid and enemy tank count.
      */
     public static LevelInfo readLevelInfo(String filePath) {
-        LevelInfo levelInfo = loadFromBinary(filePath);
 
-        return levelInfo;
+        return loadFromBinary(filePath);
     }
 
     /**
