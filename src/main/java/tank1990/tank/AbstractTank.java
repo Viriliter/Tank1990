@@ -266,12 +266,8 @@ public abstract class AbstractTank extends DynamicGameObject {
                 move(level);
             }
         });
-        movementThread.start();
-        try {
-            movementThread.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+
+        waitThread(movementThread);
     }
 
     /**
@@ -660,6 +656,19 @@ public abstract class AbstractTank extends DynamicGameObject {
         if (r < 0.4) return Direction.DIRECTION_LEFT;
         else if (r < 0.7) return Direction.DIRECTION_RIGHT;
         else return Direction.DIRECTION_UPWARDS;
+    }
+
+    /**
+     * Waits for a thread to finish execution.
+     * @param thread The thread to wait for.
+     */
+    private void waitThread(Thread thread) {
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
