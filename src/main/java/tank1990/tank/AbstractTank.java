@@ -120,7 +120,7 @@ public abstract class AbstractTank extends DynamicGameObject {
         spawnBlinkTick.setRepeats(-1);  // Repeat only once for spawning animation
 
         // From experimental results, updating tank movement in every 100 milliseconds is a good value for at least enemy tanks.
-        movementTick = new TimeTick(Utils.Time2GameTick(100));
+        movementTick = new TimeTick(Utils.Time2GameTick(150));
         movementTick.setRepeats(-1);  // Repeat indefinitely
 
         frozenTick = new TimeTick(Utils.Time2GameTick(Globals.FROZEN_COOLDOWN_MS));
@@ -799,6 +799,8 @@ public abstract class AbstractTank extends DynamicGameObject {
         } else {
             nextTileLoc = currentGridLoc;  // If not at the center, stay in the grid center
         }
+
+        if (Utils.getRandomProbability(10)) nextTileLoc = null;  // Randomly nullify the next tile location to add randomness
 
         if (nextTileLoc != null) {
             // Update the tank's position based on the next tile
